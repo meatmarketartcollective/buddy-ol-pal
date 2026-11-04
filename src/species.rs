@@ -109,9 +109,9 @@ mod tests {
     #[test]
     fn table_loads_and_names_are_unique() {
         let t = table();
-        // Wave B: 12 species. The full count of 18 becomes a hard equality
-        // test at wave C (plan milestone 5).
-        assert!(t.len() >= 12, "wave B shipped: twelve species expected");
+        // Wave C completes the table: exactly eighteen species (plan
+        // milestone 5).
+        assert_eq!(t.len(), 18, "the full table is eighteen species");
         let mut names: Vec<&str> = t.iter().map(|s| s.name.as_str()).collect();
         names.sort();
         let n = names.len();
