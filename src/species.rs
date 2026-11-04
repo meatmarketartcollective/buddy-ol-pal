@@ -53,9 +53,18 @@ impl MoodLines {
 
 const SPECIES_TOML: &str = include_str!("../species.toml");
 
+#[derive(Debug, Deserialize)]
+struct SpeciesFile {
+    species: Vec<Species>,
+}
+
 pub fn table() -> &'static [Species] {
     static TABLE: OnceLock<Vec<Species>> = OnceLock::new();
-    TABLE.get_or_init(|| toml::from_str(SPECIES_TOML).expect("species.toml must parse"))
+    TABLE.get_or_init(|| {
+        let parsed: SpeciesFile = toml::from_str(SPECIES_TOML).expect("species.toml must parse");
+        assert!(!parsed.species.is_empty(), "species table is empty");
+        parsed.species
+    })
 }
 
 pub fn get(name: &str) -> Option<&'static Species> {
