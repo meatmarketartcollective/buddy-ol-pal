@@ -390,3 +390,195 @@ idle = ["sitting quietly in the shade"]
 working = ["decomposing diligently"]
 celebrating = ["spores of joy!"]
 miffed = ["a little more fungry."]
+
+[[species]]
+name = "dragon"
+tier = "common"
+names = [
+  "Drake", "Wyrm", "Scorch", "Flare", "Sizzle", "Ryu", "Puff",
+  "Fang", "Vex", "Aurum",
+]
+
+[species.art]
+idle = '''
+   ^ ^
+  ( -.- )
+   \_/~'''
+working = '''
+   ^ ^
+  ( >.< )
+   \_/w'''
+celebrating = '''
+   ^ ^
+  ( ^o^ )
+   \_/u'''
+miffed = '''
+   ^ ^
+  ( >_< )
+   \_/~'''
+
+[species.lines]
+idle = ["napping on a hoard of one coin"]
+working = ["stoking the furnace within"]
+celebrating = ["blew a celebratory smoke ring!"]
+miffed = ["smoke curling out of both nostrils."]
+
+[[species]]
+name = "yeti"
+tier = "common"
+names = [
+  "Flurry", "Everest", "Blizzard", "Snowball", "Tundra", "Frost",
+  "Powder", "Chill", "Sasquatch", "Marshmallow",
+]
+
+[species.art]
+idle = '''
+  \^^^/
+ ( -.- )
+   /  \'''
+working = '''
+  \^^^/
+ ( >.< )
+   /  \'''
+celebrating = '''
+  \^^^/
+ ( ^o^ )
+   /  \'''
+miffed = '''
+  \^^^/
+ ( >_< )
+   /  \'''
+
+[species.lines]
+idle = ["staying cool under pressure"]
+working = ["shoveling through the backlog, snow included"]
+celebrating = ["let out a mighty roar!"]
+miffed = ["grumbles in ice."]
+
+[[species]]
+name = "robot"
+tier = "common"
+names = [
+  "Bolt", "Cog", "Gizmo", "Widget", "Diode", "Servo", "Piston",
+  "Voltage", "Sprocket", "Nexus",
+]
+
+[species.art]
+idle = '''
+   [=]
+  ( -.- )
+   [|]'''
+working = '''
+   [=]
+  ( >.< )
+   [|]'''
+celebrating = '''
+   [=]
+  ( ^o^ )
+   [|]'''
+miffed = '''
+   [=]
+  ( >_< )
+   [|]'''
+
+[species.lines]
+idle = ["running diagnostics on nothing"]
+working = ["beeping productively"]
+celebrating = ["SYSTEMS NOMINAL!"]
+miffed = ["rebooting mood driver."]
+
+[[species]]
+name = "star"
+tier = "common"
+names = [
+  "Twinkle", "Nova", "Sparkle", "Cosmo", "Orbit", "Astrid", "Sirius",
+  "Vega", "Pulse", "Dazzle",
+]
+
+[species.art]
+idle = '''
+  \ | /
+  ( -.- )
+  / | \'''
+working = '''
+  \ | /
+  ( >.< )
+  / | \'''
+celebrating = '''
+  \ | /
+  ( ^o^ )
+  / | \'''
+miffed = '''
+  \ | /
+  ( >_< )
+  / | \'''
+
+[species.lines]
+idle = ["twinkling faintly"]
+working = ["burning through the sky"]
+celebrating = ["went super nova!"]
+miffed = ["dimmed noticeably."]
+
+[[species]]
+name = "frog"
+tier = "common"
+names = [
+  "Hopscotch", "Ribbit", "Croaky", "Leap", "Lily", "Tad", "Polly",
+  "Warts", "Hopper", "Pond",
+]
+
+[species.art]
+idle = '''
+    o o
+   ( -.- )
+    \  /'''
+working = '''
+    o o
+   ( >.< )
+    \  /'''
+celebrating = '''
+    o o
+   ( ^o^ )
+    \  /'''
+miffed = '''
+    o o
+   ( >_< )
+    \  /'''
+
+[species.lines]
+idle = ["sitting on a lily pad"]
+working = ["tongue out, catching bugs"]
+celebrating = ["ribbit ribbit hooray!"]
+miffed = ["puffed up cheeks."]
+
+[[species]]
+name = "spider"
+tier = "common"
+names = [
+  "Webster", "Spinner", "Legs", "Arachne", "Itsy", "Eightball",
+  "Crawler", "Weft", "Tarantella", "Eight",
+]
+
+[species.art]
+idle = '''
+   . .
+  ( -.- )
+  /\ /\'''
+working = '''
+   . .
+  ( >.< )
+  /\ /\'''
+celebrating = '''
+   . .
+  ( ^o^ )
+  /\ /\'''
+miffed = '''
+   . .
+  ( >_< )
+  /\ /\'''
+
+[species.lines]
+idle = ["hanging out, literally"]
+working = ["spinning up the next sprint"]
+celebrating = ["danced on the web!"]
+miffed = ["eight eyes narrowed."]
