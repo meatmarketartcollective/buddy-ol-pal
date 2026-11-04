@@ -86,10 +86,52 @@ pub fn display_name(name: &str) -> &'static str {
     resolve(name).name.as_str()
 }
 
-/// A new hatch picks a species uniformly at random (seeded, so testable).
+/// Rarity tiers and their hatch weights, out of 100. Introduced in milestone
+/// 6; every species carries its tier in the species table.
+pub const TIER_WEIGHTS: [(&str, u64); 5] = [
+    ("common", 50),
+    ("uncommon", 25),
+    ("rare", 15),
+    ("epic", 8),
+    ("legendary", 2),
+];
+
+pub const TIER_WEIGHT_TOTAL: u64 = 100;
+
+/// A new hatch rolls a rarity tier first, then a species within that tier,
+/// all seeded so tests can reproduce every roll.
 pub fn pick(seed: u64) -> &'static Species {
-    let n = table().len() as u64;
-    &table()[(seed % n) as usize]
+    let roll = seed % TIER_WEIGHT_TOTAL;
+    let mut acc = 0u64;
+    for (tier, weight) in TIER_WEIGHTS {
+        acc += weight;
+        if roll < acc {
+            let group: Vec<&'static Species> =
+                table().iter().filter(|s| s.tier == tier).collect();
+            if !group.is_empty() {
+                return group[((seed >> 8) as usize) % group.len()];
+            }
+        }
+    }
+    // Defensive fallback: a tier with no species would land here.
+    let t = table();
+    &t[(seed as usize) % t.len()]
+}
+
+/// `tb dex` rows: discovered species show name, species and tier; undiscovered
+/// ones hide everything behind ???. The first row is the summary counter.
+pub fn dex_rows(discovered: &[String]) -> Vec<String> {
+    let t = table();
+    let mut rows = Vec::with_capacity(t.len() + 1);
+    rows.push(format!("{}/{} discovered", discovered.len(), t.len()));
+    for sp in t {
+        if discovered.iter().any(|d| d.as_str() == sp.name) {
+            rows.push(format!("  {} the {} [{}]", sp.names[0], sp.name, sp.tier));
+        } else {
+            rows.push("  ??? the ???".to_string());
+        }
+    }
+    rows
 }
 
 /// Deterministic blurb pick from a mood's line pool; drifts slowly with time
@@ -160,11 +202,56 @@ mod tests {
     }
 
     #[test]
-    fn pick_is_uniform_over_the_table() {
+    fn pick_is_weighted_by_tier() {
         let t = table();
-        for seed in 0..(t.len() as u64 * 3) {
-            assert!(get(&pick(seed).name).is_some());
+        let trials = 100_000u64; // a multiple of TIER_WEIGHT_TOTAL: exact counts
+        let mut by_tier: std::collections::HashMap<&str, u64> =
+            std::collections::HashMap::new();
+        let mut seen: std::collections::HashSet<&str> = std::collections::HashSet::new();
+        for seed in 0..trials {
+            let sp = pick(seed);
+            *by_tier.entry(sp.tier.as_str()).or_insert(0) += 1;
+            seen.insert(sp.name.as_str());
         }
-        assert_eq!(pick(0).name, t[0].name);
+        assert_eq!(seen.len(), t.len(), "every species must be reachable");
+        for (tier, weight) in TIER_WEIGHTS {
+            let expected = trials * weight / TIER_WEIGHT_TOTAL;
+            let got = *by_tier.get(tier).unwrap_or(&0);
+            assert_eq!(got, expected, "tier {} odds off", tier);
+        }
+    }
+
+    #[test]
+    fn every_species_carries_a_known_tier() {
+        let valid: std::collections::HashSet<&str> =
+            TIER_WEIGHTS.iter().map(|(t, _)| *t).collect();
+        for sp in table() {
+            assert!(
+                valid.contains(sp.tier.as_str()),
+                "unknown tier {} on {}",
+                sp.tier,
+                sp.name
+            );
+        }
+        for (tier, _) in TIER_WEIGHTS {
+            assert!(
+                table().iter().any(|s| s.tier == tier),
+                "tier {} has no species",
+                tier
+            );
+        }
+    }
+
+    #[test]
+    fn dex_hides_undiscovered_species() {
+        let t = table();
+        let all: Vec<String> = t.iter().map(|s| s.name.clone()).collect();
+        let rows = dex_rows(&all);
+        assert_eq!(rows.len(), t.len() + 1);
+        assert!(rows[0].starts_with(&format!("{}/{}", t.len(), t.len())));
+        assert!(rows.iter().all(|r| !r.contains("???")));
+        let none = dex_rows(&[]);
+        assert_eq!(none[0].starts_with("0/"), true);
+        assert_eq!(none.iter().filter(|r| r.contains("???")).count(), t.len());
     }
 }

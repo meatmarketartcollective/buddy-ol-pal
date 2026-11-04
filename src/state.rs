@@ -4,7 +4,7 @@ use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-pub const STATE_VERSION: i64 = 2;
+pub const STATE_VERSION: i64 = 3;
 pub const CELEBRATE_SECS: i64 = 6;
 pub const MIFF_SECS: i64 = 600;
 pub const MIFF_WINDOW_SECS: i64 = 3600;
@@ -25,6 +25,8 @@ pub struct CompanionState {
     pub xp: i64,
     #[serde(default)]
     pub level: i64, // display-only, derived from xp (state v2)
+    #[serde(default)]
+    pub discovered: Vec<String>, // species names seen at least once (state v3)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -75,18 +77,42 @@ pub fn config_dir() -> PathBuf {
 }
 
 pub fn default_state(now: i64, seed: u64) -> CompanionState {
-    // A new hatch picks a species uniformly at random; the name comes from
-    // that species' own pool. Existing state files keep their species.
+    // A new hatch rolls a rarity tier, then a species within it (both seeded
+    // so tests can reproduce the roll). Half the names come from the species'
+    // curated pool, half from the petname wordlist so names keep feeling
+    // fresh. Existing state files keep their species and name.
     let sp = crate::species::pick(seed);
-    let name_idx = ((seed >> 16) as usize) % sp.names.len();
+    let r = (seed >> 16) as usize;
+    let name = if r % 2 == 0 {
+        sp.names[r % sp.names.len()].clone()
+    } else {
+        library_name(r)
+    };
     CompanionState {
         version: STATE_VERSION,
-        name: sp.names[name_idx].clone(),
+        name,
         species: sp.name.clone(),
         hatched_at: now,
         mood: Mood::Idle.label().to_string(),
         xp: 0,
         level: 1,
+        discovered: vec![sp.name.clone()],
+    }
+}
+
+/// A name from the petname wordlist (~1,800 common nouns, MIT/Apache-2.0),
+/// capitalized to match the curated pools. Falls back to "Buddy" if the
+/// wordlist ever came up empty.
+fn library_name(r: usize) -> String {
+    let petnames = petname::Petnames::large();
+    if petnames.nouns.is_empty() {
+        return "Buddy".to_string();
+    }
+    let n = petnames.nouns[r % petnames.nouns.len()].to_string();
+    let mut chars = n.chars();
+    match chars.next() {
+        Some(first) => first.to_ascii_uppercase().to_string() + chars.as_str(),
+        None => n,
     }
 }
 
@@ -124,11 +150,16 @@ fn seed() -> u64 {
 pub fn parse_state(text: &str) -> Option<CompanionState> {
     let mut st: CompanionState = toml::from_str(text).ok()?;
     if st.version == 1 {
-        // v1 -> v2 migration: level did not exist; derive it, bump the
-        // version. The next save persists the migration; nothing is deleted.
-        st.version = STATE_VERSION;
+        // v1 -> v2 migration: level did not exist; derive it. The next save
+        // persists the migration; nothing is deleted.
         st.level = level_for(st.xp);
-        return Some(st);
+        st.version = 2;
+    }
+    if st.version == 2 {
+        // v2 -> v3 migration: the dex did not exist; the companion's own
+        // species counts as its first discovery.
+        st.discovered = vec![st.species.clone()];
+        st.version = STATE_VERSION;
     }
     if st.version == STATE_VERSION {
         Some(st)
@@ -642,7 +673,7 @@ mod tests {
     }
 
     #[test]
-    fn v1_state_migrates_to_v2() {
+    fn v1_state_migrates_fully() {
         let (_d, dir) = tmpdir();
         fs::write(
             dir.join("state.toml"),
@@ -650,10 +681,32 @@ mod tests {
         )
         .unwrap();
         let st = load_or_hatch(&dir);
-        assert_eq!(st.version, 2);
+        assert_eq!(st.version, STATE_VERSION);
+        assert_eq!(st.discovered, vec!["ember".to_string()]);
         assert_eq!(st.xp, 17);
         assert_eq!(st.level, level_for(17));
         assert_eq!(st.level, 2);
+        let baks: Vec<String> = fs::read_dir(&dir)
+            .unwrap()
+            .filter_map(|e| e.ok())
+            .map(|e| e.file_name().to_string_lossy().to_string())
+            .filter(|n| n.starts_with("state.toml.bak"))
+            .collect();
+        assert!(baks.is_empty(), "migration is not corruption; no backup churn");
+    }
+
+    #[test]
+    fn v2_state_migrates_to_v3() {
+        let (_d, dir) = tmpdir();
+        fs::write(
+            dir.join("state.toml"),
+            "version = 2\nname = \"Pip\"\nspecies = \"moss\"\nhatched_at = 1\nmood = \"idle\"\nxp = 5\nlevel = 1\n",
+        )
+        .unwrap();
+        let st = load_or_hatch(&dir);
+        assert_eq!(st.version, STATE_VERSION);
+        assert_eq!(st.discovered, vec!["moss".to_string()]);
+        assert_eq!(st.xp, 5);
         let baks: Vec<String> = fs::read_dir(&dir)
             .unwrap()
             .filter_map(|e| e.ok())

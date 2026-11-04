@@ -197,7 +197,7 @@ miffed = ["pricklier than usual."]
 
 [[species]]
 name = "fox"
-tier = "common"
+tier = "uncommon"
 names = [
   "Rusty", "Vixen", "Todd", "Cinder", "Bramble", "Fennec", "Nutmeg",
   "Kitsu", "Reynard", "Fluff",
@@ -265,7 +265,7 @@ miffed = ["viscosity increased noticeably."]
 
 [[species]]
 name = "ghost"
-tier = "common"
+tier = "rare"
 names = [
   "Whisper", "Phantom", "Wisp", "Spook", "Murmur", "Ghoul", "Ethel",
   "Shroud", "Eerie", "Pale",
@@ -329,7 +329,7 @@ miffed = ["retracted into its shell."]
 
 [[species]]
 name = "owl"
-tier = "common"
+tier = "uncommon"
 names = [
   "Hoot", "Athena", "Minerva", "Screech", "Nocturne", "Owlet",
   "Talon", "Swoop", "Perch", "Strix",
@@ -393,7 +393,7 @@ miffed = ["a little more fungry."]
 
 [[species]]
 name = "dragon"
-tier = "common"
+tier = "legendary"
 names = [
   "Drake", "Wyrm", "Scorch", "Flare", "Sizzle", "Ryu", "Puff",
   "Fang", "Vex", "Aurum",
@@ -425,7 +425,7 @@ miffed = ["smoke curling out of both nostrils."]
 
 [[species]]
 name = "yeti"
-tier = "common"
+tier = "epic"
 names = [
   "Flurry", "Everest", "Blizzard", "Snowball", "Tundra", "Frost",
   "Powder", "Chill", "Sasquatch", "Marshmallow",
@@ -489,7 +489,7 @@ miffed = ["rebooting mood driver."]
 
 [[species]]
 name = "star"
-tier = "common"
+tier = "rare"
 names = [
   "Twinkle", "Nova", "Sparkle", "Cosmo", "Orbit", "Astrid", "Sirius",
   "Vega", "Pulse", "Dazzle",
@@ -586,7 +586,7 @@ miffed = ["eight eyes narrowed."]
 
 [[species]]
 name = "overlord"
-tier = "common"
+tier = "epic"
 names = [
   "Query",
   "Repro",
@@ -778,7 +778,7 @@ miffed = ["changes requested."]
 
 [[species]]
 name = "axolotl"
-tier = "common"
+tier = "rare"
 names = [
   "Gilly",
   "Axo",
@@ -942,7 +942,7 @@ miffed = ["hanging upside down, frowning."]
 
 [[species]]
 name = "espresso"
-tier = "common"
+tier = "uncommon"
 names = [
   "Crema",
   "Ristretto",
@@ -990,7 +990,7 @@ miffed = ["this is decaf."]
 
 [[species]]
 name = "boba"
-tier = "common"
+tier = "rare"
 names = [
   "Tappy",
   "Pearls",
@@ -1126,7 +1126,7 @@ miffed = ["burnt on one side."]
 
 [[species]]
 name = "pixeldragon"
-tier = "common"
+tier = "epic"
 names = [
   "Pixelle",
   "Bitzy",
@@ -1170,7 +1170,7 @@ miffed = ["smoke stack offline."]
 
 [[species]]
 name = "quantum"
-tier = "common"
+tier = "uncommon"
 names = [
   "Quarky",
   "Superpose",
@@ -1218,7 +1218,7 @@ miffed = ["decohered slightly."]
 
 [[species]]
 name = "alien"
-tier = "common"
+tier = "uncommon"
 names = [
   "Zorbo",
   "Xenny",
@@ -1306,7 +1306,7 @@ miffed = ["boiled over."]
 
 [[species]]
 name = "glitch"
-tier = "common"
+tier = "uncommon"
 names = [
   "Staticy",
   "Zappy",
@@ -1346,7 +1346,7 @@ miffed = ["segfault. again."]
 
 [[species]]
 name = "cloud"
-tier = "common"
+tier = "uncommon"
 names = [
   "Cirrus",
   "Stratus",
@@ -1390,7 +1390,7 @@ miffed = ["100% chance of grumbling."]
 
 [[species]]
 name = "sparkle"
-tier = "common"
+tier = "uncommon"
 names = [
   "Glint",
   "Gleamy",
