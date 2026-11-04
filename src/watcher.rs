@@ -101,20 +101,8 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
     let mut st = state::load_or_hatch(dir);
     let threshold = threshold_secs();
     let gain = state::xp_gain(code, duration_secs, threshold);
+    let leveled = state::apply_xp(&mut st, gain);
     let prev_level = st.level;
-    if gain > 0 {
-        let today = state::now_secs() / 86400;
-        if st.xp_day != today {
-            st.xp_day = today;
-            st.xp_today = 0;
-        }
-        if st.xp_today < state::XP_DAILY_CAP {
-            let room = (state::XP_DAILY_CAP - st.xp_today).min(gain);
-            st.xp += room;
-            st.xp_today += room;
-        }
-    }
-    st.level = state::level_for(st.xp);
     if let Some(k) = kind {
         state::apply_event_chaos(&mut st, k);
     }
@@ -149,7 +137,7 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
                     line
                 ));
             }
-            if st.level > prev_level {
+            if leveled {
                 speak_text(&format!(
                     "{} the {} grew to level {}!",
                     st.name,

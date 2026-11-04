@@ -187,6 +187,35 @@ pub fn xp_gain(exit_code: i32, duration_secs: u64, threshold_secs: u64) -> i64 {
     }
 }
 
+/// The single XP door. Every path that grants XP (settle for command
+/// outcomes, interaction for pets, feeds, plays) goes through here, so the
+/// daily cap cannot be bypassed by one of them. Rolls the per-day counter at
+/// the unix day boundary, guards against a clock that jumps backward (a stale
+/// xp_day in the future resets the counter instead of granting an extra day),
+/// clamps negative gains to nothing, and re-derives the level. Returns true
+/// when the companion crossed into a new level, so callers can react once.
+pub fn apply_xp(st: &mut CompanionState, gain: i64) -> bool {
+    if gain <= 0 {
+        st.level = level_for(st.xp);
+        return false;
+    }
+    let today = now_secs() / 86400;
+    if st.xp_day != today {
+        // A future xp_day means the clock moved backward; reset, do not
+        // trust it and hand out a fresh cap for free.
+        st.xp_day = today;
+        st.xp_today = 0;
+    }
+    if st.xp_today < XP_DAILY_CAP {
+        let room = (XP_DAILY_CAP - st.xp_today).min(gain);
+        st.xp += room;
+        st.xp_today += room;
+    }
+    let prev_level = st.level;
+    st.level = level_for(st.xp);
+    st.level > prev_level
+}
+
 /// XP still owed before the next level, or 0 when maxed.
 pub fn xp_to_next(xp: i64) -> i64 {
     let last = LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.len() - 1];
@@ -853,6 +882,52 @@ mod tests {
         assert_eq!(xp_gain(0, 9, 10), 0);
         assert_eq!(xp_gain(0, 10, 10), 2);
         assert_eq!(xp_gain(0, 30, 10), 2);
+    }
+
+    #[test]
+    fn apply_xp_caps_every_path() {
+        let mut st = default_state(now_secs(), 7);
+        st.xp_day = now_secs() / 86400;
+        st.xp_today = XP_DAILY_CAP - 1;
+        let leveled = apply_xp(&mut st, 5);
+        assert_eq!(st.xp_today, XP_DAILY_CAP, "clipped at the cap");
+        assert!(!leveled);
+        // one more grant the same day pays nothing at all
+        apply_xp(&mut st, 5);
+        assert_eq!(st.xp_today, XP_DAILY_CAP);
+    }
+
+    #[test]
+    fn apply_xp_detects_level_ups_once() {
+        let mut st = default_state(now_secs(), 7);
+        st.level = level_for(st.xp);
+        st.xp = 9;
+        st.xp_day = now_secs() / 86400;
+        let leveled = apply_xp(&mut st, 2);
+        assert!(leveled, "crossing 10 is a level up");
+        assert_eq!(st.level, 2);
+        let again = apply_xp(&mut st, 2);
+        assert!(!again, "no second level-up without crossing a threshold");
+    }
+
+    #[test]
+    fn apply_xp_ignores_negative_gain() {
+        let mut st = default_state(now_secs(), 7);
+        st.xp = 30;
+        let before = st.xp;
+        apply_xp(&mut st, -5);
+        assert_eq!(st.xp, before, "xp never goes backward from a bad gain");
+        assert_eq!(st.level, level_for(30));
+    }
+
+    #[test]
+    fn apply_xp_survives_a_backward_clock() {
+        let mut st = default_state(now_secs(), 7);
+        st.xp_day = now_secs() / 86400 + 5; // stale future day
+        st.xp_today = XP_DAILY_CAP;
+        apply_xp(&mut st, 2);
+        assert_eq!(st.xp_day, now_secs() / 86400, "future day is reset");
+        assert_eq!(st.xp_today, 2, "cap not stolen by a stale future day");
     }
 
     #[test]

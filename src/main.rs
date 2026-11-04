@@ -136,8 +136,7 @@ fn interaction(kind: &str, cooldown_secs: i64, xp: i64, verb: &str, full: &str) 
     if let Err(e) = state::append_event(&dir, &ev) {
         eprintln!("hatch: could not write event: {}", e);
     }
-    st.xp += xp;
-    st.level = state::level_for(st.xp);
+    let leveled = state::apply_xp(&mut st, xp);
     state::apply_event_chaos(&mut st, kind);
     if let Err(e) = state::save_state(&dir, &st) {
         eprintln!("hatch: could not save state: {}", e);
@@ -148,6 +147,14 @@ fn interaction(kind: &str, cooldown_secs: i64, xp: i64, verb: &str, full: &str) 
         species::display_name(&st.species),
         verb
     );
+    if leveled {
+        println!(
+            "{} the {} grew to level {}!",
+            st.name,
+            species::display_name(&st.species),
+            st.level
+        );
+    }
     0
 }
 
