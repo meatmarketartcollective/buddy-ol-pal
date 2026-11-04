@@ -18,6 +18,14 @@ pub const GLITCH_THRESHOLD: i64 = 50;
 pub const CHAOS_PER_ERROR: i64 = 8;
 pub const CHAOS_SUCCESS_RELIEF: i64 = 3;
 pub const CHAOS_PET_RELIEF: i64 = 2;
+// The interaction set: feed and play earn a little XP and ease chaos, each
+// on its own cooldown so a buddy can't be spammed; talk is free.
+pub const FEED_COOLDOWN_SECS: i64 = 60;
+pub const PLAY_COOLDOWN_SECS: i64 = 300;
+pub const XP_FEED: i64 = 1;
+pub const XP_PLAY: i64 = 2;
+pub const CHAOS_FEED_RELIEF: i64 = 1;
+pub const CHAOS_PLAY_RELIEF: i64 = 2;
 pub const CHAOS_MAX: i64 = 100;
 pub const ROTATE_LINES: usize = 1000;
 pub const MAX_ARCHIVE: usize = 3;
@@ -368,8 +376,22 @@ pub fn apply_event_chaos(st: &mut CompanionState, kind: &str) {
         "command_failed" => (st.chaos + CHAOS_PER_ERROR).min(CHAOS_MAX),
         "build_finished" => st.chaos.saturating_sub(CHAOS_SUCCESS_RELIEF),
         "petted" => st.chaos.saturating_sub(CHAOS_PET_RELIEF),
+        "fed" => st.chaos.saturating_sub(CHAOS_FEED_RELIEF),
+        "played" => st.chaos.saturating_sub(CHAOS_PLAY_RELIEF),
         _ => st.chaos,
     };
+}
+
+/// The most recent event of a kind, if any.
+pub fn last_event_of_kind<'a>(events: &'a [Event], kind: &str) -> Option<&'a Event> {
+    events.iter().rev().find(|e| e.kind == kind)
+}
+
+/// True while an interaction of this kind is still cooling down.
+pub fn on_cooldown(events: &[Event], kind: &str, now: i64, cooldown_secs: i64) -> bool {
+    last_event_of_kind(events, kind)
+        .map(|e| now - e.ts < cooldown_secs)
+        .unwrap_or(false)
 }
 
 /// Trailing run of consecutive command_failed events.
@@ -531,6 +553,25 @@ mod tests {
         assert_eq!(classify(0, 30, 10), Some("build_finished"));
         assert_eq!(classify(1, 0, 10), Some("command_failed"));
         assert_eq!(classify(127, 45, 10), Some("command_failed"));
+    }
+
+    #[test]
+    #[test]
+    fn interactions_cooldown_and_effects() {
+        let evs = vec![Event { ts: 100, kind: "fed".into(), duration_secs: 0, exit_code: 0 }];
+        assert!(on_cooldown(&evs, "fed", 130, FEED_COOLDOWN_SECS));
+        assert!(!on_cooldown(&evs, "fed", 160, FEED_COOLDOWN_SECS));
+        assert!(!on_cooldown(&evs, "played", 130, PLAY_COOLDOWN_SECS));
+        assert!(!on_cooldown(&evs, "fed", 130, 0));
+        assert_eq!(last_event_of_kind(&evs, "played"), None);
+        let mut st = default_state(1, 7);
+        st.chaos = 50;
+        apply_event_chaos(&mut st, "fed");
+        assert_eq!(st.chaos, 49);
+        apply_event_chaos(&mut st, "played");
+        assert_eq!(st.chaos, 47);
+        apply_event_chaos(&mut st, "petted");
+        assert_eq!(st.chaos, 45);
     }
 
     #[test]
