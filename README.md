@@ -9,12 +9,23 @@ Rust + ratatui, single binary.
 
 ## Install
 
+One command (downloads the prebuilt release binary when one exists for your
+machine, otherwise builds from source; needs no Rust toolchain on the
+prebuilt path):
+
+    curl -fsSL <repo>/raw/main/install.sh | sh
+
+From a clone:
+
     git clone <repo> && cd hatch
     ./install.sh
 
-That builds the release binary and puts `tb` in `~/.local/bin`
-(set `HATCH_BIN` to install somewhere else). First run hatches a companion
-and saves it locally. No config, no account.
+Either way `tb` lands in `~/.local/bin` (set `HATCH_BIN` to install
+somewhere else). First run hatches a companion and saves it locally.
+No config, no account.
+
+![hatch demo](demo.gif)
+
 
 ## Usage
 
