@@ -17,7 +17,8 @@ fetch_prebuilt() {
   # Best-effort: if there is a release binary for this machine, use it.
   command -v curl >/dev/null 2>&1 || return 1
   case "$machine" in
-    Linux-x86_64) asset="tb-linux-x86_64" ;;
+    Linux-x86_64)  asset="tb-linux-x86_64" ;;
+    Linux-aarch64) asset="tb-linux-aarch64" ;;
     *) return 1 ;;
   esac
   url="https://github.com/$REPO/releases/latest/download/$asset"
