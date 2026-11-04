@@ -95,3 +95,45 @@ Art can be a single frame or a list of frames per mood. A list cycles
 one frame per tick, and the engine's 7-state animation layer (blink,
 zzz drift, hearts, spinner, glitch frames) runs on top. Sleeping,
 resting, and petted ride the idle frames.
+
+## AI voice
+
+By default the buddy speaks lines from its species pool. It can also talk
+through any AI endpoint, and the free default is built in: NVIDIA's hosted
+models give you free credits at signup, no credit card.
+
+### The free NVIDIA key (the default)
+
+    tb ai setup
+
+That walks you through it:
+
+  1. Open https://build.nvidia.com/settings/api-keys
+  2. Sign in (email or GitHub works) and click Generate Key.
+  3. Copy the key (it starts with nvapi-) and paste it at the prompt. Input
+     is hidden.
+
+hatch writes `ai.toml` into its state dir (permissions 600), runs a test
+call, and from then on `tb talk` answers come from the model
+(`meta/llama-3.1-8b-instruct` unless you change it).
+
+### Any other endpoint
+
+Setup flags pick a different provider: `tb ai setup --openai`,
+`tb ai setup --anthropic`, or `tb ai setup --url URL --model M` for anything
+OpenAI-compatible: Groq, OpenRouter, a local Ollama
+(`--url http://127.0.0.1:11434/v1 --model llama3.1`), LM Studio, vLLM. Hand
+the key over through an env var with `--env NAME` and nothing is written to
+disk.
+
+### Control
+
+    tb ai          status
+    tb ai test     one test call
+    tb ai on/off   wake or silence the voice
+    tb ai clear    remove the config
+
+If the endpoint is unreachable or out of credits, the buddy falls back to its
+built-in lines; nothing breaks. Requests carry only the buddy's name,
+species, mood and the last event's kind and exit code, never paths, contents
+or secrets.
