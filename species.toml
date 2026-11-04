@@ -582,3 +582,900 @@ idle = ["hanging out, literally"]
 working = ["spinning up the next sprint"]
 celebrating = ["danced on the web!"]
 miffed = ["eight eyes narrowed."]
+
+
+[[species]]
+name = "overlord"
+tier = "common"
+names = [
+  "Query",
+  "Repro",
+  "Closey",
+  "Vote",
+  "Badge",
+  "Karma",
+  "Answer",
+  "Bronze",
+  "Socky",
+  "Upvote"
+]
+
+[species.art]
+idle = '''
+  .[===].
+ (  -_-  )
+  /|   |\
+ / |   | \
+  (_____)'''
+working = '''
+  .[===].
+ (  >_<  )
+  /|   |\
+ / |   | \
+  (_____)'''
+celebrating = '''
+  .[===].
+ (  ^_-  )
+  /|   |\
+ / |   | \
+  (_____)'''
+miffed = '''
+  .[===].
+ (  O_o  )
+  /|   |\
+ / |   | \
+  (_____)'''
+
+[species.lines]
+idle = ["have you tried searching first?"]
+working = ["cross-referencing every answer"]
+celebrating = ["accepted answer! +15 rep."]
+miffed = ["closed as duplicate."]
+
+[[species]]
+name = "leak"
+tier = "common"
+names = [
+  "Malloc",
+  "Heap",
+  "Leaky",
+  "Blobby",
+  "Dribble",
+  "Oozy",
+  "Seggy",
+  "Garbo",
+  "Bloat",
+  "Drip"
+]
+
+[species.art]
+idle = '''
+   .---.
+  ( o O )
+ (  ~ ~  )o
+(_________)'''
+working = '''
+   .---.
+  ( - - )
+ (  ~ ~  )o
+(_________)'''
+celebrating = '''
+   .---.
+  ( ^ ^ )
+ (  ~ ~  )o
+(_________)'''
+miffed = '''
+   .---.
+  ( @ @ )
+ (  ~ ~  )o
+(_________)'''
+
+[species.lines]
+idle = ["quietly growing resident size"]
+working = ["consuming all available memory"]
+celebrating = ["freed! ...for now."]
+miffed = ["leaked all over the floor."]
+
+[[species]]
+name = "wizard"
+tier = "common"
+names = [
+  "Merlinix",
+  "Scroll",
+  "Rune",
+  "Hex",
+  "Grimoire",
+  "Cursey",
+  "Legacy",
+  "Archaic",
+  "Sorcy",
+  "Mysto"
+]
+
+[species.art]
+idle = '''
+   /\
+  /  \
+ / *  \
+(  - - )
+ \ ~~~ /
+ (====)'''
+working = '''
+   /\
+  /  \
+ / *  \
+(  . . )
+ \ ~~~ /
+ (====)'''
+celebrating = '''
+   /\
+  /  \
+ / *  \
+(  ^ ^ )
+ \ ~~~ /
+ (====)'''
+miffed = '''
+   /\
+  /  \
+ / *  \
+(  x x )
+ \ ~~~ /
+ (====)'''
+
+[species.lines]
+idle = ["guarding the ancient spells"]
+working = ["chanting over the legacy code"]
+celebrating = ["the spell compiled!"]
+miffed = ["someone touched the ancient files."]
+
+[[species]]
+name = "crab"
+tier = "common"
+names = [
+  "Pinchy",
+  "Snip",
+  "Claws",
+  "Shellby",
+  "Scuttle",
+  "Nipper",
+  "Sidney",
+  "Barnacle",
+  "Tidepool",
+  "Verdict"
+]
+
+[species.art]
+idle = '''
+  (o)  (o)
+   \  /
+  /=====\
+ ( | " | )
+  v--^--v'''
+working = '''
+  (-) (-)
+   \  /
+  /=====\
+ ( | . | )
+  v--^--v'''
+celebrating = '''
+  (^)  (^)
+   \  /
+  /=====\
+ ( | w | )
+  v--^--v'''
+miffed = '''
+  (!)  (!)
+   \  /
+  /=====\
+ ( | O | )
+  v--^--v'''
+
+[species.lines]
+idle = ["clicking pincers, patiently"]
+working = ["reading every diff line"]
+celebrating = ["LGTM! approved."]
+miffed = ["changes requested."]
+
+[[species]]
+name = "axolotl"
+tier = "common"
+names = [
+  "Gilly",
+  "Axo",
+  "Lotle",
+  "Pinkie",
+  "Frill",
+  "Xolo",
+  "Wavy",
+  "Regen",
+  "Salammy",
+  "Gillian"
+]
+
+[species.art]
+idle = '''
+ \.  ./
+-( o.o )-
+ /"---"\'''
+working = '''
+ \.  ./
+-( -.- )-
+ /"---"\'''
+celebrating = '''
+ \.  ./
+-( ^.^ )-
+ /"---"\'''
+miffed = '''
+ \.  ./
+-( o.O )-
+ /"---"\'''
+
+[species.lines]
+idle = ["gills clear, code ready"]
+working = ["regenerating a missing limb of the codebase"]
+celebrating = ["gills flapping happily!"]
+miffed = ["gills drooping."]
+
+[[species]]
+name = "duck"
+tier = "common"
+names = [
+  "Quackers",
+  "Await",
+  "Promise",
+  "Waddle",
+  "Bill",
+  "Downy",
+  "Mallard",
+  "Beaky",
+  "Futures",
+  "Thenable"
+]
+
+[species.art]
+idle = '''
+  __(o)<
+ (____/
+  "  "'''
+working = '''
+  __(-)<
+ (____/
+  "  "'''
+celebrating = '''
+  __(^)<
+ (____/
+  "  "'''
+miffed = '''
+  __(O)<
+ (____/
+  "  "'''
+
+[species.lines]
+idle = ["quack(await bug)"]
+working = ["awaiting the bug, patiently"]
+celebrating = ["the future resolved!"]
+miffed = ["promise rejected."]
+
+[[species]]
+name = "turtle"
+tier = "common"
+names = [
+  "Torty",
+  "Slowmo",
+  "Blip",
+  "Domey",
+  "Greenie",
+  "Basking",
+  "Carapace",
+  "Patience",
+  "Steady",
+  "Oldtimer"
+]
+
+[species.art]
+idle = '''
+   ___
+  /o.o\
+ (_____)~~
+  " " "'''
+working = '''
+   ___
+  /-.-\
+ (_____)~~
+  " " "'''
+celebrating = '''
+   ___
+  /^.^\
+ (_____)~~
+  " " "'''
+miffed = '''
+   ___
+  /o.O\
+ (_____)~~
+  " " "'''
+
+[species.lines]
+idle = ["slow and steady"]
+working = ["crossing the terminal at half speed"]
+celebrating = ["passed! eventually."]
+miffed = ["withdrawing into its shell."]
+
+[[species]]
+name = "bat"
+tier = "common"
+names = [
+  "Squeaks",
+  "Wingy",
+  "Nighty",
+  "Radar",
+  "Sonar",
+  "Dangly",
+  "Cavey",
+  "Twilight",
+  "Upside",
+  "Vesper"
+]
+
+[species.art]
+idle = '''
+ /\/\ (\_/) /\/\
+    ( . . )
+     ( " )'''
+working = '''
+ /\/\ (\_/) /\/\
+    ( >.< )
+     ( " )'''
+celebrating = '''
+ /\/\ (\_/) /\/\
+    ( ^o^ )
+     ( " )'''
+miffed = '''
+ /\/\ (\_/) /\/\
+    ( >_< )
+     ( " )'''
+
+[species.lines]
+idle = ["hanging out in dark mode"]
+working = ["navigating by echo"]
+celebrating = ["a screech of joy!"]
+miffed = ["hanging upside down, frowning."]
+
+[[species]]
+name = "espresso"
+tier = "common"
+names = [
+  "Crema",
+  "Ristretto",
+  "Doppio",
+  "Roasty",
+  "Bean",
+  "Steamy",
+  "Zing",
+  "Jitter",
+  "Arabica",
+  "Brew"
+]
+
+[species.art]
+idle = '''
+  (  )  (
+   )  (  )
+  [======]
+  |  o.o |\_
+  |______/'''
+working = '''
+  (  )  (
+   )  (  )
+  [======]
+  |  -.- |\_
+  |______/'''
+celebrating = '''
+  (  )  (
+   )  (  )
+  [======]
+  |  ^.^ |\_
+  |______/'''
+miffed = '''
+  (  )  (
+   )  (  )
+  [======]
+  |  O_O |\_
+  |______/'''
+
+[species.lines]
+idle = ["overclocking your brain"]
+working = ["pulling a double shot"]
+celebrating = ["caffeine levels optimal!"]
+miffed = ["this is decaf."]
+
+[[species]]
+name = "boba"
+tier = "common"
+names = [
+  "Tappy",
+  "Pearls",
+  "Chewy",
+  "Matcha",
+  "Taro",
+  "Sippy",
+  "Strawby",
+  "Milktea",
+  "Tapioca",
+  "Sweeto"
+]
+
+[species.art]
+idle = '''
+  |  ||  |
+  |======|
+  | o . o|
+  |ooOOOO|
+  \______/'''
+working = '''
+  |  ||  |
+  |======|
+  | - . -|
+  |ooOOOO|
+  \______/'''
+celebrating = '''
+  |  ||  |
+  |======|
+  | ^ . ^|
+  |ooOOOO|
+  \______/'''
+miffed = '''
+  |  ||  |
+  |======|
+  | o . O|
+  |ooOOOO|
+  \______/'''
+
+[species.lines]
+idle = ["sweetening the stack traces"]
+working = ["steeping in the debugger"]
+celebrating = ["pearls down, joy up!"]
+miffed = ["gone flat and lukewarm."]
+
+[[species]]
+name = "rubberduck"
+tier = "common"
+names = [
+  "Squeaky",
+  "Yellowy",
+  "Bathtoy",
+  "Quackly",
+  "Ducky",
+  "Floatee",
+  "Sudsy",
+  "Tubby",
+  "Explainy",
+  "Debug"
+]
+
+[species.art]
+idle = '''
+   _(o)>
+  \___)
+   " "'''
+working = '''
+   _(-)>
+  \___)
+   " "'''
+celebrating = '''
+   _(^)>
+  \___)
+   " "'''
+miffed = '''
+   _(O)>
+  \___)
+   " "'''
+
+[species.lines]
+idle = ["listening to your logic"]
+working = ["quacking through the stack trace"]
+celebrating = ["the bug explained itself!"]
+miffed = ["squeaked twice. unimpressed."]
+
+[[species]]
+name = "toast"
+tier = "common"
+names = [
+  "Crunchy",
+  "Golden",
+  "Buttery",
+  "Jammy",
+  "Toasty",
+  "Crust",
+  "Slice",
+  "Poppy",
+  "Spread",
+  "Marmalade"
+]
+
+[species.art]
+idle = '''
+  .------.
+ /        \
+|  o   o  |
+|    U    |
+ \________/'''
+working = '''
+  .------.
+ /        \
+|  -   -  |
+|    U    |
+ \________/'''
+celebrating = '''
+  .------.
+ /        \
+|  ^   ^  |
+|    U    |
+ \________/'''
+miffed = '''
+  .------.
+ /        \
+|  x   x  |
+|    n    |
+ \________/'''
+
+[species.lines]
+idle = ["golden brown and read-ready"]
+working = ["toasting sectors"]
+celebrating = ["ejected successfully!"]
+miffed = ["burnt on one side."]
+
+[[species]]
+name = "pixeldragon"
+tier = "common"
+names = [
+  "Pixelle",
+  "Bitzy",
+  "Sprite",
+  "Retro",
+  "Eightbit",
+  "Raster",
+  "Voxel",
+  "Arcade",
+  "Joystick",
+  "Dpad"
+]
+
+[species.art]
+idle = '''
+  /^__^\
+ ( o.o  )===o
+  (____)
+  /_/ \_\'''
+working = '''
+  /^__^\
+ ( -.-  )===o
+  (____)
+  /_/ \_\'''
+celebrating = '''
+  /^__^\
+ ( ^.^  )===o
+  (____)
+  /_/ \_\'''
+miffed = '''
+  /^__^\
+ ( o.O  )===o
+  (____)
+  /_/ \_\'''
+
+[species.lines]
+idle = ["guarding the main branch"]
+working = ["compiling fire"]
+celebrating = ["roared in 8-bit!"]
+miffed = ["smoke stack offline."]
+
+[[species]]
+name = "quantum"
+tier = "common"
+names = [
+  "Quarky",
+  "Superpose",
+  "Tangly",
+  "Spinny",
+  "Probable",
+  "Uncertain",
+  "Catbox",
+  "Waveform",
+  "Plancky",
+  "Boson"
+]
+
+[species.art]
+idle = '''
+   .---.
+  / * * \
+ (_______)
+   |o o|
+   |___|'''
+working = '''
+   .---.
+  / * * \
+ (_______)
+   |.-.|
+   |___|'''
+celebrating = '''
+   .---.
+  / * * \
+ (_______)
+   |^ ^|
+   |___|'''
+miffed = '''
+   .---.
+  / * * \
+ (_______)
+   |@ @|
+   |___|'''
+
+[species.lines]
+idle = ["existing in superposition"]
+working = ["observing the waveform collapse"]
+celebrating = ["measured pure joy!"]
+miffed = ["decohered slightly."]
+
+[[species]]
+name = "alien"
+tier = "common"
+names = [
+  "Zorbo",
+  "Xenny",
+  "Saucery",
+  "Greeble",
+  "Antenna",
+  "Zeta",
+  "Reticuli",
+  "Roswell",
+  "Abducto",
+  "Beamie"
+]
+
+[species.art]
+idle = '''
+   /---\
+  ( o_o )
+  / / \ \'''
+working = '''
+   /---\
+  ( -_- )
+  / / \ \'''
+celebrating = '''
+   /---\
+  ( ^_^ )
+  / / \ \'''
+miffed = '''
+   /---\
+  ( O_o )
+  / / \ \'''
+
+[species.lines]
+idle = ["scanning source code"]
+working = ["probing the codebase"]
+celebrating = ["life detected!"]
+miffed = ["abducted the wrong branch."]
+
+[[species]]
+name = "cauldron"
+tier = "common"
+names = [
+  "Bubbly",
+  "Fizz",
+  "Potion",
+  "Simmer",
+  "Elixir",
+  "Worty",
+  "Newtie",
+  "Trouble",
+  "Frothy",
+  "Charmed"
+]
+
+[species.art]
+idle = '''
+   (  *  )
+  (_______)
+  |  o o  |
+  \_______/
+   /_/ \_\'''
+working = '''
+   (  .  )
+  (_______)
+  |  - -  |
+  \_______/
+   /_/ \_\'''
+celebrating = '''
+   (  ~  )
+  (_______)
+  |  ^ ^  |
+  \_______/
+   /_/ \_\'''
+miffed = '''
+   (  !  )
+  (_______)
+  |  x x  |
+  \_______/
+   /_/ \_\'''
+
+[species.lines]
+idle = ["brewing dependencies"]
+working = ["simmering the build"]
+celebrating = ["the potion passed!"]
+miffed = ["boiled over."]
+
+[[species]]
+name = "glitch"
+tier = "common"
+names = [
+  "Staticy",
+  "Zappy",
+  "Bitrot",
+  "Corrupt",
+  "Flicker",
+  "Noise",
+  "Skew",
+  "Tear",
+  "Snowy",
+  "Crashy"
+]
+
+[species.art]
+idle = '''
+ [+_+]
+ /| |\
+  / \'''
+working = '''
+ [.-.]
+ /| |\
+  / \'''
+celebrating = '''
+ [^_^]
+ /| |\
+  / \'''
+miffed = '''
+ [x_x]
+ /| |\
+  / \'''
+
+[species.lines]
+idle = ["buffer overflow detected"]
+working = ["corrupting productively"]
+celebrating = ["checksum passed!"]
+miffed = ["segfault. again."]
+
+[[species]]
+name = "cloud"
+tier = "common"
+names = [
+  "Cirrus",
+  "Stratus",
+  "Cumulo",
+  "Overcast",
+  "Drizzle",
+  "Misty",
+  "Foggy",
+  "Puffy",
+  "Squall",
+  "Cloudb"
+]
+
+[species.art]
+idle = '''
+  .(  ).
+ (  o.o )
+(________)
+  / / /'''
+working = '''
+  .(  ).
+ (  -.- )
+(________)
+  . . .'''
+celebrating = '''
+  .(  ).
+ (  ^.^ )
+(________)
+  \ \ \'''
+miffed = '''
+  .(  ).
+ (  O_o )
+(________)
+  ! ! !'''
+
+[species.lines]
+idle = ["cloudy with a chance of bugs"]
+working = ["raining on the deploy"]
+celebrating = ["partly sunny!"]
+miffed = ["100% chance of grumbling."]
+
+[[species]]
+name = "sparkle"
+tier = "common"
+names = [
+  "Glint",
+  "Gleamy",
+  "Polish",
+  "Shiny",
+  "Glister",
+  "Beamy",
+  "Radiant",
+  "Glitter",
+  "Shimmer",
+  "Glimmer"
+]
+
+[species.art]
+idle = '''
+   \ | /
+ --(o.o)--
+   / | \'''
+working = '''
+   \ | /
+ --(-.-)--
+   / | \'''
+celebrating = '''
+   \ | /
+ --(^o^)--
+   / | \'''
+miffed = '''
+   \ | /
+ --(o.O)--
+   / | \'''
+
+[species.lines]
+idle = ["twinkling with potential"]
+working = ["shining over the terminal"]
+celebrating = ["full sparkle achieved!"]
+miffed = ["dimmed for now."]
+
+[[species]]
+name = "saguaro"
+tier = "common"
+names = [
+  "Prickles",
+  "Spiney",
+  "Desert",
+  "Bloomer",
+  "Ribbed",
+  "Arid",
+  "Oasis",
+  "Needle",
+  "Western",
+  "Sirocco"
+]
+
+[species.art]
+idle = '''
+  _  _
+ | || |
+ | || |~
+  \__/
+   ||
+  ===='''
+working = '''
+  _  _
+ | || |
+ | || |~
+  \.-/
+   ||
+  ===='''
+celebrating = '''
+  _  _
+ | || |
+ | || |~
+  \^^/
+   ||
+  ===='''
+miffed = '''
+  _  _
+ | || |
+ | || |~
+  \xx/
+   ||
+  ===='''
+
+[species.lines]
+idle = ["prickly about syntax"]
+working = ["photosynthesizing the sprint"]
+celebrating = ["in bloom!"]
+miffed = ["needles out."]

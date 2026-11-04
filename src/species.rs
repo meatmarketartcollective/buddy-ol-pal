@@ -109,9 +109,9 @@ mod tests {
     #[test]
     fn table_loads_and_names_are_unique() {
         let t = table();
-        // Wave C completes the table: exactly eighteen species (plan
+        // The buddy graduation completes the table: exactly thirty-eight species (plan
         // milestone 5).
-        assert_eq!(t.len(), 18, "the full table is eighteen species");
+        assert_eq!(t.len(), 38, "the full table is thirty-eight species");
         let mut names: Vec<&str> = t.iter().map(|s| s.name.as_str()).collect();
         names.sort();
         let n = names.len();

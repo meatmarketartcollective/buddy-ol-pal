@@ -52,7 +52,7 @@ fn draw(f: &mut Frame, st: &CompanionState, sp: &Species, mood: Mood, last: Opti
     )));
 
     let w = 36u16;
-    let h = 9u16;
+    let h = (art.lines().count() as u16).saturating_add(6);
     let popup = Rect {
         x: area.width.saturating_sub(w + 1),
         y: area.height.saturating_sub(h + 1),
