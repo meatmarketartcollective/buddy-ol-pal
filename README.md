@@ -27,7 +27,20 @@ and saves it locally. No config, no account.
     tb off / tb on              # the off switch: no notifications, no UI; events still log
     tb emit <kind> [--exit N] [--secs S]  # adapter: feed hatch an event from any harness
 
-### Wiring it to real work
+#### Passive capture (no wrapping)
+
+Interactive shells can feed hatch without wrapping anything:
+
+    eval "$(tb shell bash)"    # add to .bashrc
+    eval "$(tb shell zsh)"     # add to .zshrc
+
+Every command's outcome and duration then reach the buddy on their own.
+Fast successes are skipped (nothing worth reacting to); failures and slow
+successes become events, same as a wrapped run. Commands starting with tb
+are ignored so the capture does not chase itself. Set HATCH_THRESHOLD_SECS
+to move the slow-success line.
+
+## Wiring it to real work
 
 Wrap the commands you care about, and long successes plus any failure turn
 into events:

@@ -108,11 +108,13 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
 }
 
 
-/// `tb emit <kind> [--exit N] [--secs S]`: the adapter surface. Any harness
-/// can feed hatch an event without wrapping its command: kind names what
-/// happened ("build_finished" or "command_failed"), --exit and --secs carry
-/// the outcome. Unknown kinds are logged but stay silent and calm.
-pub fn parse_emit_args(argv: &[String]) -> Result<(String, i32, u64), String> {
+/// `tb emit [kind] [--exit N] [--secs S]`: the adapter surface. With a kind,
+/// any harness can feed hatch a named event. With no kind, the outcome is
+/// classified like a wrapped run: slow successes and any failure become
+/// events, fast successes are skipped (nothing worth reacting to). Same
+/// effects as a real run either way. Unknown kinds are logged but stay
+/// silent and calm.
+pub fn parse_emit_args(argv: &[String]) -> Result<(Option<String>, i32, u64), String> {
     let mut kind: Option<String> = None;
     let mut exit_code = 0i32;
     let mut secs = 0u64;
@@ -131,19 +133,25 @@ pub fn parse_emit_args(argv: &[String]) -> Result<(String, i32, u64), String> {
             _ => return Err("too many arguments".into()),
         }
     }
-    kind.ok_or_else(|| "no kind given".to_string())
-        .map(|k| (k, exit_code, secs))
+    Ok((kind, exit_code, secs))
 }
 
 pub fn emit(argv: &[String]) -> i32 {
     let (kind, exit_code, secs) = match parse_emit_args(argv) {
         Ok(parsed) => parsed,
         Err(e) => {
-            eprintln!("hatch: {}. usage: tb emit <kind> [--exit N] [--secs S]", e);
+            eprintln!("hatch: {}. usage: tb emit [kind] [--exit N] [--secs S]", e);
             return 2;
         }
     };
-    settle(&state::config_dir(), Some(&kind), secs, exit_code);
+    let kind = match kind {
+        Some(k) => Some(k),
+        None => match state::classify(exit_code, secs, threshold_secs()) {
+            Some(k) => Some(k.to_string()),
+            None => return 0,
+        },
+    };
+    settle(&state::config_dir(), kind.as_deref(), secs, exit_code);
     0
 }
 
@@ -196,10 +204,10 @@ mod tests {
     #[test]
     fn emit_args_parse() {
         let a: Vec<String> = vec!["build_finished".into()];
-        assert_eq!(parse_emit_args(&a).unwrap(), ("build_finished".into(), 0, 0));
+        assert_eq!(parse_emit_args(&a).unwrap(), (Some("build_finished".into()), 0, 0));
         let b: Vec<String> = vec!["command_failed".into(), "--exit".into(), "2".into(), "--secs".into(), "7".into()];
-        assert_eq!(parse_emit_args(&b).unwrap(), ("command_failed".into(), 2, 7));
-        assert!(parse_emit_args(&[]).is_err());
+        assert_eq!(parse_emit_args(&b).unwrap(), (Some("command_failed".into()), 2, 7));
+        assert_eq!(parse_emit_args(&[]).unwrap(), (None, 0, 0), "no kind means classify it");
         let c: Vec<String> = vec!["k".into(), "--exit".into()];
         assert!(parse_emit_args(&c).is_err());
         let d: Vec<String> = vec!["k".into(), "extra".into()];

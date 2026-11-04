@@ -1,4 +1,5 @@
 mod anim;
+mod shell;
 mod species;
 mod state;
 mod tui;
@@ -18,6 +19,7 @@ fn help() {
     println!("  tb talk            say hi; your buddy answers with a line");
     println!("  tb off / tb on     silence notifications and hide the UI, or wake it back up");
     println!("  tb emit <kind>     feed hatch an event from any harness (e.g. build_finished --exit 0 --secs 42)");
+    println!("  tb shell [bash|zsh]  print the passive-capture snippet; eval it in your rc file");
     println!("  tb tail [-n N]     print the last N events as JSON lines (default 10)\n");
     println!("state lives in ~/.config/hatch (override with HATCH_HOME)");
 }
@@ -37,6 +39,7 @@ fn main() {
         Some("dex") => dex_cmd(),
         Some("tail") => tail_cmd(&args[1..]),
         Some("emit") => watcher::emit(&args[1..]),
+        Some("shell") => shell_cmd(args.get(1).map(|s| s.as_str())),
         Some("-h") | Some("--help") | Some("help") => {
             help();
             0
@@ -191,6 +194,25 @@ fn switch_cmd(on: bool) -> i32 {
         }
     );
     0
+}
+
+/// `tb shell [bash|zsh]`: prints the passive-capture snippet for that shell.
+/// Eval its output in the rc file and hatch sees every interactive command.
+fn shell_cmd(which: Option<&str>) -> i32 {
+    match which.unwrap_or("bash") {
+        "bash" => {
+            print!("{}", shell::BASH);
+            0
+        }
+        "zsh" => {
+            print!("{}", shell::ZSH);
+            0
+        }
+        other => {
+            eprintln!("hatch: unsupported shell '{}'. try bash or zsh.", other);
+            2
+        }
+    }
 }
 
 fn status_cmd() -> i32 {
