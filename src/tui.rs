@@ -1,3 +1,4 @@
+use crate::species::{self, Species};
 use crate::state::{self, CompanionState, Event, Mood};
 use ratatui::{
     backend::CrosstermBackend,
@@ -10,27 +11,6 @@ use ratatui::{
 use std::io;
 use std::time::Duration;
 
-fn sprite(mood: Mood) -> (&'static str, &'static str) {
-    match mood {
-        Mood::Idle => (
-            "   /\\_/\\\n  ( -.- )\n   > ~ <",
-            "napping, waiting for something to happen",
-        ),
-        Mood::Working => (
-            "   /\\_/\\\n  ( >.< )\n   > w <",
-            "*clang clang clang*",
-        ),
-        Mood::Celebrate => (
-            "   /\\_/\\\n  ( ^o^ )\n   > u <",
-            "it worked! it actually worked!",
-        ),
-        Mood::Miffed => (
-            "   /\\_/\\\n  ( >_< )\n   > ~ <",
-            "okay. that's twice now.",
-        ),
-    }
-}
-
 fn last_line(last: Option<&Event>, now: i64) -> String {
     match last {
         None => "nothing yet. try: tb run -- <cmd>".to_string(),
@@ -42,9 +22,10 @@ fn last_line(last: Option<&Event>, now: i64) -> String {
     }
 }
 
-fn draw(f: &mut Frame, st: &CompanionState, mood: Mood, last: Option<&Event>, now: i64) {
+fn draw(f: &mut Frame, st: &CompanionState, sp: &Species, mood: Mood, last: Option<&Event>, now: i64) {
     let area = f.area();
-    let (art, blurb) = sprite(mood);
+    let art = sp.art.for_mood(mood);
+    let blurb = species::pick_line(sp.lines.for_mood(mood), now);
     let mood_style = match mood {
         Mood::Idle => Style::default().fg(Color::Gray),
         Mood::Working => Style::default().fg(Color::Yellow),
@@ -59,7 +40,7 @@ fn draw(f: &mut Frame, st: &CompanionState, mood: Mood, last: Option<&Event>, no
         )));
     }
     lines.push(Line::from(Span::styled(
-        format!("{} the {} L{} ({})", st.name, st.species, st.level, mood.label()),
+        format!("{} the {} L{} ({})", st.name, sp.name, st.level, mood.label()),
         Style::default()
             .fg(Color::White)
             .add_modifier(Modifier::BOLD),
@@ -87,6 +68,7 @@ fn draw(f: &mut Frame, st: &CompanionState, mood: Mood, last: Option<&Event>, no
 pub fn run_ui() -> i32 {
     let dir = state::config_dir();
     let mut st = state::load_or_hatch(&dir);
+    let sp = species::resolve(&st.species);
 
     let mut stdout = io::stdout();
     if crossterm::terminal::enable_raw_mode().is_err() {
@@ -126,7 +108,7 @@ pub fn run_ui() -> i32 {
         let mood = state::current_mood(active, &events, now);
         st.mood = mood.label().to_string();
 
-        let _ = terminal.draw(|f| draw(f, &st, mood, events.last(), now));
+        let _ = terminal.draw(|f| draw(f, &st, sp, mood, events.last(), now));
         std::thread::sleep(Duration::from_millis(250));
     }
 

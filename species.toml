@@ -1,0 +1,68 @@
+# Species table. Every companion species lives here with its art (one frame
+# per mood), its reaction-line pools, its name pool, and its rarity tier.
+# The ember's art and names moved in unchanged from the hard-coded original.
+
+[[species]]
+name = "ember"
+tier = "common"
+names = [
+  "Pip", "Momo", "Biscuit", "Echo", "Waffle", "Pixel", "Sprout", "Noodle",
+  "Comet", "Pebble", "Tofu", "Ziggy", "Maple", "Clover", "Dot", "Miso",
+  "Bumble", "Fig", "Scooter", "Waldo", "Juniper", "Crumb", "Beacon", "Tango",
+]
+
+[species.art]
+idle = '''
+   /\_/\
+  ( -.- )
+   > ~ <'''
+working = '''
+   /\_/\
+  ( >.< )
+   > w <'''
+celebrating = '''
+   /\_/\
+  ( ^o^ )
+   > u <'''
+miffed = '''
+   /\_/\
+  ( >_< )
+   > ~ <'''
+
+[species.lines]
+idle = ["napping, waiting for something to happen"]
+working = ["*clang clang clang*"]
+celebrating = ["it worked! it actually worked!"]
+miffed = ["okay. that's twice now."]
+
+[[species]]
+name = "moss"
+tier = "common"
+names = [
+  "Fern", "Thyme", "Willow", "Ivy", "Basil", "Reed", "Opal", "Nettle",
+  "Sorrel", "Bracken",
+]
+
+[species.art]
+idle = '''
+    \\|/
+   ( -.- )
+    > ~ <'''
+working = '''
+    \\|/
+   ( >.< )
+    > w <'''
+celebrating = '''
+    \\|/
+   ( ^o^ )
+    > u <'''
+miffed = '''
+    \\|/
+   ( >_< )
+    > ~ <'''
+
+[species.lines]
+idle = ["growing quietly. nothing to see here."]
+working = ["photosynthesizing as fast as it can"]
+celebrating = ["a good day to be moss"]
+miffed = ["moss remembers."]

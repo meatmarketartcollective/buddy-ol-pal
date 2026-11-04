@@ -1,3 +1,4 @@
+mod species;
 mod state;
 mod tui;
 mod watcher;
@@ -81,7 +82,10 @@ fn status_cmd() -> i32 {
     let events = state::read_events_tail(&dir, 50);
     let active = state::is_active(&dir);
     let mood = state::current_mood(active, &events, now);
-    println!("{}", state::format_status(&st, mood, events.last(), now));
+    println!(
+        "{}",
+        state::format_status(&st, species::display_name(&st.species), mood, events.last(), now)
+    );
     0
 }
 
