@@ -16,6 +16,7 @@ fn help() {
     println!("  tb feed            feed your buddy a treat (+1 xp, eases chaos, 1m cooldown)");
     println!("  tb play            play with your buddy (+2 xp, eases chaos more, 5m cooldown)");
     println!("  tb talk            say hi; your buddy answers with a line");
+    println!("  tb off / tb on     silence notifications and hide the UI, or wake it back up");
     println!("  tb tail [-n N]     print the last N events as JSON lines (default 10)\n");
     println!("state lives in ~/.config/hatch (override with HATCH_HOME)");
 }
@@ -30,6 +31,8 @@ fn main() {
         Some("feed") => feed_cmd(),
         Some("play") => play_cmd(),
         Some("talk") => talk_cmd(),
+        Some("off") => switch_cmd(false),
+        Some("on") => switch_cmd(true),
         Some("dex") => dex_cmd(),
         Some("tail") => tail_cmd(&args[1..]),
         Some("-h") | Some("--help") | Some("help") => {
@@ -164,6 +167,27 @@ fn play_cmd() -> i32 {
 
 fn talk_cmd() -> i32 {
     interaction("talked", 0, 0, "chirps a hello back. (talked)", "")
+}
+
+/// `tb off` / `tb on`: the off switch. Events keep logging either way; off
+/// only silences notifications and keeps the UI from opening.
+fn switch_cmd(on: bool) -> i32 {
+    let dir = state::config_dir();
+    let mut st = state::load_or_hatch(&dir);
+    st.enabled = on;
+    if let Err(e) = state::save_state(&dir, &st) {
+        eprintln!("hatch: could not save state: {}", e);
+        return 1;
+    }
+    println!(
+        "{}",
+        if on {
+            "hatch is back on."
+        } else {
+            "hatch is off. events still log; tb on to wake it."
+        }
+    );
+    0
 }
 
 fn status_cmd() -> i32 {

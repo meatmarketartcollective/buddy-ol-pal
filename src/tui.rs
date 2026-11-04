@@ -85,6 +85,10 @@ fn draw(
 pub fn run_ui() -> i32 {
     let dir = state::config_dir();
     let mut st = state::load_or_hatch(&dir);
+    if !st.enabled {
+        println!("hatch is off (tb on to wake it)");
+        return 0;
+    }
     let sp = species::resolve(&st.species);
 
     let mut stdout = io::stdout();

@@ -4,7 +4,7 @@ use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-pub const STATE_VERSION: i64 = 4;
+pub const STATE_VERSION: i64 = 5;
 pub const CELEBRATE_SECS: i64 = 6;
 pub const MIFF_SECS: i64 = 600;
 pub const MIFF_WINDOW_SECS: i64 = 3600;
@@ -48,6 +48,12 @@ pub struct CompanionState {
     pub discovered: Vec<String>, // species names seen at least once (state v3)
     #[serde(default)]
     pub chaos: i64, // glitch pressure from failures, eased by success and pets (state v4)
+    #[serde(default = "default_true")]
+    pub enabled: bool, // the off switch: false silences notifications and the UI (state v5)
+}
+
+fn default_true() -> bool {
+    true
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -118,6 +124,7 @@ pub fn default_state(now: i64, seed: u64) -> CompanionState {
     CompanionState {
         version: STATE_VERSION,
         chaos: 0,
+        enabled: true,
         name,
         species: sp.name.clone(),
         hatched_at: now,
@@ -193,6 +200,11 @@ pub fn parse_state(text: &str) -> Option<CompanionState> {
         // v3 -> v4 migration: chaos did not exist; every companion starts
         // calm. The next save persists it; nothing is deleted.
         st.chaos = 0;
+        st.version = 4;
+    }
+    if st.version == 4 {
+        // v4 -> v5 migration: the off switch did not exist; the buddy is on.
+        st.enabled = true;
         st.version = STATE_VERSION;
     }
     if st.version == STATE_VERSION {
@@ -556,6 +568,30 @@ mod tests {
     }
 
     #[test]
+    #[test]
+    fn v4_state_migrates_to_v5() {
+        let (_d, dir) = tmpdir();
+        fs::write(
+            dir.join("state.toml"),
+            "version = 4\nname = \"Pip\"\nspecies = \"ember\"\nhatched_at = 1\nmood = \"idle\"\nxp = 3\nlevel = 1\ndiscovered = [\"ember\"]\nchaos = 12\n",
+        )
+        .unwrap();
+        let st = load_or_hatch(&dir);
+        assert_eq!(st.version, STATE_VERSION);
+        assert_eq!(st.chaos, 12);
+        assert!(st.enabled);
+    }
+
+    #[test]
+    fn off_switch_round_trips() {
+        let mut st = default_state(1, 7);
+        st.enabled = false;
+        let (_d, dir) = tmpdir();
+        save_state(&dir, &st).unwrap();
+        let back = load_or_hatch(&dir);
+        assert!(!back.enabled);
+    }
+
     #[test]
     fn interactions_cooldown_and_effects() {
         let evs = vec![Event { ts: 100, kind: "fed".into(), duration_secs: 0, exit_code: 0 }];
