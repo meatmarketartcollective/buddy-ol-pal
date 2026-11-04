@@ -1,3 +1,4 @@
+mod ai;
 mod anim;
 mod shell;
 mod species;
@@ -17,6 +18,7 @@ fn help() {
     println!("  tb feed            feed your buddy a treat (+1 xp, eases chaos, 1m cooldown)");
     println!("  tb play            play with your buddy (+2 xp, eases chaos more, 5m cooldown)");
     println!("  tb talk            say hi; your buddy answers with a line");
+    println!("  tb ai              give your buddy an AI voice: setup (free NVIDIA key), test, on/off, clear");
     println!("  tb off / tb on     silence notifications and hide the UI, or wake it back up");
     println!("  tb emit <kind>     feed hatch an event from any harness (e.g. build_finished --exit 0 --secs 42)");
     println!("  tb shell [bash|zsh]  print the passive-capture snippet; eval it in your rc file");
@@ -34,6 +36,7 @@ fn main() {
         Some("feed") => feed_cmd(),
         Some("play") => play_cmd(),
         Some("talk") => talk_cmd(),
+        Some("ai") => ai::ai_cmd(&args[1..]),
         Some("off") => switch_cmd(false),
         Some("on") => switch_cmd(true),
         Some("dex") => dex_cmd(),
@@ -189,7 +192,17 @@ fn talk_cmd() -> i32 {
     let mood = state::current_mood(active, &events, now);
     let sp = species::get(&st.species).unwrap_or_else(species::fallback);
     let seed = (now as u64) + st.chaos.unsigned_abs() + st.xp.unsigned_abs();
-    let line = species::speak(sp, mood, seed);
+    let last = events.last().map(|e| (e.kind.as_str(), e.exit_code, e.duration_secs));
+    let voice = ai::Voice {
+        pet_name: &st.name,
+        species: &sp.name,
+        mood: mood.label(),
+        last_event: last,
+    };
+    let line = match ai::speak(&dir, &voice) {
+        Some(l) if !l.is_empty() => l,
+        _ => species::speak(sp, mood, seed).to_string(),
+    };
     interaction("talked", 0, 0, &format!("{line} (talked)"), "")
 }
 
