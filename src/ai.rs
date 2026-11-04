@@ -313,7 +313,7 @@ pub fn ai_cmd(rest: &[String]) -> i32 {
 }
 
 fn status_cmd() -> i32 {
-    let dir = state::config_dir();
+    let dir = crate::state::config_dir();
     let path = config_path(&dir);
     if !path.exists() {
         println!("no AI voice configured; the buddy speaks its built-in lines.");
@@ -454,7 +454,7 @@ fn setup_cmd(rest: &[String]) -> i32 {
         timeout_secs: Some(DEFAULT_TIMEOUT_SECS),
         enabled: Some(true),
     };
-    let dir = state::config_dir();
+    let dir = crate::state::config_dir();
     let path = match save_config(&dir, &cfg) {
         Ok(p) => p,
         Err(e) => {
@@ -478,7 +478,7 @@ fn setup_cmd(rest: &[String]) -> i32 {
 }
 
 fn test_cmd() -> i32 {
-    let dir = state::config_dir();
+    let dir = crate::state::config_dir();
     let cfg = match load_config(&dir) {
         Some(c) => c,
         None => {
@@ -501,7 +501,7 @@ fn test_cmd() -> i32 {
 }
 
 fn toggle_cmd(on: bool) -> i32 {
-    let dir = state::config_dir();
+    let dir = crate::state::config_dir();
     let cfg = match load_config(&dir) {
         Some(c) => c,
         None => {
@@ -528,7 +528,7 @@ fn toggle_cmd(on: bool) -> i32 {
 }
 
 fn clear_cmd() -> i32 {
-    let dir = state::config_dir();
+    let dir = crate::state::config_dir();
     match fs::remove_file(config_path(&dir)) {
         Ok(()) => {
             println!("AI config removed; the buddy speaks its built-in lines.");

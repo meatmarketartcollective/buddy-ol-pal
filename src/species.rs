@@ -55,6 +55,14 @@ pub struct MoodLines {
     pub working: Vec<String>,
     pub celebrating: Vec<String>,
     pub miffed: Vec<String>,
+    /// Deeper canned pools for the three derived moods. Empty pools fall
+    /// back to the idle pool, so older species files keep working.
+    #[serde(default)]
+    pub sleeping: Vec<String>,
+    #[serde(default)]
+    pub resting: Vec<String>,
+    #[serde(default)]
+    pub petted: Vec<String>,
 }
 
 impl MoodArt {
@@ -78,12 +86,19 @@ impl MoodArt {
 
 impl MoodLines {
     pub fn for_mood(&self, mood: Mood) -> &[String] {
-        match mood {
+        let specific: &Vec<String> = match mood {
             Mood::Idle => &self.idle,
             Mood::Working => &self.working,
             Mood::Celebrate => &self.celebrating,
             Mood::Miffed => &self.miffed,
-            Mood::Sleeping | Mood::Resting | Mood::Petted => &self.idle,
+            Mood::Sleeping => &self.sleeping,
+            Mood::Resting => &self.resting,
+            Mood::Petted => &self.petted,
+        };
+        if specific.is_empty() {
+            &self.idle
+        } else {
+            specific
         }
     }
 }
@@ -490,6 +505,36 @@ miffed = []
         for s in table() {
             for m in [Mood::Idle, Mood::Working, Mood::Celebrate, Mood::Miffed] {
                 assert!(!speak(s, m, 0).is_empty(), "{} has an empty pool", s.name);
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod voice_tests {
+    use super::*;
+    use crate::state::Mood;
+
+    #[test]
+    fn every_species_has_deep_canned_lines() {
+        for sp in table() {
+            for mood in [
+                Mood::Idle,
+                Mood::Working,
+                Mood::Celebrate,
+                Mood::Miffed,
+                Mood::Sleeping,
+                Mood::Resting,
+                Mood::Petted,
+            ] {
+                let pool = sp.lines.for_mood(mood);
+                assert!(
+                    pool.len() >= 4,
+                    "{} pool {:?} has only {} canned lines",
+                    sp.name,
+                    mood,
+                    pool.len()
+                );
             }
         }
     }

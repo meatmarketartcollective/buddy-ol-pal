@@ -65,11 +65,13 @@ miffed = ['''
    /   \
 ''']
 [species.lines]
-idle = ["cheeks sparking at idle wattage", "nesting in the mousehole of the terminal"]
-working = ["thunderbolt on the failing test", "tail up, current flowing"]
-celebrating = ["PIKA PIKA, full charge", "static electricity high-fives"]
-miffed = ["PIKAAAA, sparks everywhere", "cheeks puffed, charge building"]
-
+idle = ["cheeks spark when excited", "pika pika", "keeps static sparks close while the cursor idles", "fiddles with the red cheeks while nothing is happening"]
+working = ["pika pika (working)", "files static sparks under: in progress", "guarding the red cheeks while you grind", "the hum of real work. thunderbolt plans approves"]
+celebrating = ["pika pika (celebrating)", "victory dance around static sparks!", "IT WORKED! the red cheeks everywhere!", "green as far as thunderbolt plans can see!"]
+miffed = ["pika pika (miffed)", "not speaking to the build. or static sparks", "crossed arms, drooped the red cheeks", "two failures in a row. thunderbolt plans is not amused"]
+sleeping = ["pika pika (sleeping)", "z z z ... static sparks tucked in ...", "curled around the red cheeks, out cold", "dreaming of endless thunderbolt plans"]
+resting = ["pika pika (resting)", "a quiet stretch. static sparks at half power", "recharging next to the red cheeks", "thunderbolt plans and i are pacing ourselves"]
+petted = ["pika pika (petted)", "static sparks at maximum smugness", "sends the red cheeks as a thank you", "oh. oh that's nice. thunderbolt plans purrs"]
 [[species]]
 name = "charizard"
 tier = "legendary"
@@ -136,11 +138,13 @@ miffed = ['''
    /    \
 ''']
 [species.lines]
-idle = ["tired flame on the tail", "perched on the volcano ridge"]
-working = ["melting blockers with dragon breath", "wings aloft over the merge queue"]
-celebrating = ["a flamethrower of pure joy", "victory loops with smoke rings"]
-miffed = ["fire hot enough to melt the diff", "the flame on the tail turned BLUE"]
-
+idle = ["wants to be dragon-tier and mostly is", "flame on, ego too", "napping next to tail flame. wake me when it matters", "guards the wing beat from nothing in particular"]
+working = ["flame on, ego too (working)", "guarding tail flame while you grind", "files the wing beat under: in progress", "you type, i vibe, fire discipline trembles"]
+celebrating = ["flame on, ego too (celebrating)", "confetti made of tail flame!", "IT WORKED! the wing beat everywhere!", "victory dance around fire discipline!"]
+miffed = ["flame on, ego too (miffed)", "crossed arms, drooped tail flame", "not speaking to the build. or the wing beat", "the audacity. fire discipline remembers this"]
+sleeping = ["flame on, ego too (sleeping)", "dreaming of endless tail flame", "z z z ... the wing beat tucked in ...", "curled around fire discipline, out cold"]
+resting = ["flame on, ego too (resting)", "a quiet stretch. tail flame at half power", "nothing broke for a whole hour. suspicious. the wing beat agrees", "recharging next to fire discipline"]
+petted = ["flame on, ego too (petted)", "tail flame at maximum smugness", "maximum affection detected. the wing beat melts", "oh. oh that's nice. fire discipline purrs"]
 [[species]]
 name = "bulbasaur"
 tier = "uncommon"
@@ -199,11 +203,13 @@ miffed = ['''
    /   \
 ''']
 [species.lines]
-idle = ["bulb photosynthesizing calmly", "rooted and patient"]
-working = ["vine-whip on the lint errors", "solar-charging the compile"]
-celebrating = ["the bulb bloomed at last", "seed of success fully grown"]
-miffed = ["razor leaf, aimed at nobody in particular", "the bulb drooped in protest"]
-
+idle = ["photosynthesizes and judges", "the bulb blooms on schedule", "fiddles with a back bulb while nothing is happening", "napping next to vine whips. wake me when it matters"]
+working = ["the bulb blooms on schedule (working)", "the hum of real work. a back bulb approves", "guarding vine whips while you grind", "every keystroke is sunbeam naps music"]
+celebrating = ["the bulb blooms on schedule (celebrating)", "victory dance around a back bulb!", "vine whips is proud. i am proud. we are proud", "green as far as sunbeam naps can see!"]
+miffed = ["the bulb blooms on schedule (miffed)", "the audacity. a back bulb remembers this", "crossed arms, drooped vine whips", "not speaking to the build. or sunbeam naps"]
+sleeping = ["the bulb blooms on schedule (sleeping)", "z z z ... a back bulb tucked in ...", "the cursor blinks. vine whips does not", "curled around sunbeam naps, out cold"]
+resting = ["the bulb blooms on schedule (resting)", "recharging next to a back bulb", "eyes half closed, vine whips warm", "sunbeam naps and i are pacing ourselves"]
+petted = ["the bulb blooms on schedule (petted)", "sends a back bulb as a thank you", "vine whips at maximum smugness", "oh. oh that's nice. sunbeam naps purrs"]
 [[species]]
 name = "squirtle"
 tier = "uncommon"
@@ -262,11 +268,13 @@ miffed = ['''
    /   \
 ''']
 [species.lines]
-idle = ["backpack shell zipped shut", "practicing water-guns at the wall"]
-working = ["hosing down the hot paths", "water pulse, measured pressure"]
-celebrating = ["bubble beam of celebration", "shell armor polished to a shine"]
-miffed = ["water gun at maximum sulk", "withdrew into the shell entirely"]
-
+idle = ["leads the squad, mostly for fun", "shell squad assemble", "just a rounded shell and me out here. fine by me", "guards water blasts from nothing in particular"]
+working = ["shell squad assemble (working)", "you type, i vibe, a rounded shell trembles", "guarding water blasts while you grind", "files sunglasses vibes under: in progress"]
+celebrating = ["shell squad assemble (celebrating)", "victory dance around a rounded shell!", "confetti made of water blasts!", "green as far as sunglasses vibes can see!"]
+miffed = ["shell squad assemble (miffed)", "do it again. see what a rounded shell does", "not speaking to the build. or water blasts", "the audacity. sunglasses vibes remembers this"]
+sleeping = ["shell squad assemble (sleeping)", "the cursor blinks. a rounded shell does not", "z z z ... water blasts tucked in ...", "curled around sunglasses vibes, out cold"]
+resting = ["shell squad assemble (resting)", "a rounded shell and i are pacing ourselves", "a quiet stretch. water blasts at half power", "eyes half closed, sunglasses vibes warm"]
+petted = ["shell squad assemble (petted)", "sends a rounded shell as a thank you", "oh. oh that's nice. water blasts purrs", "maximum affection detected. sunglasses vibes melts"]
 [[species]]
 name = "eevee"
 tier = "uncommon"
@@ -325,11 +333,13 @@ miffed = ['''
   /|   |\
 ''']
 [species.lines]
-idle = ["fluff maximized, decisions deferred", "napping on eight possible futures"]
-working = ["quick attack on quick fixes", "adapting to every environment variable"]
-celebrating = ["praise! affection! possible evolution!", "tail fluffed to full volume"]
-miffed = ["the fluff bristles", "still deciding which evolution to be mad as"]
-
+idle = ["undefined potential, all paths open", "evolution is a lifestyle", "fiddles with a fluffy collar while nothing is happening", "thinking about the zoomies again"]
+working = ["evolution is a lifestyle (working)", "guarding a fluffy collar while you grind", "hovers near the terminal, the zoomies at the ready", "files adaptive dna under: in progress"]
+celebrating = ["evolution is a lifestyle (celebrating)", "a fluffy collar is proud. i am proud. we are proud", "confetti made of the zoomies!", "IT WORKED! adaptive dna everywhere!"]
+miffed = ["evolution is a lifestyle (miffed)", "two failures in a row. a fluffy collar is not amused", "the audacity. the zoomies remembers this", "do it again. see what adaptive dna does"]
+sleeping = ["evolution is a lifestyle (sleeping)", "the cursor blinks. a fluffy collar does not", "dreaming of endless the zoomies", "z z z ... adaptive dna tucked in ..."]
+resting = ["evolution is a lifestyle (resting)", "nothing broke for a whole hour. suspicious. a fluffy collar agrees", "recharging next to the zoomies", "eyes half closed, adaptive dna warm"]
+petted = ["evolution is a lifestyle (petted)", "a fluffy collar at maximum smugness", "maximum affection detected. the zoomies melts", "oh. oh that's nice. adaptive dna purrs"]
 [[species]]
 name = "jigglypuff"
 tier = "uncommon"
@@ -388,11 +398,13 @@ miffed = ['''
    / | \
 ''']
 [species.lines]
-idle = ["inflated and smug", "humming a half-lullaby"]
-working = ["singing the build to sleep, productively", "marker ready for anyone who naps"]
-celebrating = ["a song of pure triumph", "balloon bounce, victory lap"]
-miffed = ["you fell asleep DURING MY SET", "drawing on your face in permanent marker"]
-
+idle = ["sings, everyone sleeps, takes it personally", "the lullaby is loaded", "guards a microphone marker from nothing in particular", "keeps round outrage close while the cursor idles"]
+working = ["the lullaby is loaded (working)", "files a microphone marker under: in progress", "guarding round outrage while you grind", "you type, i vibe, the song trembles"]
+celebrating = ["the lullaby is loaded (celebrating)", "victory dance around a microphone marker!", "green as far as round outrage can see!", "the song is proud. i am proud. we are proud"]
+miffed = ["the lullaby is loaded (miffed)", "two failures in a row. a microphone marker is not amused", "not speaking to the build. or round outrage", "do it again. see what the song does"]
+sleeping = ["the lullaby is loaded (sleeping)", "dreaming of endless a microphone marker", "the cursor blinks. round outrage does not", "curled around the song, out cold"]
+resting = ["the lullaby is loaded (resting)", "recharging next to a microphone marker", "round outrage and i are pacing ourselves", "a quiet stretch. the song at half power"]
+petted = ["the lullaby is loaded (petted)", "a microphone marker at maximum smugness", "sends round outrage as a thank you", "maximum affection detected. the song melts"]
 [[species]]
 name = "gengar"
 tier = "epic"
@@ -451,11 +463,13 @@ miffed = ['''
   /   \
 ''']
 [species.lines]
-idle = ["grinning from the shadow of the pane", "hiding in the keyboard's dead keys"]
-working = ["hexing the race conditions", "lurking near the segfaults, taking notes"]
-celebrating = ["a shadow that LAUGHS with you", "dream-eater snack: the whole error log"]
-miffed = ["the grin went crooked", "curse applied, no negotiation"]
-
+idle = ["grins from shadows, mostly harmless", "boo, but make it sinister", "napping next to shadow hiding. wake me when it matters", "just a wide grin and me out here. fine by me"]
+working = ["boo, but make it sinister (working)", "you type, i vibe, shadow hiding trembles", "the hum of real work. a wide grin approves", "every keystroke is cold spots music"]
+celebrating = ["boo, but make it sinister (celebrating)", "confetti made of shadow hiding!", "victory dance around a wide grin!", "IT WORKED! cold spots everywhere!"]
+miffed = ["boo, but make it sinister (miffed)", "crossed arms, drooped shadow hiding", "do it again. see what a wide grin does", "not speaking to the build. or cold spots"]
+sleeping = ["boo, but make it sinister (sleeping)", "curled around shadow hiding, out cold", "shh. a wide grin is sleeping too", "the cursor blinks. cold spots does not"]
+resting = ["boo, but make it sinister (resting)", "nothing broke for a whole hour. suspicious. shadow hiding agrees", "recharging next to a wide grin", "cold spots and i are pacing ourselves"]
+petted = ["boo, but make it sinister (petted)", "oh. oh that's nice. shadow hiding purrs", "sends a wide grin as a thank you", "happy wiggle! cold spots wiggles too"]
 [[species]]
 name = "snorlax"
 tier = "rare"
@@ -514,11 +528,13 @@ miffed = ['''
   /|     |\
 ''']
 [species.lines]
-idle = ["asleep across the build path", "snoring in perfect rhythm"]
-working = ["wide awake for exactly this", "body-slamming the bottleneck"]
-celebrating = ["a nap as reward, well earned", "belly rumble of satisfaction"]
-miffed = ["you woke the snorlax", "rolled over onto your deploy"]
-
+idle = ["blocking the route, unbothered", "zzz (not moving)", "small stretches, big thoughts about a nap mountain", "fiddles with berry feasts while nothing is happening"]
+working = ["zzz (not moving) (working)", "hovers near the terminal, a nap mountain at the ready", "you type, i vibe, berry feasts trembles", "files the belly flop under: in progress"]
+celebrating = ["zzz (not moving) (celebrating)", "green as far as a nap mountain can see!", "berry feasts is proud. i am proud. we are proud", "victory dance around the belly flop!"]
+miffed = ["zzz (not moving) (miffed)", "the audacity. a nap mountain remembers this", "do it again. see what berry feasts does", "two failures in a row. the belly flop is not amused"]
+sleeping = ["zzz (not moving) (sleeping)", "z z z ... a nap mountain tucked in ...", "dreaming of endless berry feasts", "curled around the belly flop, out cold"]
+resting = ["zzz (not moving) (resting)", "a quiet stretch. a nap mountain at half power", "nothing broke for a whole hour. suspicious. berry feasts agrees", "eyes half closed, the belly flop warm"]
+petted = ["zzz (not moving) (petted)", "maximum affection detected. a nap mountain melts", "happy wiggle! berry feasts wiggles too", "the belly flop at maximum smugness"]
 [[species]]
 name = "mewtwo"
 tier = "legendary"
@@ -585,11 +601,13 @@ miffed = ['''
    /  \
 ''']
 [species.lines]
-idle = ["hovering, calculating everything", "one-fifth aware of your presence"]
-working = ["psychic debugging, no breakpoints needed", "bending the metrics toward the truth"]
-celebrating = ["this outcome was CALCULATED", "telekinetic high-five, gentle"]
-miffed = ["the clones of my patience are exhausted", "a psychic storm brews silently"]
-
+idle = ["considers deleting the world, weekly", "i was made, not born", "thinking about psychic pressure again", "fiddles with the cold stare while nothing is happening"]
+working = ["i was made, not born (working)", "guarding psychic pressure while you grind", "the hum of real work. the cold stare approves", "files lab memories under: in progress"]
+celebrating = ["i was made, not born (celebrating)", "confetti made of psychic pressure!", "green as far as the cold stare can see!", "victory dance around lab memories!"]
+miffed = ["i was made, not born (miffed)", "crossed arms, drooped psychic pressure", "two failures in a row. the cold stare is not amused", "the audacity. lab memories remembers this"]
+sleeping = ["i was made, not born (sleeping)", "dreaming of endless psychic pressure", "shh. the cold stare is sleeping too", "z z z ... lab memories tucked in ..."]
+resting = ["i was made, not born (resting)", "eyes half closed, psychic pressure warm", "the cold stare and i are pacing ourselves", "nothing broke for a whole hour. suspicious. lab memories agrees"]
+petted = ["i was made, not born (petted)", "psychic pressure at maximum smugness", "sends the cold stare as a thank you", "maximum affection detected. lab memories melts"]
 [[species]]
 name = "mew"
 tier = "legendary"
@@ -648,11 +666,13 @@ miffed = ['''
    /   \
 ''']
 [species.lines]
-idle = ["blinking in and out of existence", "curled in a bubble, ancient"]
-working = ["learning every move, instantly", "invisible progress, visible results"]
-celebrating = ["a myth confirmed by a green build", "bubble bounce of ancient joy"]
-miffed = ["rarely seen, currently VERY seen", "vanished, taking your merge rights along"]
-
+idle = ["contains every move, uses them for hide and seek", "found me? no", "fiddles with a floating tail while nothing is happening", "keeps bubble play close while the cursor idles"]
+working = ["found me? no (working)", "hovers near the terminal, a floating tail at the ready", "guarding bubble play while you grind", "the hum of real work. ancient genes approves"]
+celebrating = ["found me? no (celebrating)", "confetti made of a floating tail!", "bubble play is proud. i am proud. we are proud", "green as far as ancient genes can see!"]
+miffed = ["found me? no (miffed)", "two failures in a row. a floating tail is not amused", "crossed arms, drooped bubble play", "not speaking to the build. or ancient genes"]
+sleeping = ["found me? no (sleeping)", "curled around a floating tail, out cold", "shh. bubble play is sleeping too", "z z z ... ancient genes tucked in ..."]
+resting = ["found me? no (resting)", "a quiet stretch. a floating tail at half power", "nothing broke for a whole hour. suspicious. bubble play agrees", "ancient genes and i are pacing ourselves"]
+petted = ["found me? no (petted)", "maximum affection detected. a floating tail melts", "oh. oh that's nice. bubble play purrs", "sends ancient genes as a thank you"]
 [[species]]
 name = "psyduck"
 tier = "uncommon"
@@ -711,11 +731,13 @@ miffed = ['''
    /   \
 ''']
 [species.lines]
-idle = ["holding its head, as always", "vaguely aware of the deadline"]
-working = ["confusion attack, accidentally effective", "headache-powered telekinesis"]
-celebrating = ["sudden clarity! brief! delightful!", "hands off head for one full second"]
-miffed = ["headache intensifying", "the quack of deep displeasure"]
-
+idle = ["headache-powered psychic, no notes", "the headache is the point", "small stretches, big thoughts about a stress migraine", "just vacant stare and me out here. fine by me"]
+working = ["the headache is the point (working)", "hovers near the terminal, a stress migraine at the ready", "every keystroke is vacant stare music", "files hands-on-head under: in progress"]
+celebrating = ["the headache is the point (celebrating)", "victory dance around a stress migraine!", "green as far as vacant stare can see!", "confetti made of hands-on-head!"]
+miffed = ["the headache is the point (miffed)", "not speaking to the build. or a stress migraine", "two failures in a row. vacant stare is not amused", "the audacity. hands-on-head remembers this"]
+sleeping = ["the headache is the point (sleeping)", "the cursor blinks. a stress migraine does not", "curled around vacant stare, out cold", "dreaming of endless hands-on-head"]
+resting = ["the headache is the point (resting)", "recharging next to a stress migraine", "a quiet stretch. vacant stare at half power", "eyes half closed, hands-on-head warm"]
+petted = ["the headache is the point (petted)", "oh. oh that's nice. a stress migraine purrs", "sends vacant stare as a thank you", "maximum affection detected. hands-on-head melts"]
 [[species]]
 name = "meowth"
 tier = "uncommon"
@@ -774,11 +796,13 @@ miffed = ['''
   /| |\
 ''']
 [species.lines]
-idle = ["polishing the charm on its forehead", "planning something, benignly"]
-working = ["scratch cat, professional grade", "fury swipes at the flaky tests"]
-celebrating = ["the boss will be SO pleased", "coin flip: it's always heads"]
-miffed = ["we're blasting off agaaaain", "that's the WRONG kind of scratch"]
-
+idle = ["walks on two feet, dreams in coins", "payday or nothing", "thinking about a coin charm again", "fiddles with fury swipes while nothing is happening"]
+working = ["payday or nothing (working)", "every keystroke is a coin charm music", "the hum of real work. fury swipes approves", "you type, i vibe, the upright walk trembles"]
+celebrating = ["payday or nothing (celebrating)", "a coin charm is proud. i am proud. we are proud", "IT WORKED! fury swipes everywhere!", "green as far as the upright walk can see!"]
+miffed = ["payday or nothing (miffed)", "two failures in a row. a coin charm is not amused", "do it again. see what fury swipes does", "not speaking to the build. or the upright walk"]
+sleeping = ["payday or nothing (sleeping)", "the cursor blinks. a coin charm does not", "curled around fury swipes, out cold", "shh. the upright walk is sleeping too"]
+resting = ["payday or nothing (resting)", "recharging next to a coin charm", "eyes half closed, fury swipes warm", "the upright walk and i are pacing ourselves"]
+petted = ["payday or nothing (petted)", "a coin charm at maximum smugness", "sends fury swipes as a thank you", "happy wiggle! the upright walk wiggles too"]
 [[species]]
 name = "gyarados"
 tier = "epic"
@@ -837,11 +861,13 @@ miffed = ['''
   /_|||_\
 ''']
 [species.lines]
-idle = ["coiled in the deep, waiting", "storm-sense tingling at the horizon"]
-working = ["hyper beam through the blocker", "the wrath of a thousand splashes"]
-celebrating = ["a calm sea, for once, well earned", "raged, and it WORKED"]
-miffed = ["MAGIKARP'S WRATH UNLEASHED", "the lake is empty, the lake is ANGRY"]
-
+idle = ["holds grudges at magikarp tier, releases at max", "rage is a lifecycle", "guards tidal rage from nothing in particular", "fiddles with a crimson glare while nothing is happening"]
+working = ["rage is a lifecycle (working)", "guarding tidal rage while you grind", "hovers near the terminal, a crimson glare at the ready", "every keystroke is the roar music"]
+celebrating = ["rage is a lifecycle (celebrating)", "green as far as tidal rage can see!", "victory dance around a crimson glare!", "the roar is proud. i am proud. we are proud"]
+miffed = ["rage is a lifecycle (miffed)", "two failures in a row. tidal rage is not amused", "the audacity. a crimson glare remembers this", "crossed arms, drooped the roar"]
+sleeping = ["rage is a lifecycle (sleeping)", "shh. tidal rage is sleeping too", "curled around a crimson glare, out cold", "dreaming of endless the roar"]
+resting = ["rage is a lifecycle (resting)", "eyes half closed, tidal rage warm", "a crimson glare and i are pacing ourselves", "a quiet stretch. the roar at half power"]
+petted = ["rage is a lifecycle (petted)", "maximum affection detected. tidal rage melts", "oh. oh that's nice. a crimson glare purrs", "happy wiggle! the roar wiggles too"]
 [[species]]
 name = "lapras"
 tier = "rare"
@@ -900,11 +926,13 @@ miffed = ['''
    /    \
 ''']
 [species.lines]
-idle = ["singing across the still water", "carrying passengers, asking nothing"]
-working = ["ice beam at surgical temperatures", "singing while it swims the data lake"]
-celebrating = ["a song carried over the whole bay", "gentle giant, precise joy"]
-miffed = ["the song turned minor key", "frozen silence, deliberately"]
-
+idle = ["ferry service with infinite patience", "hop on, all are welcome", "thinking about gentle currents again", "guards the shell harp from nothing in particular"]
+working = ["hop on, all are welcome (working)", "guarding gentle currents while you grind", "files the shell harp under: in progress", "the hum of real work. passenger ferries approves"]
+celebrating = ["hop on, all are welcome (celebrating)", "IT WORKED! gentle currents everywhere!", "green as far as the shell harp can see!", "passenger ferries is proud. i am proud. we are proud"]
+miffed = ["hop on, all are welcome (miffed)", "do it again. see what gentle currents does", "the audacity. the shell harp remembers this", "crossed arms, drooped passenger ferries"]
+sleeping = ["hop on, all are welcome (sleeping)", "the cursor blinks. gentle currents does not", "curled around the shell harp, out cold", "dreaming of endless passenger ferries"]
+resting = ["hop on, all are welcome (resting)", "a quiet stretch. gentle currents at half power", "recharging next to the shell harp", "eyes half closed, passenger ferries warm"]
+petted = ["hop on, all are welcome (petted)", "gentle currents at maximum smugness", "maximum affection detected. the shell harp melts", "oh. oh that's nice. passenger ferries purrs"]
 [[species]]
 name = "lucario"
 tier = "epic"
@@ -963,11 +991,13 @@ miffed = ['''
   /| | |\
 ''']
 [species.lines]
-idle = ["reading the aura of the codebase", "spikes calm, senses open"]
-working = ["aura sphere aimed at the real bug", "metal claw, precise strikes"]
-celebrating = ["the aura is GREEN and bright", "an aura storm of satisfaction"]
-miffed = ["the aura reads WRONG on this commit", "sensing your distrust, reciprocating"]
-
+idle = ["reads auras, keeps receipts", "the aura is strong", "just aura reading and me out here. fine by me", "guards bone spikes from nothing in particular"]
+working = ["the aura is strong (working)", "guarding aura reading while you grind", "every keystroke is bone spikes music", "hovers near the terminal, the focused stance at the ready"]
+celebrating = ["the aura is strong (celebrating)", "IT WORKED! aura reading everywhere!", "victory dance around bone spikes!", "confetti made of the focused stance!"]
+miffed = ["the aura is strong (miffed)", "not speaking to the build. or aura reading", "the audacity. bone spikes remembers this", "crossed arms, drooped the focused stance"]
+sleeping = ["the aura is strong (sleeping)", "the cursor blinks. aura reading does not", "z z z ... bone spikes tucked in ...", "dreaming of endless the focused stance"]
+resting = ["the aura is strong (resting)", "aura reading and i are pacing ourselves", "nothing broke for a whole hour. suspicious. bone spikes agrees", "recharging next to the focused stance"]
+petted = ["the aura is strong (petted)", "happy wiggle! aura reading wiggles too", "maximum affection detected. bone spikes melts", "the focused stance at maximum smugness"]
 [[species]]
 name = "greninja"
 tier = "rare"
@@ -1026,11 +1056,13 @@ miffed = ['''
    /  \
 ''']
 [species.lines]
-idle = ["scarf-tongue flicking, ready", "a shadow in the water tower"]
-working = ["water shuriken, silent execution", "shadow sneak behind the bug"]
-celebrating = ["a ninja star spun in triumph", "the tongue-scarf curled in delight"]
-miffed = ["vanished, but the disappointment lingers", "mat block: no thank you"]
-
+idle = ["ninja first, frog second, hero always", "water shuriken, ready", "guards water shurikens from nothing in particular", "fiddles with scarf tongue while nothing is happening"]
+working = ["water shuriken, ready (working)", "files water shurikens under: in progress", "the hum of real work. scarf tongue approves", "every keystroke is the shadow dash music"]
+celebrating = ["water shuriken, ready (celebrating)", "victory dance around water shurikens!", "scarf tongue is proud. i am proud. we are proud", "green as far as the shadow dash can see!"]
+miffed = ["water shuriken, ready (miffed)", "the audacity. water shurikens remembers this", "crossed arms, drooped scarf tongue", "do it again. see what the shadow dash does"]
+sleeping = ["water shuriken, ready (sleeping)", "the cursor blinks. water shurikens does not", "shh. scarf tongue is sleeping too", "dreaming of endless the shadow dash"]
+resting = ["water shuriken, ready (resting)", "recharging next to water shurikens", "scarf tongue and i are pacing ourselves", "a quiet stretch. the shadow dash at half power"]
+petted = ["water shuriken, ready (petted)", "happy wiggle! water shurikens wiggles too", "oh. oh that's nice. scarf tongue purrs", "sends the shadow dash as a thank you"]
 [[species]]
 name = "ditto"
 tier = "common"
@@ -1097,11 +1129,13 @@ miffed = ['''
   \______/
 ''']
 [species.lines]
-idle = ["a puddle of pure potential", "practicing being a different rock"]
-working = ["transforming into the exact tool needed", "copying the work, perfectly"]
-celebrating = ["became a party hat, somehow", "morphed into a tiny victory"]
-miffed = ["transformed into a frown", "the copy is imperfect and offended"]
-
+idle = ["is whatever the situation requires", "copy that. literally", "keeps a wobbly copy close while the cursor idles", "guards imperfect faces from nothing in particular"]
+working = ["copy that. literally (working)", "every keystroke is a wobbly copy music", "files imperfect faces under: in progress", "you type, i vibe, the transform trembles"]
+celebrating = ["copy that. literally (celebrating)", "victory dance around a wobbly copy!", "imperfect faces is proud. i am proud. we are proud", "IT WORKED! the transform everywhere!"]
+miffed = ["copy that. literally (miffed)", "not speaking to the build. or a wobbly copy", "the audacity. imperfect faces remembers this", "crossed arms, drooped the transform"]
+sleeping = ["copy that. literally (sleeping)", "dreaming of endless a wobbly copy", "curled around imperfect faces, out cold", "shh. the transform is sleeping too"]
+resting = ["copy that. literally (resting)", "a wobbly copy and i are pacing ourselves", "a quiet stretch. imperfect faces at half power", "recharging next to the transform"]
+petted = ["copy that. literally (petted)", "maximum affection detected. a wobbly copy melts", "imperfect faces at maximum smugness", "sends the transform as a thank you"]
 [[species]]
 name = "cubone"
 tier = "uncommon"
@@ -1160,11 +1194,13 @@ miffed = ['''
    /|  |\
 ''']
 [species.lines]
-idle = ["helmet on, memories on", "tapping the bone club thoughtfully"]
-working = ["bonemerang: throws the task, it returns done", "digging through the pile"]
-celebrating = ["a rare unguarded smile", "bone club drumroll"]
-miffed = ["the helmet hides nothing today", "that deadpan skull-stare"]
-
+idle = ["wears the skull, carries the story", "the bone club speaks", "napping next to a worn skull. wake me when it matters", "small stretches, big thoughts about bone club"]
+working = ["the bone club speaks (working)", "every keystroke is a worn skull music", "the hum of real work. bone club approves", "hovers near the terminal, the quiet mourning at the ready"]
+celebrating = ["the bone club speaks (celebrating)", "a worn skull is proud. i am proud. we are proud", "victory dance around bone club!", "confetti made of the quiet mourning!"]
+miffed = ["the bone club speaks (miffed)", "the audacity. a worn skull remembers this", "do it again. see what bone club does", "two failures in a row. the quiet mourning is not amused"]
+sleeping = ["the bone club speaks (sleeping)", "dreaming of endless a worn skull", "shh. bone club is sleeping too", "curled around the quiet mourning, out cold"]
+resting = ["the bone club speaks (resting)", "recharging next to a worn skull", "a quiet stretch. bone club at half power", "eyes half closed, the quiet mourning warm"]
+petted = ["the bone club speaks (petted)", "maximum affection detected. a worn skull melts", "happy wiggle! bone club wiggles too", "the quiet mourning at maximum smugness"]
 [[species]]
 name = "dragonite"
 tier = "epic"
@@ -1223,11 +1259,13 @@ miffed = ['''
    /    \
 ''']
 [species.lines]
-idle = ["circled the globe, back for tea", "drifting, amiable, enormous"]
-working = ["hurricane through the flaky region", "delivering the fix across oceans"]
-celebrating = ["a barrel roll in the sunrise", "thunderous joy, gentle eyes"]
-miffed = ["outrage. briefly. then a hug.", "the mail was LATE, and dragonite knows"]
-
+idle = ["huge, kind, delivers packages", "friendly dragon delivers", "just a mail delivery and me out here. fine by me", "fiddles with orange wings while nothing is happening"]
+working = ["friendly dragon delivers (working)", "the hum of real work. a mail delivery approves", "every keystroke is orange wings music", "hovers near the terminal, the happy roar at the ready"]
+celebrating = ["friendly dragon delivers (celebrating)", "a mail delivery is proud. i am proud. we are proud", "IT WORKED! orange wings everywhere!", "victory dance around the happy roar!"]
+miffed = ["friendly dragon delivers (miffed)", "do it again. see what a mail delivery does", "crossed arms, drooped orange wings", "the audacity. the happy roar remembers this"]
+sleeping = ["friendly dragon delivers (sleeping)", "shh. a mail delivery is sleeping too", "dreaming of endless orange wings", "the cursor blinks. the happy roar does not"]
+resting = ["friendly dragon delivers (resting)", "recharging next to a mail delivery", "eyes half closed, orange wings warm", "the happy roar and i are pacing ourselves"]
+petted = ["friendly dragon delivers (petted)", "sends a mail delivery as a thank you", "orange wings at maximum smugness", "happy wiggle! the happy roar wiggles too"]
 [[species]]
 name = "vulpix"
 tier = "uncommon"
@@ -1278,11 +1316,13 @@ miffed = ['''
    /| |\
 ''']
 [species.lines]
-idle = ["six tails fanned like a hand of cards", "warm as a small furnace"]
-working = ["will-o-wisp on the warning pile", "foxfire lighting the way"]
-celebrating = ["all six tails at full wag", "a tiny inferno of delight"]
-miffed = ["tails bristled to six exclamation points", "frost breath, barely justified"]
-
+idle = ["six tails, infinite elegance", "foxfire at dusk", "keeps six tails close while the cursor idles", "guards foxfire glow from nothing in particular"]
+working = ["foxfire at dusk (working)", "you type, i vibe, six tails trembles", "every keystroke is foxfire glow music", "files the twirl under: in progress"]
+celebrating = ["foxfire at dusk (celebrating)", "green as far as six tails can see!", "foxfire glow is proud. i am proud. we are proud", "victory dance around the twirl!"]
+miffed = ["foxfire at dusk (miffed)", "crossed arms, drooped six tails", "do it again. see what foxfire glow does", "not speaking to the build. or the twirl"]
+sleeping = ["foxfire at dusk (sleeping)", "dreaming of endless six tails", "the cursor blinks. foxfire glow does not", "curled around the twirl, out cold"]
+resting = ["foxfire at dusk (resting)", "eyes half closed, six tails warm", "a quiet stretch. foxfire glow at half power", "recharging next to the twirl"]
+petted = ["foxfire at dusk (petted)", "maximum affection detected. six tails melts", "oh. oh that's nice. foxfire glow purrs", "happy wiggle! the twirl wiggles too"]
 [[species]]
 name = "petrock"
 tier = "common"
@@ -1309,8 +1349,10 @@ miffed = '''
  \____/
 '''
 [species.lines]
-idle = ["does nothing", "sits there", "has seen things", "is a rock"]
-working = ["still a rock", "contains gravel", "does not help", "rocks do not work"]
-celebrating = ["vibrates with joy inside", "emotionally granite"]
-miffed = ["unbothered", "stays a rock"]
-
+idle = ["sits. that's the whole thing", "still here", "observes. does not participate", "a very committed rock"]
+working = ["unbothered", "solid as ever", "watches you work. judges silently", "has seen worse grinds"]
+celebrating = ["the mountain does not cheer", "gravel applause", "a faint rumble of pride", "still a rock, but a proud one"]
+miffed = ["erosion takes centuries", "your failures mean nothing geologically", "unmoved", "still a rock"]
+sleeping = ["rocks do not sleep. rocks wait", "geological patience", "zzz is a social construct", "naps in dog years"]
+resting = ["peak rock form", "stillness is the skill", "conserving minerals", "already at rest"]
+petted = ["that did nothing. do it again", "solidarity acknowledged", "a tiny pebble tumbles off", "appreciates the effort, silently"]
