@@ -43,6 +43,34 @@ pub fn run_and_log(argv: &[String]) -> i32 {
 /// chaos effect, save, and notify while the buddy is on. Shared by `tb run`
 /// and `tb emit` so adapters get exactly the same reactions.
 pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, code: i32) -> i32 {
+    let _lock = state::lock_state(dir);
+
+    // The kinds a wrapped run can produce. An adapter may emit its own kind:
+    // it is logged, but it stays silent and calm (no XP, no chaos, no ping),
+    // so a typo cannot mint rewards and a stranger event cannot startle the
+    // buddy.
+    let known = kind
+        .map(|k| matches!(k, "build_finished" | "command_failed"))
+        .unwrap_or(true);
+    if !known {
+        eprintln!(
+            "hatch: unknown kind '{}'. known kinds: build_finished, command_failed. logging it, but it stays silent and calm.",
+            kind.unwrap_or("")
+        );
+        if let Some(k) = kind {
+            let ev = Event {
+                ts: state::now_secs(),
+                kind: k.to_string(),
+                duration_secs,
+                exit_code: code,
+            };
+            if let Err(e) = state::append_event(dir, &ev) {
+                eprintln!("hatch: could not write event: {}", e);
+            }
+        }
+        return code;
+    }
+
     if let Some(k) = kind {
         let ev = Event {
             ts: state::now_secs(),
@@ -79,10 +107,11 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
     code
 }
 
+
 /// `tb emit <kind> [--exit N] [--secs S]`: the adapter surface. Any harness
 /// can feed hatch an event without wrapping its command: kind names what
-/// happened ("build_finished", "command_failed", or its own), --exit and
-/// --secs carry the outcome. Same effects as a real run.
+/// happened ("build_finished" or "command_failed"), --exit and --secs carry
+/// the outcome. Unknown kinds are logged but stay silent and calm.
 pub fn parse_emit_args(argv: &[String]) -> Result<(String, i32, u64), String> {
     let mut kind: Option<String> = None;
     let mut exit_code = 0i32;
@@ -118,6 +147,41 @@ pub fn emit(argv: &[String]) -> i32 {
     0
 }
 
+/// The notification line for an event, in the buddy's voice.
+pub fn notification_message(kind: &str, duration_secs: u64, code: i32) -> String {
+    match kind {
+        "build_finished" => format!("hatch: build finished in {}s", duration_secs),
+        "command_failed" => format!("hatch: command failed (exit {})", code),
+        other => format!("hatch: {}", other),
+    }
+}
+
+/// Emit a notification: the OSC 9 desktop-notification escape on stdout, and,
+/// inside tmux, a display-message so the other panes see it too. The escape
+/// only goes to a real terminal (a pipe gets clean output); HATCH_NOTIFY=off
+/// silences everything and HATCH_NOTIFY=force emits even piped, for testing.
+pub fn notify(msg: &str) {
+    match std::env::var("HATCH_NOTIFY").as_deref() {
+        Ok("off") => return,
+        Ok("force") => {}
+        _ => {
+            use std::io::IsTerminal;
+            if !std::io::stdout().is_terminal() {
+                return;
+            }
+        }
+    }
+    print!("\x1b]9;{}\x07", msg);
+    use std::io::Write;
+    let _ = std::io::stdout().flush();
+    if std::env::var_os("TMUX").is_some() {
+        let _ = Command::new("tmux")
+            .args(["display-message", "-d", "4000", msg])
+            .spawn();
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -141,27 +205,16 @@ mod tests {
         let d: Vec<String> = vec!["k".into(), "extra".into()];
         assert!(parse_emit_args(&d).is_err());
     }
-}
 
-/// The notification line for an event, in the buddy's voice.
-pub fn notification_message(kind: &str, duration_secs: u64, code: i32) -> String {
-    match kind {
-        "build_finished" => format!("hatch: build finished in {}s", duration_secs),
-        "command_failed" => format!("hatch: command failed (exit {})", code),
-        other => format!("hatch: {}", other),
+    #[test]
+    fn unknown_emit_kind_is_logged_but_calm() {
+        let dir = tempfile::tempdir().unwrap();
+        let home = dir.path().join("h");
+        let before = state::load_or_hatch(&home).xp;
+        settle(&home, Some("build_finshed"), 5, 0);
+        let st = state::load_or_hatch(&home);
+        assert_eq!(st.xp, before, "unknown kind must not pay XP");
+        let tail = state::read_events_tail(&home, 10);
+        assert!(tail.iter().any(|e| e.kind == "build_finshed"), "unknown kind is still logged");
     }
 }
-
-/// Emit a notification: the OSC 9 desktop-notification escape on stdout, and,
-/// inside tmux, a display-message so the other panes see it too.
-pub fn notify(msg: &str) {
-    print!("\x1b]9;{}\x07", msg);
-    use std::io::Write;
-    let _ = std::io::stdout().flush();
-    if std::env::var_os("TMUX").is_some() {
-        let _ = Command::new("tmux")
-            .args(["display-message", "-d", "4000", msg])
-            .spawn();
-    }
-}
-

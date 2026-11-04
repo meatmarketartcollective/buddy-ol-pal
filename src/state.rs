@@ -214,6 +214,22 @@ pub fn parse_state(text: &str) -> Option<CompanionState> {
     }
 }
 
+/// A cross-process lock over the read-modify-write section every command
+/// shares (load state, mutate, save). Concurrent `tb run` and `tb emit` calls
+/// otherwise lose each other's XP and chaos to the last writer. Blocks until
+/// the lock is held; on any error the caller proceeds unlocked rather than
+/// failing the command.
+pub fn lock_state(dir: &Path) -> Option<std::fs::File> {
+    let f = fs::OpenOptions::new()
+        .create(true)
+        .truncate(false)
+        .write(true)
+        .open(dir.join("hatch.lock"))
+        .ok()?;
+    f.lock().ok()?;
+    Some(f)
+}
+
 pub fn save_state(dir: &Path, st: &CompanionState) -> std::io::Result<()> {
     fs::create_dir_all(dir)?;
     let tmp = dir.join("state.toml.tmp");
