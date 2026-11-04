@@ -109,7 +109,9 @@ mod tests {
     #[test]
     fn table_loads_and_names_are_unique() {
         let t = table();
-        assert!(t.len() >= 2, "ember plus at least one more species");
+        // Wave A: 6 species. The full count of 18 becomes a hard equality
+        // test at wave C (plan milestone 5).
+        assert!(t.len() >= 6, "wave A shipped: six species expected");
         let mut names: Vec<&str> = t.iter().map(|s| s.name.as_str()).collect();
         names.sort();
         let n = names.len();
@@ -131,7 +133,7 @@ mod tests {
     #[test]
     fn name_pools_non_empty() {
         for sp in table() {
-            assert!(!sp.names.is_empty(), "{} has an empty name pool", sp.name);
+            assert!(sp.names.len() >= 8, "{} name pool below the eight-name floor: {}", sp.name, sp.names.len());
             for mood in [Mood::Idle, Mood::Working, Mood::Celebrate, Mood::Miffed] {
                 assert!(!sp.lines.for_mood(mood).is_empty(), "{} lines empty for {}", sp.name, mood.label());
             }

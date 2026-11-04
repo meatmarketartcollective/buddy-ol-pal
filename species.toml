@@ -66,3 +66,131 @@ idle = ["growing quietly. nothing to see here."]
 working = ["photosynthesizing as fast as it can"]
 celebrating = ["a good day to be moss"]
 miffed = ["moss remembers."]
+
+[[species]]
+name = "droplet"
+tier = "common"
+names = [
+  "Dew", "Brook", "Splash", "Marina", "Coral", "Nimbus", "Puddle",
+  "Tide", "Rill", "Delta",
+]
+
+[species.art]
+idle = '''
+   .--.
+  ( -.- )
+   \__/'''
+working = '''
+   .--.
+  ( >.< )
+   \__/'''
+celebrating = '''
+   .--.
+  ( ^o^ )
+   \__/'''
+miffed = '''
+   .--.
+  ( >_< )
+   \__/'''
+
+[species.lines]
+idle = ["bobbing quietly, waiting for rain"]
+working = ["stirring up a little whirlpool"]
+celebrating = ["made a splash!"]
+miffed = ["turned murky."]
+
+[[species]]
+name = "geode"
+tier = "common"
+names = [
+  "Agate", "Jasper", "Onyx", "Beryl", "Topaz", "Flint", "Quartz",
+  "Grit", "Marble", "Druzy",
+]
+
+[species.art]
+idle = '''
+  _____
+ ( -.- )
+  \___/'''
+working = '''
+  _____
+ ( >.< )
+  \___/'''
+celebrating = '''
+  _____
+ ( ^o^ )
+  \___/'''
+miffed = '''
+  _____
+ ( >_< )
+  \___/'''
+
+[species.lines]
+idle = ["solid as ever. crystals growing inside"]
+working = ["polishing its own insides"]
+celebrating = ["facets for days!"]
+miffed = ["cracked. only slightly."]
+
+[[species]]
+name = "moth"
+tier = "common"
+names = [
+  "Lumen", "Dusty", "Flutter", "Silk", "Gossamer", "Atlas", "Pollen",
+  "Coco", "Sable", "Wing",
+]
+
+[species.art]
+idle = '''
+   \\ //
+  ( -.- )
+   ~  ~'''
+working = '''
+   \\ //
+  ( >.< )
+   ~  ~'''
+celebrating = '''
+   \\ //
+  ( ^o^ )
+   ~  ~'''
+miffed = '''
+   \\ //
+  ( >_< )
+   ~  ~'''
+
+[species.lines]
+idle = ["fluttering toward the porch light"]
+working = ["fanning furiously"]
+celebrating = ["drawn to the glow of success"]
+miffed = ["wings all askew."]
+
+[[species]]
+name = "cactus"
+tier = "common"
+names = [
+  "Spike", "Barrel", "Jojoba", "Aloe", "Paya", "Nopal", "Yucca",
+  "Sedona", "Cholla", "Prickle",
+]
+
+[species.art]
+idle = '''
+  o   o
+ ( -.- )
+   \_/'''
+working = '''
+  o   o
+ ( >.< )
+   \_/'''
+celebrating = '''
+  o   o
+ ( ^o^ )
+   \_/'''
+miffed = '''
+  o   o
+ ( >_< )
+   \_/'''
+
+[species.lines]
+idle = ["standing very still. extremely patient"]
+working = ["drinking slowly, very slowly"]
+celebrating = ["bloomed for a moment"]
+miffed = ["pricklier than usual."]
