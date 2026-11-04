@@ -1,7 +1,10 @@
 # Star Fox universe species pack: 20 characters, art by Casey Benson.
-# # Each mood carries two art frames that cycle every tick; the engine's
-# 7-state animation layer (blink, zzz drift, hearts, spinner, glitch)
-# runs on top. Sleeping/resting/petted ride the idle frames.
+# # Every species and every mood carries two art frames that cycle every
+# tick; featureless designs get a gentle sway so nothing sits frozen.
+# The engine's 7-state animation layer (blink, zzz drift, hearts,
+# spinner, glitch) runs on top. Sleeping/resting/petted ride the idle
+# frames. Sole exception: petrock, who is a rock and does not animate.
+# That is the joke.
 # Drop in ~/.config/hatch/packs/ (or $HATCH_HOME/packs).
 
 [[species]]
@@ -35,20 +38,32 @@ working = ['''
  \_____/
  /|   |\
 ''']
-celebrating = '''
+celebrating = ['''
   /\_/\
  / ^ ^ \
 |   ^   |
  \_____/
  /|   |\
-'''
-miffed = '''
+''', '''
+   /\_/\
+  / ^ ^ \
+ |   ^   |
+  \_____/
+  /|   |\
+''']
+miffed = ['''
   /\_/\
  / > > \
 |   ^   |
  \_____/
  /|   |\
-'''
+''', '''
+   /\_/\
+  / > > \
+ |   ^   |
+  \_____/
+  /|   |\
+''']
 [species.lines]
 idle = ["mission patch shined, wings folded", "waiting in the hangar"]
 working = ["barrel roll through the merge conflicts", "laser check, systems green"]
@@ -86,20 +101,32 @@ working = ['''
   /|X|\
  /_/_\_\
 ''']
-celebrating = '''
+celebrating = ['''
   \___/
  <^   ^>
    \^/
   /|X|\
  /_/_\_\
-'''
-miffed = '''
+''', '''
+   \___/
+  <^   ^>
+    \^/
+   /|X|\
+  /_/_\_\
+''']
+miffed = ['''
   \___/
  <>   >>
    \^/
   /|X|\
  /_/_\_\
-'''
+''', '''
+   \___/
+  <>   >>
+    \^/
+   /|X|\
+  /_/_\_\
+''']
 [species.lines]
 idle = ["leaning on the arwing, cool", "polishing sunglasses in zero-g"]
 working = ["game on, hotshot", "flying in, shooting first"]
@@ -137,20 +164,32 @@ working = ['''
  /|===|\
   /   \
 ''']
-celebrating = '''
+celebrating = ['''
   /---\
  (^   ^)
   \ ᴗ /
  /|===|\
   /   \
-'''
-miffed = '''
+''', '''
+   /---\
+  (^   ^)
+   \ ᴗ /
+  /|===|\
+   /   \
+''']
+miffed = ['''
   /---\
  (>   >)
   \ ᴗ /
  /|===|\
   /   \
-'''
+''', '''
+   /---\
+  (>   >)
+   \ ᴗ /
+  /|===|\
+   /   \
+''']
 [species.lines]
 idle = ["long ears twitching with wisdom", "maps spread, coffee cold"]
 working = ["do a barrel roll (advice free)", "old pilot, new bugs"]
@@ -188,20 +227,32 @@ working = ['''
  /|~~~|\
   /   \
 ''']
-celebrating = '''
+celebrating = ['''
   .---.
  (^   ^)
   \ ᴗ /
  /|~~~|\
   /   \
-'''
-miffed = '''
+''', '''
+   .---.
+  (^   ^)
+   \ ᴗ /
+  /|~~~|\
+   /   \
+''']
+miffed = ['''
   .---.
  (>   >)
   \ ᴗ /
  /|~~~|\
   /   \
-'''
+''', '''
+   .---.
+  (>   >)
+   \ ᴗ /
+  /|~~~|\
+   /   \
+''']
 [species.lines]
 idle = ["wrench in hand, always", "shield analyzer humming"]
 working = ["shields at forty percent, FIXING", "inventing something from spare parts"]
@@ -239,20 +290,32 @@ working = ['''
  /|////|\
   /    \
 ''']
-celebrating = '''
+celebrating = ['''
  /\____/\
 ( ^    ^ )
  \  --  /
  /|////|\
   /    \
-'''
-miffed = '''
+''', '''
+  /\____/\
+ ( ^    ^ )
+  \  --  /
+  /|////|\
+   /    \
+''']
+miffed = ['''
  /\____/\
 ( >    > )
  \  --  /
  /|////|\
   /    \
-'''
+''', '''
+  /\____/\
+ ( >    > )
+  \  --  /
+  /|////|\
+   /    \
+''']
 [species.lines]
 idle = ["smiling like a wolf in a henhouse", "claws sharpened on the merge queue"]
 working = ["hunting the bug, pack-style", "no mercy for flaky tests"]
@@ -416,20 +479,32 @@ working = ['''
  /|     |\
   /     \
 ''']
-celebrating = '''
+celebrating = ['''
   /\___/\
  (^     ^)
   \ ᴗ_ /
  /|     |\
   /     \
-'''
-miffed = '''
+''', '''
+   /\___/\
+  (^     ^)
+   \ ᴗ_ /
+  /|     |\
+   /     \
+''']
+miffed = ['''
   /\___/\
  (>     >)
   \ ᴗ_ /
  /|     |\
   /     \
-'''
+''', '''
+   /\___/\
+  (>     >)
+   \ ᴗ_ /
+  /|     |\
+   /     \
+''']
 [species.lines]
 idle = ["practicing uncle's evil laugh", "sitting in the big chair, badly"]
 working = ["inventing schemes on the fly", "empire-building, one bug at a time"]
@@ -467,20 +542,32 @@ working = ['''
  /|===|\
   /   \
 ''']
-celebrating = '''
+celebrating = ['''
   /\  /\
  (^  ^ )
   \ ᴗ /
  /|===|\
   /   \
-'''
-miffed = '''
+''', '''
+   /\  /\
+  (^  ^ )
+   \ ᴗ /
+  /|===|\
+   /   \
+''']
+miffed = ['''
   /\  /\
  (>  > )
   \ ᴗ /
  /|===|\
   /   \
-'''
+''', '''
+   /\  /\
+  (>  > )
+   \ ᴗ /
+  /|===|\
+   /   \
+''']
 [species.lines]
 idle = ["rose between claws, smooth", "a silk voice, sharp claws"]
 working = ["claw-swipe with a compliment", "seducing the bug into surrender"]
@@ -518,20 +605,32 @@ working = ['''
  /|✧|\
   / \
 ''']
-celebrating = '''
+celebrating = ['''
   /\_/\
  (^   ^)
   \ ᴗ /
  /|✧|\
   / \
-'''
-miffed = '''
+''', '''
+   /\_/\
+  (^   ^)
+   \ ᴗ /
+  /|✧|\
+   / \
+''']
+miffed = ['''
   /\_/\
  (>   >)
   \ ᴗ /
  /|✧|\
   / \
-'''
+''', '''
+   /\_/\
+  (>   >)
+   \ ᴗ /
+  /|✧|\
+   / \
+''']
 [species.lines]
 idle = ["staff humming with thoughts unsaid", "listening to the mind of the code"]
 working = ["staff spells on stubborn bugs", "reading the error's feelings"]
@@ -569,20 +668,32 @@ working = ['''
  /|███|\
   /   \
 ''']
-celebrating = '''
+celebrating = ['''
   .-----.
  (^  ^)
   \___/
  /|███|\
   /   \
-'''
-miffed = '''
+''', '''
+   .-----.
+  (^  ^)
+   \___/
+  /|███|\
+   /   \
+''']
+miffed = ['''
   .-----.
  (>  >)
   \___/
  /|███|\
   /   \
-'''
+''', '''
+   .-----.
+  (>  >)
+   \___/
+  /|███|\
+   /   \
+''']
 [species.lines]
 idle = ["medals arranged, briefing ready", "cornerian flag at half-staff of coffee"]
 working = ["dispatching resources, crisply", "the defense budget, fully deployed"]
@@ -620,20 +731,32 @@ working = ['''
   \___/
   /| |\
 ''']
-celebrating = '''
+celebrating = ['''
   .-----.
  | [^] |
  |  _  |
   \___/
   /| |\
-'''
-miffed = '''
+''', '''
+   .-----.
+  | [^] |
+  |  _  |
+   \___/
+   /| |\
+''']
+miffed = ['''
   .-----.
  | [>] |
  |  _  |
   \___/
   /| |\
-'''
+''', '''
+   .-----.
+  | [>] |
+  |  _  |
+   \___/
+   /| |\
+''']
 [species.lines]
 idle = ["systems nominal, sarcasm sub-threshold", "floating, blinking, waiting"]
 working = ["analysis complete, deploying", "beep boop, task executing"]
@@ -671,20 +794,32 @@ working = ['''
  /|===|\
   /   \
 ''']
-celebrating = '''
+celebrating = ['''
   /\_/\
  (^   ^)
   \ ^ /
  /|===|\
   /   \
-'''
-miffed = '''
+''', '''
+   /\_/\
+  (^   ^)
+   \ ^ /
+  /|===|\
+   /   \
+''']
+miffed = ['''
   /\_/\
  (>   >)
   \ ^ /
  /|===|\
   /   \
-'''
+''', '''
+   /\_/\
+  (>   >)
+   \ ^ /
+  /|===|\
+   /   \
+''']
 [species.lines]
 idle = ["appearing where needed, then not", "flying through the vein of memory"]
 working = ["guiding from beyond the radar", "wingman of legend, rarely visible"]
@@ -722,20 +857,32 @@ working = ['''
  /|███|\
   /   \
 ''']
-celebrating = '''
+celebrating = ['''
   .---.
  (^   ^)
   \ ᴗ /
  /|███|\
   /   \
-'''
-miffed = '''
+''', '''
+   .---.
+  (^   ^)
+   \ ᴗ /
+  /|███|\
+   /   \
+''']
+miffed = ['''
   .---.
  (>   >)
   \ ᴗ /
  /|███|\
   /   \
-'''
+''', '''
+   .---.
+  (>   >)
+   \ ᴗ /
+  /|███|\
+   /   \
+''']
 [species.lines]
 idle = ["paws on the throttle, easy", "dogfight stories on repeat"]
 working = ["hold the line, I'm coming", "covering your flank, always"]
@@ -836,20 +983,32 @@ working = ['''
  /|.|\
   / \
 ''']
-celebrating = '''
+celebrating = ['''
   .---.
  / ^ ^ \
  \ ᴗ /
  /|^|\
   / \
-'''
-miffed = '''
+''', '''
+   .---.
+  / ^ ^ \
+  \ ᴗ /
+  /|^|\
+   / \
+''']
+miffed = ['''
   .---.
  / > > \
  \ ᴗ /
  /|>|\
   / \
-'''
+''', '''
+   .---.
+  / > > \
+  \ ᴗ /
+  /|>|\
+   / \
+''']
 [species.lines]
 idle = ["curls bouncing, eyes bright", "flight log pristine"]
 working = ["new pilot, old soul", "flying textbook-perfect"]
@@ -887,20 +1046,32 @@ working = ['''
  /|★|\
   / \
 ''']
-celebrating = '''
+celebrating = ['''
   /\_/\
  (^   ^)
   \ ᴗ /
  /|★|\
   / \
-'''
-miffed = '''
+''', '''
+   /\_/\
+  (^   ^)
+   \ ᴗ /
+  /|★|\
+   / \
+''']
+miffed = ['''
   /\_/\
  (>   >)
   \ ᴗ /
  /|★|\
   / \
-'''
+''', '''
+   /\_/\
+  (>   >)
+   \ ᴗ /
+  /|★|\
+   / \
+''']
 [species.lines]
 idle = ["sharp eyes, sharper claws", "lounging like it's a cockpit"]
 working = ["claw-first problem solving", "nine lives, spending one"]
@@ -938,20 +1109,32 @@ working = ['''
  /|___|\
   /   \
 ''']
-celebrating = '''
+celebrating = ['''
   /\  /\
  (^    ^)
   \ ᴗ /
  /|___|\
   /   \
-'''
-miffed = '''
+''', '''
+   /\  /\
+  (^    ^)
+   \ ᴗ /
+  /|___|\
+   /   \
+''']
+miffed = ['''
   /\  /\
  (>    >)
   \ ᴗ /
  /|___|\
   /   \
-'''
+''', '''
+   /\  /\
+  (>    >)
+   \ ᴗ /
+  /|___|\
+   /   \
+''']
 [species.lines]
 idle = ["princely stomping in place", "demanding attention, cutely"]
 working = ["fire breath on the blocker", "digging for the root cause"]
@@ -1052,20 +1235,32 @@ working = ['''
   \_______/
   /|     |\
 ''']
-celebrating = '''
+celebrating = ['''
   .-------.
  ( ^     ^ )
  |   ___   |
   \_______/
   /|     |\
-'''
-miffed = '''
+''', '''
+   .-------.
+  ( ^     ^ )
+  |   ___   |
+   \_______/
+   /|     |\
+''']
+miffed = ['''
   .-------.
  ( >     > )
  |   ___   |
   \_______/
   /|     |\
-'''
+''', '''
+   .-------.
+  ( >     > )
+  |   ___   |
+   \_______/
+   /|     |\
+''']
 [species.lines]
 idle = ["a giant face, serene and terrifying", "hands folded in the void"]
 working = ["science beyond cornerian understanding", "the brain computes, the hands build"]
