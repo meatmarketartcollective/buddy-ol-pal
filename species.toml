@@ -194,3 +194,199 @@ idle = ["standing very still. extremely patient"]
 working = ["drinking slowly, very slowly"]
 celebrating = ["bloomed for a moment"]
 miffed = ["pricklier than usual."]
+
+[[species]]
+name = "fox"
+tier = "common"
+names = [
+  "Rusty", "Vixen", "Todd", "Cinder", "Bramble", "Fennec", "Nutmeg",
+  "Kitsu", "Reynard", "Fluff",
+]
+
+[species.art]
+idle = '''
+  /\  /\
+ ( -.- )
+  > ~ <'''
+working = '''
+  /\  /\
+ ( >.< )
+  > w <'''
+celebrating = '''
+  /\  /\
+ ( ^o^ )
+  > u <'''
+miffed = '''
+  /\  /\
+ ( >_< )
+  > ~ <'''
+
+[species.lines]
+idle = ["curled up, one ear still listening"]
+working = ["zoomies. pure zoomies."]
+celebrating = ["found the best stick ever!"]
+miffed = ["ears flat. someone moved the food bowl."]
+
+[[species]]
+name = "slime"
+tier = "common"
+names = [
+  "Goo", "Jelly", "Wobbles", "Ooze", "Squish", "Gloop", "Pudding",
+  "Blorp", "Quiver", "Sludge",
+]
+
+[species.art]
+idle = '''
+  ,---.
+ ( -.- )
+  `---'
+'''
+working = '''
+  ,---.
+ ( >.< )
+  `---'
+'''
+celebrating = '''
+  ,---.
+ ( ^o^ )
+  `---'
+'''
+miffed = '''
+  ,---.
+ ( >_< )
+  `---'
+'''
+
+[species.lines]
+idle = ["settling into a comfortable puddle"]
+working = ["absorbing the workload, literally"]
+celebrating = ["wobbled with joy!"]
+miffed = ["viscosity increased noticeably."]
+
+[[species]]
+name = "ghost"
+tier = "common"
+names = [
+  "Whisper", "Phantom", "Wisp", "Spook", "Murmur", "Ghoul", "Ethel",
+  "Shroud", "Eerie", "Pale",
+]
+
+[species.art]
+idle = '''
+   ____
+  ( -.- )
+   ~'~'~'''
+working = '''
+   ____
+  ( >.< )
+   ~'w'~'''
+celebrating = '''
+   ____
+  ( ^o^ )
+   ~'u'~'''
+miffed = '''
+   ____
+  ( >_< )
+   ~'~'~'''
+
+[species.lines]
+idle = ["haunting the build directory"]
+working = ["phasing through the stack trace"]
+celebrating = ["boo-yah!"]
+miffed = ["gone translucent with annoyance."]
+
+[[species]]
+name = "snail"
+tier = "common"
+names = [
+  "Spiral", "Escargot", "Mollusk", "Shelly", "Trail", "Whorl",
+  "Nacre", "Slugger", "Slowpoke", "Gastropod",
+]
+
+[species.art]
+idle = '''
+   (@)
+  ( -.- )
+   \___/'''
+working = '''
+   (@)
+  ( >.< )
+   \___/'''
+celebrating = '''
+   (@)
+  ( ^o^ )
+   \___/'''
+miffed = '''
+   (@)
+  ( >_< )
+   \___/'''
+
+[species.lines]
+idle = ["taking the scenic route"]
+working = ["sliming at maximum slow"]
+celebrating = ["left a shiny trail!"]
+miffed = ["retracted into its shell."]
+
+[[species]]
+name = "owl"
+tier = "common"
+names = [
+  "Hoot", "Athena", "Minerva", "Screech", "Nocturne", "Owlet",
+  "Talon", "Swoop", "Perch", "Strix",
+]
+
+[species.art]
+idle = '''
+   ,^,
+  ( -.- )
+   | |'''
+working = '''
+   ,^,
+  ( >.< )
+   | |'''
+celebrating = '''
+   ,^,
+  ( ^o^ )
+   | |'''
+miffed = '''
+   ,^,
+  ( >_< )
+   | |'''
+
+[species.lines]
+idle = ["watching. always watching."]
+working = ["hunting night prey"]
+celebrating = ["a wise choice!"]
+miffed = ["not amused. hoot."]
+
+[[species]]
+name = "mushroom"
+tier = "common"
+names = [
+  "Morel", "Chanterelle", "Portobello", "Toadstool", "Amanita",
+  "Puffball", "Bracket", "Shroom", "Sporeling", "Cap",
+]
+
+[species.art]
+idle = '''
+  ,-"""-,
+  ( -.- )
+    | |'''
+working = '''
+  ,-"""-,
+  ( >.< )
+    | |'''
+celebrating = '''
+  ,-"""-,
+  ( ^o^ )
+    | |'''
+miffed = '''
+  ,-"""-,
+  ( >_< )
+    | |'''
+
+[species.lines]
+idle = ["sitting quietly in the shade"]
+working = ["decomposing diligently"]
+celebrating = ["spores of joy!"]
+miffed = ["a little more fungry."]
