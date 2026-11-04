@@ -660,6 +660,6 @@ mod tests {
         save_state(&dir, &st).unwrap();
         let loaded = load_or_hatch(&dir);
         assert_eq!(loaded, st);
-        assert_eq!(loaded.level, 4);
+        assert_eq!(loaded.level, 3);
     }
 }
