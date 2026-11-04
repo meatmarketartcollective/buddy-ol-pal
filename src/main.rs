@@ -2,10 +2,14 @@ mod state;
 mod tui;
 mod watcher;
 
+use std::fs;
+
 fn help() {
     println!("hatch - a terminal companion that reacts to real events\n");
     println!("  tb ui              open the companion (plain `tb` also works)");
-    println!("  tb run -- <cmd>    run a command; long runs and failures get logged as events\n");
+    println!("  tb run -- <cmd>    run a command; long runs and failures get logged as events");
+    println!("  tb status          one-line companion status for scripts and panes");
+    println!("  tb tail [-n N]     print the last N events as JSON lines (default 10)\n");
     println!("state lives in ~/.config/hatch (override with HATCH_HOME)");
 }
 
@@ -14,6 +18,8 @@ fn main() {
     let code = match args.first().map(|s| s.as_str()) {
         None | Some("ui") => tui::run_ui(),
         Some("run") => watcher::run_and_log(&run_argv(&args[1..])),
+        Some("status") => status_cmd(),
+        Some("tail") => tail_cmd(&args[1..]),
         Some("-h") | Some("--help") | Some("help") => {
             help();
             0
@@ -59,4 +65,52 @@ mod tests {
     fn empty_args_survive() {
         assert_eq!(run_argv(&v(&[])), v(&[]));
     }
+}
+
+/// `tb status`: one plain line, read-only. Never hatches a companion.
+fn status_cmd() -> i32 {
+    let dir = state::config_dir();
+    let st = fs::read_to_string(dir.join("state.toml"))
+        .ok()
+        .and_then(|s| state::parse_state(&s));
+    let Some(st) = st else {
+        println!("no companion yet; run tb");
+        return 0;
+    };
+    let now = state::now_secs();
+    let events = state::read_events_tail(&dir, 50);
+    let active = state::is_active(&dir);
+    let mood = state::current_mood(active, &events, now);
+    println!("{}", state::format_status(&st, mood, events.last(), now));
+    0
+}
+
+/// `tb tail [-n N]`: the last N events as JSON lines. Read-only.
+fn tail_cmd(rest: &[String]) -> i32 {
+    let mut n: usize = 10;
+    let mut idx = 0;
+    while idx < rest.len() {
+        match rest[idx].as_str() {
+            "-n" => {
+                if let Some(v) = rest.get(idx + 1).and_then(|v| v.parse().ok()) {
+                    n = v;
+                }
+                idx += 2;
+            }
+            other => {
+                if let Ok(v) = other.parse::<usize>() {
+                    n = v;
+                }
+                idx += 1;
+            }
+        }
+    }
+    let n = n.min(state::ROTATE_LINES);
+    let dir = state::config_dir();
+    for ev in state::read_events_tail(&dir, n) {
+        if let Ok(line) = serde_json::to_string(&ev) {
+            println!("{line}");
+        }
+    }
+    0
 }

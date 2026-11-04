@@ -24,6 +24,10 @@ fn sprite(mood: Mood) -> (&'static str, &'static str) {
             "   /\\_/\\\n  ( ^o^ )\n   > u <",
             "it worked! it actually worked!",
         ),
+        Mood::Miffed => (
+            "   /\\_/\\\n  ( >_< )\n   > ~ <",
+            "okay. that's twice now.",
+        ),
     }
 }
 
@@ -45,6 +49,7 @@ fn draw(f: &mut Frame, st: &CompanionState, mood: Mood, last: Option<&Event>, no
         Mood::Idle => Style::default().fg(Color::Gray),
         Mood::Working => Style::default().fg(Color::Yellow),
         Mood::Celebrate => Style::default().fg(Color::Green),
+        Mood::Miffed => Style::default().fg(Color::Red),
     };
     let mut lines: Vec<Line> = Vec::new();
     for l in art.lines() {

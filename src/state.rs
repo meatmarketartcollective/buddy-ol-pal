@@ -1,12 +1,17 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
-use std::io::Write;
+use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 pub const STATE_VERSION: i64 = 1;
 pub const SPECIES: &str = "ember";
 pub const CELEBRATE_SECS: i64 = 6;
+pub const MIFF_SECS: i64 = 600;
+pub const MIFF_WINDOW_SECS: i64 = 3600;
+pub const ROTATE_LINES: usize = 1000;
+pub const MAX_ARCHIVE: usize = 3;
+pub const TAIL_READ_CAP: u64 = 256 * 1024;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct CompanionState {
@@ -31,6 +36,7 @@ pub enum Mood {
     Idle,
     Working,
     Celebrate,
+    Miffed,
 }
 
 impl Mood {
@@ -39,6 +45,7 @@ impl Mood {
             Mood::Idle => "idle",
             Mood::Working => "working",
             Mood::Celebrate => "celebrating",
+            Mood::Miffed => "miffed",
         }
     }
 }
@@ -141,6 +148,9 @@ pub fn events_path(dir: &Path) -> PathBuf {
 
 pub fn append_event(dir: &Path, ev: &Event) -> std::io::Result<()> {
     fs::create_dir_all(dir)?;
+    // Rotate BEFORE opening the handle: a rename under an open append handle
+    // would send this event into the archived file, not the fresh log.
+    rotate_events_if_needed(dir);
     let mut f = fs::OpenOptions::new()
         .create(true)
         .append(true)
@@ -151,10 +161,27 @@ pub fn append_event(dir: &Path, ev: &Event) -> std::io::Result<()> {
     f.write_all(line.as_bytes())
 }
 
+/// Bounded tail read: reads at most the last TAIL_READ_CAP bytes of the log
+/// and drops the torn first line if it started mid-file.
+fn read_tail_text(path: &Path) -> std::io::Result<String> {
+    let mut f = fs::File::open(path)?;
+    let len = f.metadata()?.len();
+    let start = len.saturating_sub(TAIL_READ_CAP);
+    f.seek(SeekFrom::Start(start))?;
+    let mut s = String::new();
+    f.read_to_string(&mut s)?;
+    if start > 0 {
+        if let Some(idx) = s.find('\n') {
+            s.drain(..=idx);
+        }
+    }
+    Ok(s)
+}
+
 /// Reads the newest `max` events, oldest-first. Truncated or corrupt lines
 /// (a torn final write) are skipped, never fatal.
 pub fn read_events_tail(dir: &Path, max: usize) -> Vec<Event> {
-    let text = match fs::read_to_string(events_path(dir)) {
+    let text = match read_tail_text(&events_path(dir)) {
         Ok(t) => t,
         Err(_) => return Vec::new(),
     };
@@ -226,8 +253,86 @@ pub fn current_mood(child_running: bool, events: &[Event], now: i64) -> Mood {
         if last.kind == "build_finished" && now - last.ts <= CELEBRATE_SECS {
             return Mood::Celebrate;
         }
+        if is_miffed(events, now) {
+            return Mood::Miffed;
+        }
     }
     Mood::Idle
+}
+
+/// Trailing run of consecutive command_failed events.
+pub fn failure_streak(events: &[Event]) -> usize {
+    events
+        .iter()
+        .rev()
+        .take_while(|e| e.kind == "command_failed")
+        .count()
+}
+
+/// Miffed: two or more trailing failures, the newest within the miff decay
+/// window, the whole streak inside the failure window.
+pub fn is_miffed(events: &[Event], now: i64) -> bool {
+    let streak = failure_streak(events);
+    if streak < 2 {
+        return false;
+    }
+    let n = events.len();
+    if now - events[n - 1].ts > MIFF_SECS {
+        return false;
+    }
+    let streak_events = &events[n - streak..];
+    let recent = streak_events
+        .iter()
+        .rev()
+        .take_while(|e| now - e.ts <= MIFF_WINDOW_SECS)
+        .count();
+    recent >= 2
+}
+
+/// One plain line for `tb status`: name, species, derived mood, xp, last event.
+pub fn format_status(
+    st: &CompanionState,
+    mood: Mood,
+    last: Option<&Event>,
+    now: i64,
+) -> String {
+    let last_part = match last {
+        Some(ev) => format!("last={} {}s ago", ev.kind, (now - ev.ts).max(0)),
+        None => "no events yet".to_string(),
+    };
+    format!(
+        "{} the {} ({}) xp={} {}",
+        st.name,
+        st.species,
+        mood.label(),
+        st.xp,
+        last_part
+    )
+}
+
+fn count_event_lines(path: &Path) -> usize {
+    fs::read(path)
+        .map(|b| b.iter().filter(|&&c| c == b'\n').count())
+        .unwrap_or(0)
+}
+
+/// Bounding the log: when appending would push events.jsonl past
+/// ROTATE_LINES lines, it first becomes events-1.jsonl and older archives
+/// shift, capped at MAX_ARCHIVE files. The oldest archive is replaced,
+/// never accumulated forever.
+pub fn rotate_events_if_needed(dir: &Path) {
+    let path = events_path(dir);
+    if count_event_lines(&path) < ROTATE_LINES {
+        return;
+    }
+    for i in (1..MAX_ARCHIVE).rev() {
+        let from = dir.join(format!("events-{}.jsonl", i));
+        if from.exists() {
+            let to = dir.join(format!("events-{}.jsonl", i + 1));
+            let _ = fs::rename(&from, &to);
+        }
+    }
+    let _ = fs::rename(&path, dir.join("events-1.jsonl"));
 }
 
 #[cfg(test)]
@@ -349,4 +454,114 @@ mod tests {
         assert!(marker_stale(6 * 3600 + 1));
     }
 
+
+    #[test]
+    fn status_format_and_no_events() {
+        let st = default_state(1_700_000_000, 0);
+        let line = format_status(&st, Mood::Idle, None, 1_700_000_100);
+        assert!(line.starts_with(&format!("{} the {} (idle) xp=0", st.name, st.species)));
+        assert!(line.ends_with("no events yet"));
+        let ev = Event {
+            ts: 1_700_000_090,
+            kind: "build_finished".into(),
+            duration_secs: 30,
+            exit_code: 0,
+        };
+        let line2 = format_status(&st, Mood::Celebrate, Some(&ev), 1_700_000_100);
+        assert!(line2.ends_with("last=build_finished 10s ago"));
+    }
+
+    #[test]
+    fn rotation_at_boundary() {
+        let (_d, dir) = tmpdir();
+        for i in 0..1000 {
+            append_event(&dir, &Event { ts: i, kind: "build_finished".into(), duration_secs: 30, exit_code: 0 }).unwrap();
+        }
+        assert_eq!(count_event_lines(&events_path(&dir)), 1000);
+        assert!(!dir.join("events-1.jsonl").exists());
+        append_event(&dir, &Event { ts: 1001, kind: "command_failed".into(), duration_secs: 0, exit_code: 1 }).unwrap();
+        assert_eq!(count_event_lines(&events_path(&dir)), 1);
+        assert_eq!(count_event_lines(&dir.join("events-1.jsonl")), 1000);
+    }
+
+    #[test]
+    fn rotation_caps_archives() {
+        let (_d, dir) = tmpdir();
+        for _round in 0..4 {
+            for i in 0..1000 {
+                append_event(&dir, &Event { ts: i, kind: "build_finished".into(), duration_secs: 30, exit_code: 0 }).unwrap();
+            }
+        }
+        assert!(!dir.join("events-4.jsonl").exists());
+        assert!(dir.join("events-3.jsonl").exists());
+        assert_eq!(count_event_lines(&events_path(&dir)), 1000);
+    }
+
+    #[test]
+    fn tail_is_bounded_and_ordered() {
+        let (_d, dir) = tmpdir();
+        for i in 0..40 {
+            append_event(&dir, &Event { ts: i, kind: "build_finished".into(), duration_secs: 30, exit_code: 0 }).unwrap();
+        }
+        let tail = read_events_tail(&dir, 5);
+        assert_eq!(tail.len(), 5);
+        assert_eq!(tail[4].ts, 39);
+        assert_eq!(tail[0].ts, 35);
+    }
+
+    #[test]
+    fn failure_streak_counts_trailing_failures() {
+        let evs = |kinds: &[&str]| -> Vec<Event> {
+            kinds
+                .iter()
+                .enumerate()
+                .map(|(i, k)| Event { ts: i as i64, kind: k.to_string(), duration_secs: 1, exit_code: 1 })
+                .collect()
+        };
+        assert_eq!(failure_streak(&evs(&["build_finished", "command_failed", "command_failed"])), 2);
+        assert_eq!(failure_streak(&evs(&["command_failed", "build_finished"])), 0);
+        assert_eq!(failure_streak(&evs(&[])), 0);
+    }
+
+    #[test]
+    fn is_miffed_windows() {
+        let now = 1_700_000_000;
+        let ev = |ts: i64| Event { ts, kind: "command_failed".into(), duration_secs: 0, exit_code: 1 };
+        assert!(is_miffed(&[ev(now - 60), ev(now - 30)], now));
+        assert!(!is_miffed(&[ev(now - 30)], now));
+        assert!(!is_miffed(&[ev(now - 7200), ev(now - 601)], now));
+        assert!(!is_miffed(&[ev(now - 3700), ev(now - 500)], now));
+        assert!(is_miffed(&[ev(now - 3700), ev(now - 500), ev(now - 10)], now));
+    }
+
+    #[test]
+    fn mood_precedence_with_miffed() {
+        let fails = vec![
+            Event { ts: 100, kind: "command_failed".into(), duration_secs: 0, exit_code: 1 },
+            Event { ts: 110, kind: "command_failed".into(), duration_secs: 0, exit_code: 1 },
+        ];
+        assert_eq!(current_mood(false, &fails, 120), Mood::Miffed);
+        assert_eq!(current_mood(true, &fails, 120), Mood::Working);
+        assert_eq!(current_mood(false, &fails, 712), Mood::Idle);
+        let mixed = vec![
+            Event { ts: 100, kind: "command_failed".into(), duration_secs: 0, exit_code: 1 },
+            Event { ts: 112, kind: "build_finished".into(), duration_secs: 30, exit_code: 0 },
+        ];
+        assert_eq!(current_mood(false, &mixed, 115), Mood::Celebrate);
+    }
+
+    #[test]
+    fn unknown_mood_in_state_is_tolerated() {
+        let (_d, dir) = tmpdir();
+        fs::write(
+            dir.join("state.toml"),
+            "version = 1\nname = \"Pip\"\nspecies = \"ember\"\nhatched_at = 1\nmood = \"banana\"\nxp = 3\n",
+        )
+        .unwrap();
+        let st = load_or_hatch(&dir);
+        assert_eq!(st.xp, 3);
+        let line = format_status(&st, Mood::Idle, None, 2);
+        assert!(line.contains("(idle)"));
+        assert!(!line.contains("banana"));
+    }
 }
