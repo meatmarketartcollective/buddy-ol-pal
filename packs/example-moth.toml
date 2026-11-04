@@ -1,0 +1,53 @@
+# Example species pack. Drop a copy in ~/.config/hatch/packs/ (or
+# $HATCH_HOME/packs) and the species loads at startup, alongside the 38
+# built-ins. Same TOML shape as species.toml; a species name that matches a
+# built-in replaces it, a new name is added.
+
+[[species]]
+name = "moth"
+tier = "common"
+names = [
+  "Rasputin", "Lampwick", "Fuzzy", "Duster", "Sweater", "Parchment", "Gauze",
+  "Velvet", "Clotho", "Flapper", "Mote", "Dustbun",
+]
+
+[species.art]
+idle = '''
+  \\_
+  (o o)
+   \\_/
+'''
+working = '''
+  \\_/
+  (o O)
+   \\_/
+'''
+celebrating = '''
+  \\_/
+  (^o^)
+   \\_/
+'''
+miffed = '''
+  \\_
+  (o -)
+   \\_/
+'''
+
+[species.lines]
+idle = [
+  "drawn to the terminal glow",
+  "did someone say lamp?",
+  "resting on the nearest stack trace",
+]
+working = [
+  "fluttering through the build",
+  "error messages smell like nectar",
+]
+celebrating = [
+  "the lamp is LIT",
+  "success! time to molt",
+]
+miffed = [
+  "the lamp lied",
+  "that failure left a bad taste",
+]

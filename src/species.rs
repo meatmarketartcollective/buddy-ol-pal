@@ -71,13 +71,57 @@ pub fn speak(sp: &Species, mood: Mood, seed: u64) -> &str {
     &pool[(seed % pool.len() as u64) as usize]
 }
 
+/// The species the binary ships with, parsed fresh each call (tests use it
+/// directly; runtime goes through `table`, which merges packs on top).
+pub fn builtin_table() -> Vec<Species> {
+    let parsed: SpeciesFile = toml::from_str(SPECIES_TOML).expect("species.toml must parse");
+    assert!(!parsed.species.is_empty(), "species table is empty");
+    parsed.species
+}
+
 pub fn table() -> &'static [Species] {
     static TABLE: OnceLock<Vec<Species>> = OnceLock::new();
-    TABLE.get_or_init(|| {
-        let parsed: SpeciesFile = toml::from_str(SPECIES_TOML).expect("species.toml must parse");
-        assert!(!parsed.species.is_empty(), "species table is empty");
-        parsed.species
-    })
+    TABLE.get_or_init(|| merge(builtin_table(), &load_pack_files()))
+}
+
+/// Runtime species packs: every *.toml in $HATCH_HOME/packs, sorted by file
+/// name so the load order is stable. Missing dir means no packs.
+fn load_pack_files() -> Vec<(String, String)> {
+    let dir = crate::state::config_dir().join("packs");
+    let mut out = Vec::new();
+    let Ok(entries) = std::fs::read_dir(&dir) else {
+        return out;
+    };
+    let mut paths: Vec<_> = entries.filter_map(|e| e.ok()).map(|e| e.path()).collect();
+    paths.sort();
+    for p in paths {
+        if p.extension().map(|e| e == "toml").unwrap_or(false) {
+            if let Ok(text) = std::fs::read_to_string(&p) {
+                out.push((p.display().to_string(), text));
+            }
+        }
+    }
+    out
+}
+
+/// Merge pack files into the builtin table. A pack species carrying the name
+/// of a builtin replaces it; a new name appends. A file that does not parse
+/// is skipped whole: a bad pack must never take the buddy down.
+fn merge(builtins: Vec<Species>, packs: &[(String, String)]) -> Vec<Species> {
+    let mut table = builtins;
+    for (_, text) in packs {
+        let Ok(parsed) = toml::from_str::<SpeciesFile>(text) else {
+            continue;
+        };
+        for sp in parsed.species {
+            if let Some(slot) = table.iter_mut().find(|t| t.name == sp.name) {
+                *slot = sp;
+            } else {
+                table.push(sp);
+            }
+        }
+    }
+    table
 }
 
 pub fn get(name: &str) -> Option<&'static Species> {
@@ -164,14 +208,69 @@ mod tests {
     #[test]
     fn table_loads_and_names_are_unique() {
         let t = table();
-        // The buddy graduation completes the table: exactly thirty-eight species (plan
-        // milestone 5).
-        assert_eq!(t.len(), 38, "the full table is thirty-eight species");
+        // The buddy graduation completes the table: exactly thirty-eight built-in
+        // species (plan milestone 5). Runtime packs may add or override on top.
+        assert_eq!(builtin_table().len(), 38, "the full table is thirty-eight species");
         let mut names: Vec<&str> = t.iter().map(|s| s.name.as_str()).collect();
         names.sort();
         let n = names.len();
         names.dedup();
         assert_eq!(names.len(), n, "duplicate species names in table");
+    }
+
+    #[test]
+    fn pack_override_replaces_builtin() {
+        let pack = r#"
+[[species]]
+name = "ember"
+tier = "legendary"
+names = ["Ember Prime"]
+[species.art]
+idle = "x"
+working = "x"
+celebrating = "x"
+miffed = "x"
+[species.lines]
+idle = []
+working = []
+celebrating = []
+miffed = []
+"#;
+        let merged = merge(builtin_table(), &[("pack.toml".into(), pack.to_string())]);
+        let embers: Vec<_> = merged.iter().filter(|s| s.name == "ember").collect();
+        assert_eq!(embers.len(), 1, "override replaces, never duplicates");
+        assert_eq!(embers[0].tier, "legendary");
+        assert_eq!(embers[0].names, vec!["Ember Prime"]);
+        assert_eq!(merged.len(), 38, "override keeps the table the same size");
+    }
+
+    #[test]
+    fn pack_new_species_appends() {
+        let pack = r#"
+[[species]]
+name = "moth"
+tier = "common"
+names = ["Mothra"]
+[species.art]
+idle = "x"
+working = "x"
+celebrating = "x"
+miffed = "x"
+[species.lines]
+idle = []
+working = []
+celebrating = []
+miffed = []
+"#;
+        let merged = merge(builtin_table(), &[("pack.toml".into(), pack.to_string())]);
+        assert_eq!(merged.len(), 39, "a new pack species is appended");
+        assert!(merged.iter().any(|s| s.name == "moth"));
+    }
+
+    #[test]
+    fn broken_pack_is_skipped_whole() {
+        let merged = merge(builtin_table(), &[("bad.toml".into(), "not toml [[[".to_string())]);
+        assert_eq!(merged.len(), 38, "a bad pack never takes the buddy down");
     }
 
     #[test]
