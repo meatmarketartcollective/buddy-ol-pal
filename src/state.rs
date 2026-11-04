@@ -134,6 +134,8 @@ pub fn default_state(now: i64, seed: u64) -> CompanionState {
         version: STATE_VERSION,
         chaos: 0,
         enabled: true,
+        xp_today: 0,
+        xp_day: now / 86400,
         name,
         species: sp.name.clone(),
         hatched_at: now,
