@@ -7,7 +7,7 @@
 name = "newt"
 tier = "common"
 names = [
-  "Newton", "Slippery", "Regrow", "Squiggle", "Puddle", "Gill", "newt galaxy skip",
+  "Newton", "Slippery", "Regrow", "Squiggle", "Puddle", "Gill", "Slick", "Mudpup",
 ]
 
 [species.art]

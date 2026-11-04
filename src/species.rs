@@ -248,9 +248,9 @@ miffed = []
     fn pack_new_species_appends() {
         let pack = r#"
 [[species]]
-name = "moth"
+name = "newt"
 tier = "common"
-names = ["Mothra"]
+names = ["Newton"]
 [species.art]
 idle = "x"
 working = "x"
