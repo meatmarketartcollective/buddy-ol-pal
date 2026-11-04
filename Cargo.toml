@@ -1,0 +1,20 @@
+[package]
+name = "hatch"
+version = "0.1.0"
+edition = "2021"
+description = "A terminal companion that lives in your terminal and reacts to real events"
+license = "MIT"
+
+[[bin]]
+name = "tb"
+path = "src/main.rs"
+
+[dependencies]
+ratatui = "0.29"
+crossterm = "0.28"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+
+[dev-dependencies]
+tempfile = "3"
