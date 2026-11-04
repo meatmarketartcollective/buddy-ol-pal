@@ -13,6 +13,9 @@ fn help() {
     println!("  tb status          one-line companion status for scripts and panes");
     println!("  tb dex             the discovery list; undiscovered species show as ???");
     println!("  tb pet             show your buddy some love; eases the chaos");
+    println!("  tb feed            feed your buddy a treat (+1 xp, eases chaos, 1m cooldown)");
+    println!("  tb play            play with your buddy (+2 xp, eases chaos more, 5m cooldown)");
+    println!("  tb talk            say hi; your buddy answers with a line");
     println!("  tb tail [-n N]     print the last N events as JSON lines (default 10)\n");
     println!("state lives in ~/.config/hatch (override with HATCH_HOME)");
 }
@@ -24,6 +27,9 @@ fn main() {
         Some("run") => watcher::run_and_log(&run_argv(&args[1..])),
         Some("status") => status_cmd(),
         Some("pet") => pet_cmd(),
+        Some("feed") => feed_cmd(),
+        Some("play") => play_cmd(),
+        Some("talk") => talk_cmd(),
         Some("dex") => dex_cmd(),
         Some("tail") => tail_cmd(&args[1..]),
         Some("-h") | Some("--help") | Some("help") => {
@@ -98,6 +104,66 @@ fn pet_cmd() -> i32 {
         species::display_name(&st.species)
     );
     0
+}
+
+/// The interaction set behind `tb feed` / `tb play` / `tb talk`. Each logs
+/// an event the UI, tail and status can see; feed and play earn a little XP
+/// and ease the chaos, talk just gets a line back. Feed and play cool down.
+fn interaction(kind: &str, cooldown_secs: i64, xp: i64, verb: &str, full: &str) -> i32 {
+    let dir = state::config_dir();
+    let mut st = state::load_or_hatch(&dir);
+    let now = state::now_secs();
+    let events = state::read_events_tail(&dir, 50);
+    if state::on_cooldown(&events, kind, now, cooldown_secs) {
+        println!("{}", full);
+        return 0;
+    }
+    let ev = state::Event {
+        ts: now,
+        kind: kind.to_string(),
+        duration_secs: 0,
+        exit_code: 0,
+    };
+    if let Err(e) = state::append_event(&dir, &ev) {
+        eprintln!("hatch: could not write event: {}", e);
+    }
+    st.xp += xp;
+    st.level = state::level_for(st.xp);
+    state::apply_event_chaos(&mut st, kind);
+    if let Err(e) = state::save_state(&dir, &st) {
+        eprintln!("hatch: could not save state: {}", e);
+    }
+    println!(
+        "{} the {}: {}",
+        st.name,
+        species::display_name(&st.species),
+        verb
+    );
+    0
+}
+
+fn feed_cmd() -> i32 {
+    interaction(
+        "fed",
+        state::FEED_COOLDOWN_SECS,
+        state::XP_FEED,
+        "munches happily. (fed)",
+        "nope, full for now. try again in a minute",
+    )
+}
+
+fn play_cmd() -> i32 {
+    interaction(
+        "played",
+        state::PLAY_COOLDOWN_SECS,
+        state::XP_PLAY,
+        "chases the cursor around the screen. (played)",
+        "worn out. give it five minutes",
+    )
+}
+
+fn talk_cmd() -> i32 {
+    interaction("talked", 0, 0, "chirps a hello back. (talked)", "")
 }
 
 fn status_cmd() -> i32 {
