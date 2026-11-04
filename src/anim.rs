@@ -34,7 +34,7 @@ pub fn glitch_severity(chaos: i64) -> i64 {
 fn closed_eyes(art: &str) -> String {
     art.chars()
         .map(|c| match c {
-            'o' | 'O' | '0' => '-',
+            'o' | 'O' | '0' | '\u{25C9}' | '\u{25CF}' | '\u{25D5}' | '\u{2665}' => '-',
             _ => c,
         })
         .collect()
@@ -43,7 +43,7 @@ fn closed_eyes(art: &str) -> String {
 fn half_lids(art: &str) -> String {
     art.chars()
         .map(|c| match c {
-            'o' | 'O' | '0' => '.',
+            'o' | 'O' | '0' | '\u{25C9}' | '\u{25CF}' | '\u{25D5}' | '\u{2665}' => '.',
             _ => c,
         })
         .collect()
@@ -137,6 +137,13 @@ mod tests {
     fn petted_pulses_hearts() {
         assert!(frame(Mood::Petted, ART, 0, 0).contains("<3"));
         assert_ne!(frame(Mood::Petted, ART, 0, 0), frame(Mood::Petted, ART, 1, 0));
+    }
+
+    #[test]
+    fn sleeping_closes_symbol_eyes_too() {
+        let art = "( \u{25C9}   \u{25C9} )\n";
+        let f = frame(Mood::Sleeping, art, 0, 0);
+        assert!(!f.contains('\u{25C9}'), "symbol eyes must close when asleep");
     }
 
     #[test]

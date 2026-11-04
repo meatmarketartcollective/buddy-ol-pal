@@ -1,0 +1,1074 @@
+# Star Fox universe species pack: 20 characters, art by Casey Benson.
+# # Each mood carries two art frames that cycle every tick; the engine's
+# 7-state animation layer (blink, zzz drift, hearts, spinner, glitch)
+# runs on top. Sleeping/resting/petted ride the idle frames.
+# Drop in ~/.config/hatch/packs/ (or $HATCH_HOME/packs).
+
+[[species]]
+name = "foxmccloud"
+tier = "common"
+names = ["Fox", "Leader", "Arwing", "Blaster", "Star-fox", "McCloud"]
+[species.art]
+idle = ['''
+  /\_/\
+ / o o \
+|   ^   |
+ \_____/
+ /|   |\
+''', '''
+  /\_/\
+ / - - \
+|   ^   |
+ \_____/
+ /|   |\
+''']
+working = ['''
+  /\_/\
+ / > > \
+|   ^   |
+ \_____/
+ /|   |\
+''', '''
+  /\_/\
+ / . . \
+|   ^   |
+ \_____/
+ /|   |\
+''']
+celebrating = '''
+  /\_/\
+ / ^ ^ \
+|   ^   |
+ \_____/
+ /|   |\
+'''
+miffed = '''
+  /\_/\
+ / > > \
+|   ^   |
+ \_____/
+ /|   |\
+'''
+[species.lines]
+idle = ["mission patch shined, wings folded", "waiting in the hangar"]
+working = ["barrel roll through the merge conflicts", "laser check, systems green"]
+celebrating = ["MISSION COMPLETE, all pilots home", "a barrel roll, for victory"]
+miffed = ["commencing deep strike on this bug", "peppy's voice in my head, unhelpfully"]
+
+[[species]]
+name = "falco"
+tier = "rare"
+names = ["Bird-man", "Ace", "Smug", "Blue", "Co-pilot", "Hotshot"]
+[species.art]
+idle = ['''
+  \___/
+ <o   o>
+   \^/
+  /|X|\
+ /_/_\_\
+''', '''
+  \___/
+ <-   ->
+   \^/
+  /|X|\
+ /_/_\_\
+''']
+working = ['''
+  \___/
+ <>   >>
+   \^/
+  /|X|\
+ /_/_\_\
+''', '''
+  \___/
+ <.   ..
+   \^/
+  /|X|\
+ /_/_\_\
+''']
+celebrating = '''
+  \___/
+ <^   ^>
+   \^/
+  /|X|\
+ /_/_\_\
+'''
+miffed = '''
+  \___/
+ <>   >>
+   \^/
+  /|X|\
+ /_/_\_\
+'''
+[species.lines]
+idle = ["leaning on the arwing, cool", "polishing sunglasses in zero-g"]
+working = ["game on, hotshot", "flying in, shooting first"]
+celebrating = ["personally, I prefer the AIR", "a landing so smooth it's rude"]
+miffed = ["I'm finished flying with YOU", "someone check the smart bomb budget"]
+
+[[species]]
+name = "peppy"
+tier = "uncommon"
+names = ["Rabbit", "Mentor", "Veteran", "Coach", "Hare-brained", "Old Pilot"]
+[species.art]
+idle = ['''
+  /---\
+ (o   o)
+  \ ᴗ /
+ /|===|\
+  /   \
+''', '''
+  /---\
+ (-   -)
+  \ ᴗ /
+ /|===|\
+  /   \
+''']
+working = ['''
+  /---\
+ (>   >)
+  \ ᴗ /
+ /|===|\
+  /   \
+''', '''
+  /---\
+ (.   .)
+  \ ᴗ /
+ /|===|\
+  /   \
+''']
+celebrating = '''
+  /---\
+ (^   ^)
+  \ ᴗ /
+ /|===|\
+  /   \
+'''
+miffed = '''
+  /---\
+ (>   >)
+  \ ᴗ /
+ /|===|\
+  /   \
+'''
+[species.lines]
+idle = ["long ears twitching with wisdom", "maps spread, coffee cold"]
+working = ["do a barrel roll (advice free)", "old pilot, new bugs"]
+celebrating = ["great job, that's the way", "the old war stories were TRUE"]
+miffed = ["nobody listens to the old rabbit", "never give up. trust me on this one."]
+
+[[species]]
+name = "slippy"
+tier = "uncommon"
+names = ["Toad", "Engineer", "Guppy", "Fixer", "Frog", "Wrench"]
+[species.art]
+idle = ['''
+  .---.
+ (o   o)
+  \ ᴗ /
+ /|~~~|\
+  /   \
+''', '''
+  .---.
+ (-   -)
+  \ ᴗ /
+ /|~~~|\
+  /   \
+''']
+working = ['''
+  .---.
+ (>   >)
+  \ ᴗ /
+ /|~~~|\
+  /   \
+''', '''
+  .---.
+ (.   .)
+  \ ᴗ /
+ /|~~~|\
+  /   \
+''']
+celebrating = '''
+  .---.
+ (^   ^)
+  \ ᴗ /
+ /|~~~|\
+  /   \
+'''
+miffed = '''
+  .---.
+ (>   >)
+  \ ᴗ /
+ /|~~~|\
+  /   \
+'''
+[species.lines]
+idle = ["wrench in hand, always", "shield analyzer humming"]
+working = ["shields at forty percent, FIXING", "inventing something from spare parts"]
+celebrating = ["shields full, systems perfect", "the gizmo worked FIRST try"]
+miffed = ["someone get this guy off me", "the wrench slipped, the bolt laughed"]
+
+[[species]]
+name = "wolf"
+tier = "epic"
+names = ["Rival", "Star-wolf", "Fang", "Hunter", "O'Donnell", "Predator"]
+[species.art]
+idle = ['''
+ /\____/\
+( ◉    ◉ )
+ \  --  /
+ /|////|\
+  /    \
+''', '''
+ /\____/\
+( -    - )
+ \  --  /
+ /|////|\
+  /    \
+''']
+working = ['''
+ /\____/\
+( ◉    ◉ )
+ \  --  /
+ /|////|\
+  /    \
+''', '''
+ /\____/\
+( .    . )
+ \  --  /
+ /|////|\
+  /    \
+''']
+celebrating = '''
+ /\____/\
+( ^    ^ )
+ \  --  /
+ /|////|\
+  /    \
+'''
+miffed = '''
+ /\____/\
+( >    > )
+ \  --  /
+ /|////|\
+  /    \
+'''
+[species.lines]
+idle = ["smiling like a wolf in a henhouse", "claws sharpened on the merge queue"]
+working = ["hunting the bug, pack-style", "no mercy for flaky tests"]
+celebrating = ["can't let you do that... unless it's a win", "a rival's respect, hard won"]
+miffed = ["the pack is DISAPPOINTED", "this failure will be remembered, fox"]
+
+[[species]]
+name = "leon"
+tier = "uncommon"
+names = ["Chameleon", "Poison", "Lizard", "Cool", "Venom-wings", "Blend"]
+[species.art]
+idle = ['''
+  /----\
+ (◉    ◉)
+  \  ▽ /
+ /|    |\
+  /    \
+''', '''
+  /----\
+ (-    -)
+  \  ▽ /
+ /|    |\
+  /    \
+''']
+working = ['''
+  /----\
+ (◉    ◉)
+  \  ▽ /
+ /|    |\
+  /    \
+''', '''
+  /----\
+ (.    .)
+  \  ▽ /
+ /|    |\
+  /    \
+''']
+celebrating = ['''
+  /----\
+ (^    ^)
+  \  ▽ /
+ /|    |\
+  /    \
+''', '''
+  /----\
+ (^    ^)
+  \  ^ /
+ /|    |\
+  /    \
+''']
+miffed = ['''
+  /----\
+ (>    >)
+  \  ▽ /
+ /|    |\
+  /    \
+''', '''
+  /----\
+ (>    >)
+  \  < /
+ /|    |\
+  /    \
+''']
+[species.lines]
+idle = ["tongue tasting the air, calmly", "chameleon-calm, poison-ready"]
+working = ["dissolving the blocker in acid", "blending into the background process"]
+celebrating = ["a job perfectly poisoned", "invisible pride, visible results"]
+miffed = ["the tongue flicked once, meaningfully", "venom is for emergencies, and NOW"]
+
+[[species]]
+name = "pigma"
+tier = "uncommon"
+names = ["Greed-pig", "Dengar", "Money", "Betrayer", "Hog", "Bounty"]
+[species.art]
+idle = ['''
+  .-----.
+ (o     o)
+  \ 3_3 /
+ /|=====|\
+  /     \
+''', '''
+  .-----.
+ (-     -)
+  \ 3_3 /
+ /|=====|\
+  /     \
+''']
+working = ['''
+  .-----.
+ (>     >)
+  \ 3_3 /
+ /|=====|\
+  /     \
+''', '''
+  .-----.
+ (.     .)
+  \ 3_3 /
+ /|=====|\
+  /     \
+''']
+celebrating = ['''
+  .-----.
+ (^     ^)
+  \ 3_3 /
+ /|=====|\
+  /     \
+''', '''
+  .-----.
+ (^     ^)
+  \ ^_^ /
+ /|=====|\
+  /     \
+''']
+miffed = ['''
+  .-----.
+ (>     >)
+  \ 3_3 /
+ /|=====|\
+  /     \
+''', '''
+  .-----.
+ (>     >)
+  \ <_< /
+ /|=====|\
+  /     \
+''']
+[species.lines]
+idle = ["counting the reward, again", "snout deep in the contract fine print"]
+working = ["profit margins first, bugs second", "an oink of effort, minimal"]
+celebrating = ["the bounty is MINE, all mine", "a bacon celebration, fully self-aware"]
+miffed = ["paid by the hour, not the outcome", "someone owes me money for this"]
+
+[[species]]
+name = "andrew"
+tier = "common"
+names = ["Oikonny", "Nephew", "Wannabe", "Small-time", "Andross-jr", "Schemer"]
+[species.art]
+idle = ['''
+  /\___/\
+ (o     o)
+  \ ᴗ_ /
+ /|     |\
+  /     \
+''', '''
+  /\___/\
+ (-     -)
+  \ ᴗ_ /
+ /|     |\
+  /     \
+''']
+working = ['''
+  /\___/\
+ (>     >)
+  \ ᴗ_ /
+ /|     |\
+  /     \
+''', '''
+  /\___/\
+ (.     .)
+  \ ᴗ_ /
+ /|     |\
+  /     \
+''']
+celebrating = '''
+  /\___/\
+ (^     ^)
+  \ ᴗ_ /
+ /|     |\
+  /     \
+'''
+miffed = '''
+  /\___/\
+ (>     >)
+  \ ᴗ_ /
+ /|     |\
+  /     \
+'''
+[species.lines]
+idle = ["practicing uncle's evil laugh", "sitting in the big chair, badly"]
+working = ["inventing schemes on the fly", "empire-building, one bug at a time"]
+celebrating = ["uncle will hear of this VICTORY", "the throne, briefly enjoyed"]
+miffed = ["this is ALL star fox's fault", "the laugh needs more practice"]
+
+[[species]]
+name = "panther"
+tier = "uncommon"
+names = ["Caroso", "Charmer", "Rose", "Black", "Poet", "Silk"]
+[species.art]
+idle = ['''
+  /\  /\
+ (♥  ♥ )
+  \ ᴗ /
+ /|===|\
+  /   \
+''', '''
+  /\  /\
+ (-  - )
+  \ ᴗ /
+ /|===|\
+  /   \
+''']
+working = ['''
+  /\  /\
+ (♥  ♥ )
+  \ ᴗ /
+ /|===|\
+  /   \
+''', '''
+  /\  /\
+ (.  . )
+  \ ᴗ /
+ /|===|\
+  /   \
+''']
+celebrating = '''
+  /\  /\
+ (^  ^ )
+  \ ᴗ /
+ /|===|\
+  /   \
+'''
+miffed = '''
+  /\  /\
+ (>  > )
+  \ ᴗ /
+ /|===|\
+  /   \
+'''
+[species.lines]
+idle = ["rose between claws, smooth", "a silk voice, sharp claws"]
+working = ["claw-swipe with a compliment", "seducing the bug into surrender"]
+celebrating = ["for you, a rose and a green build", "panther pride, purring"]
+miffed = ["the rose wilted, and so did I", "claws out, poetry paused"]
+
+[[species]]
+name = "krystal"
+tier = "rare"
+names = ["Telepath", "Vixen", "Staff", "Blue", "Cerinia", "Listener"]
+[species.art]
+idle = ['''
+  /\_/\
+ (o   o)
+  \ ᴗ /
+ /|✧|\
+  / \
+''', '''
+  /\_/\
+ (-   -)
+  \ ᴗ /
+ /|✧|\
+  / \
+''']
+working = ['''
+  /\_/\
+ (>   >)
+  \ ᴗ /
+ /|✧|\
+  / \
+''', '''
+  /\_/\
+ (.   .)
+  \ ᴗ /
+ /|✧|\
+  / \
+''']
+celebrating = '''
+  /\_/\
+ (^   ^)
+  \ ᴗ /
+ /|✧|\
+  / \
+'''
+miffed = '''
+  /\_/\
+ (>   >)
+  \ ᴗ /
+ /|✧|\
+  / \
+'''
+[species.lines]
+idle = ["staff humming with thoughts unsaid", "listening to the mind of the code"]
+working = ["staff spells on stubborn bugs", "reading the error's feelings"]
+celebrating = ["the thoughts are all joy, for once", "staff raised, light woven"]
+miffed = ["I heard THAT thought, and I agree", "telepathy does not help with merge conflicts"]
+
+[[species]]
+name = "generalpepper"
+tier = "common"
+names = ["Pepper", "General", "Corneria", "Top-brass", "Commander", "Salute"]
+[species.art]
+idle = ['''
+  .-----.
+ (o  o)
+  \___/
+ /|███|\
+  /   \
+''', '''
+  .-----.
+ (-  -)
+  \___/
+ /|███|\
+  /   \
+''']
+working = ['''
+  .-----.
+ (>  >)
+  \___/
+ /|███|\
+  /   \
+''', '''
+  .-----.
+ (.  .)
+  \___/
+ /|███|\
+  /   \
+''']
+celebrating = '''
+  .-----.
+ (^  ^)
+  \___/
+ /|███|\
+  /   \
+'''
+miffed = '''
+  .-----.
+ (>  >)
+  \___/
+ /|███|\
+  /   \
+'''
+[species.lines]
+idle = ["medals arranged, briefing ready", "cornerian flag at half-staff of coffee"]
+working = ["dispatching resources, crisply", "the defense budget, fully deployed"]
+celebrating = ["the gratitude of a planet", "medal ceremony, promptly held"]
+miffed = ["this is a matter of GALACTIC security", "paperwork filed in triplicate, angrily"]
+
+[[species]]
+name = "rob64"
+tier = "rare"
+names = ["ROB", "Robot", "Unit", "Assistant", "Beep", "64"]
+[species.art]
+idle = ['''
+  .-----.
+ | [o] |
+ |  _  |
+  \___/
+  /| |\
+''', '''
+  .-----.
+ | [-] |
+ |  _  |
+  \___/
+  /| |\
+''']
+working = ['''
+  .-----.
+ | [>] |
+ |  _  |
+  \___/
+  /| |\
+''', '''
+  .-----.
+ | [.] |
+ |  _  |
+  \___/
+  /| |\
+''']
+celebrating = '''
+  .-----.
+ | [^] |
+ |  _  |
+  \___/
+  /| |\
+'''
+miffed = '''
+  .-----.
+ | [>] |
+ |  _  |
+  \___/
+  /| |\
+'''
+[species.lines]
+idle = ["systems nominal, sarcasm sub-threshold", "floating, blinking, waiting"]
+working = ["analysis complete, deploying", "beep boop, task executing"]
+celebrating = ["victory probability: 100.0%", "beep beep beep (jubilant)"]
+miffed = ["error. disappointment routine engaged", "rebooting the patience module"]
+
+[[species]]
+name = "jamesmccloud"
+tier = "uncommon"
+names = ["James", "Ghost", "Legend", "Father", "Vortex", "Phantom-wing"]
+[species.art]
+idle = ['''
+  /\_/\
+ (o   o)
+  \ ^ /
+ /|===|\
+  /   \
+''', '''
+  /\_/\
+ (-   -)
+  \ ^ /
+ /|===|\
+  /   \
+''']
+working = ['''
+  /\_/\
+ (>   >)
+  \ ^ /
+ /|===|\
+  /   \
+''', '''
+  /\_/\
+ (.   .)
+  \ ^ /
+ /|===|\
+  /   \
+''']
+celebrating = '''
+  /\_/\
+ (^   ^)
+  \ ^ /
+ /|===|\
+  /   \
+'''
+miffed = '''
+  /\_/\
+ (>   >)
+  \ ^ /
+ /|===|\
+  /   \
+'''
+[species.lines]
+idle = ["appearing where needed, then not", "flying through the vein of memory"]
+working = ["guiding from beyond the radar", "wingman of legend, rarely visible"]
+celebrating = ["a father's nod, brief and warm", "the ghost in the machine, proud"]
+miffed = ["you were NOT watching the tail", "the vortex swallowed the progress"]
+
+[[species]]
+name = "billgrey"
+tier = "common"
+names = ["Grey", "Bulldog", "Wingman", "Cornerian", "Pal", "Throttle"]
+[species.art]
+idle = ['''
+  .---.
+ (o   o)
+  \ ᴗ /
+ /|███|\
+  /   \
+''', '''
+  .---.
+ (-   -)
+  \ ᴗ /
+ /|███|\
+  /   \
+''']
+working = ['''
+  .---.
+ (>   >)
+  \ ᴗ /
+ /|███|\
+  /   \
+''', '''
+  .---.
+ (.   .)
+  \ ᴗ /
+ /|███|\
+  /   \
+''']
+celebrating = '''
+  .---.
+ (^   ^)
+  \ ᴗ /
+ /|███|\
+  /   \
+'''
+miffed = '''
+  .---.
+ (>   >)
+  \ ᴗ /
+ /|███|\
+  /   \
+'''
+[species.lines]
+idle = ["paws on the throttle, easy", "dogfight stories on repeat"]
+working = ["hold the line, I'm coming", "covering your flank, always"]
+celebrating = ["that's my friend, that's MY win too", "a growl of pure pride"]
+miffed = ["you left me holding the whole line", "the bulldog bite is real"]
+
+[[species]]
+name = "kattmonroe"
+tier = "uncommon"
+names = ["Monroe", "Pink", "Bomber", "Free-lance", "Feline", "Purr"]
+[species.art]
+idle = ['''
+  /\_/\
+ (♥   ♥)
+  \ ω /
+ /|~~~|\
+  /   \
+''', '''
+  /\_/\
+ (-   -)
+  \ ω /
+ /|~~~|\
+  /   \
+''']
+working = ['''
+  /\_/\
+ (♥   ♥)
+  \ ω /
+ /|~~~|\
+  /   \
+''', '''
+  /\_/\
+ (.   .)
+  \ ω /
+ /|~~~|\
+  /   \
+''']
+celebrating = ['''
+  /\_/\
+ (^   ^)
+  \ ω /
+ /|~~~|\
+  /   \
+''', '''
+  /\_/\
+ (^   ^)
+  \ ^ /
+ /|~~~|\
+  /   \
+''']
+miffed = ['''
+  /\_/\
+ (>   >)
+  \ ω /
+ /|~~~|\
+  /   \
+''', '''
+  /\_/\
+ (>   >)
+  \ < /
+ /|~~~|\
+  /   \
+''']
+[species.lines]
+idle = ["pink fighter jet idling loud", "independence worn like perfume"]
+working = ["bomb away, invoice pending", "freelance firepower, delivered"]
+celebrating = ["cat-itude fully expressed", "a purr, a wink, a clean build"]
+miffed = ["I charge extra for rescues", "nine lives, none for this bug"]
+
+[[species]]
+name = "fay"
+tier = "common"
+names = ["Spaniel", "White-dog", "Curly", "Sweet-wing", "Cadet", "Bright"]
+[species.art]
+idle = ['''
+  .---.
+ / o o \
+ \ ᴗ /
+ /|♥|\
+  / \
+''', '''
+  .---.
+ / - - \
+ \ ᴗ /
+ /|-|\
+  / \
+''']
+working = ['''
+  .---.
+ / > > \
+ \ ᴗ /
+ /|♥|\
+  / \
+''', '''
+  .---.
+ / . . \
+ \ ᴗ /
+ /|.|\
+  / \
+''']
+celebrating = '''
+  .---.
+ / ^ ^ \
+ \ ᴗ /
+ /|^|\
+  / \
+'''
+miffed = '''
+  .---.
+ / > > \
+ \ ᴗ /
+ /|>|\
+  / \
+'''
+[species.lines]
+idle = ["curls bouncing, eyes bright", "flight log pristine"]
+working = ["new pilot, old soul", "flying textbook-perfect"]
+celebrating = ["first solo flight, flawless", "the whole squad cheered"]
+miffed = ["the textbook did NOT cover this", "ears drooped, resolve held"]
+
+[[species]]
+name = "miyu"
+tier = "common"
+names = ["Lynx", "Wildcat", "Feline", "Fast", "Lone", "Sharp"]
+[species.art]
+idle = ['''
+  /\_/\
+ (o   o)
+  \ ᴗ /
+ /|★|\
+  / \
+''', '''
+  /\_/\
+ (-   -)
+  \ ᴗ /
+ /|★|\
+  / \
+''']
+working = ['''
+  /\_/\
+ (>   >)
+  \ ᴗ /
+ /|★|\
+  / \
+''', '''
+  /\_/\
+ (.   .)
+  \ ᴗ /
+ /|★|\
+  / \
+''']
+celebrating = '''
+  /\_/\
+ (^   ^)
+  \ ᴗ /
+ /|★|\
+  / \
+'''
+miffed = '''
+  /\_/\
+ (>   >)
+  \ ᴗ /
+ /|★|\
+  / \
+'''
+[species.lines]
+idle = ["sharp eyes, sharper claws", "lounging like it's a cockpit"]
+working = ["claw-first problem solving", "nine lives, spending one"]
+celebrating = ["a wildcat yowl of victory", "leaping joy, landings optional"]
+miffed = ["claws out, patience gone", "nobody tells the lynx what to do"]
+
+[[species]]
+name = "tricky"
+tier = "common"
+names = ["Prince", "Earthwalker", "Dino-brat", "Royal", "Little", "Stompy"]
+[species.art]
+idle = ['''
+  /\  /\
+ (o    o)
+  \ ᴗ /
+ /|___|\
+  /   \
+''', '''
+  /\  /\
+ (-    -)
+  \ ᴗ /
+ /|___|\
+  /   \
+''']
+working = ['''
+  /\  /\
+ (>    >)
+  \ ᴗ /
+ /|___|\
+  /   \
+''', '''
+  /\  /\
+ (.    .)
+  \ ᴗ /
+ /|___|\
+  /   \
+''']
+celebrating = '''
+  /\  /\
+ (^    ^)
+  \ ᴗ /
+ /|___|\
+  /   \
+'''
+miffed = '''
+  /\  /\
+ (>    >)
+  \ ᴗ /
+ /|___|\
+  /   \
+'''
+[species.lines]
+idle = ["princely stomping in place", "demanding attention, cutely"]
+working = ["fire breath on the blocker", "digging for the root cause"]
+celebrating = ["prince of the BUILD, bow before", "tricky tricky, in a good way"]
+miffed = ["royal tantrum, schedule pending", "the crown is crooked and so is this build"]
+
+[[species]]
+name = "aparoidqueen"
+tier = "legendary"
+names = ["Aparoid", "Hive", "Swarm", "Many", "One-mind", "Queen"]
+[species.art]
+idle = ['''
+  .-===-.
+ ( ◉   ◉ )
+  \  ▽  /
+ /|#####|\
+  /     \
+''', '''
+  .-===-.
+ ( -   - )
+  \  ▽  /
+ /|#####|\
+  /     \
+''']
+working = ['''
+  .-===-.
+ ( ◉   ◉ )
+  \  ▽  /
+ /|#####|\
+  /     \
+''', '''
+  .-===-.
+ ( .   . )
+  \  ▽  /
+ /|#####|\
+  /     \
+''']
+celebrating = ['''
+  .-===-.
+ ( ^   ^ )
+  \  ▽  /
+ /|#####|\
+  /     \
+''', '''
+  .-===-.
+ ( ^   ^ )
+  \  ^  /
+ /|#####|\
+  /     \
+''']
+miffed = ['''
+  .-===-.
+ ( >   > )
+  \  ▽  /
+ /|#####|\
+  /     \
+''', '''
+  .-===-.
+ ( >   > )
+  \  <  /
+ /|#####|\
+  /     \
+''']
+[species.lines]
+idle = ["a thousand eyes, one intention", "the hive hums in unison"]
+working = ["assimilating the bug into the swarm", "distributed computation, biological"]
+celebrating = ["the hive MARCHES, the build is OURS", "a chorus of victory, one voice"]
+miffed = ["a thousand eyes turn toward YOU", "resistance has been added to the hive"]
+
+[[species]]
+name = "andross"
+tier = "legendary"
+names = ["Emperor", "Face", "Venom", "Scientist", "Final-boss", "Void"]
+[species.art]
+idle = ['''
+  .-------.
+ ( ◉     ◉ )
+ |   ___   |
+  \_______/
+  /|     |\
+''', '''
+  .-------.
+ ( -     - )
+ |   ___   |
+  \_______/
+  /|     |\
+''']
+working = ['''
+  .-------.
+ ( ◉     ◉ )
+ |   ___   |
+  \_______/
+  /|     |\
+''', '''
+  .-------.
+ ( .     . )
+ |   ___   |
+  \_______/
+  /|     |\
+''']
+celebrating = '''
+  .-------.
+ ( ^     ^ )
+ |   ___   |
+  \_______/
+  /|     |\
+'''
+miffed = '''
+  .-------.
+ ( >     > )
+ |   ___   |
+  \_______/
+  /|     |\
+'''
+[species.lines]
+idle = ["a giant face, serene and terrifying", "hands folded in the void"]
+working = ["science beyond cornerian understanding", "the brain computes, the hands build"]
+celebrating = ["ONLY THE RESULTS MATTER", "a laugh that shakes the sector"]
+miffed = ["I've been defeated by... COMPILERS?", "the hands clench, the void watches"]
+

@@ -1,0 +1,1110 @@
+# Super Smash Bros species pack: 20 characters, art by Casey Benson.
+# # Each mood carries two art frames that cycle every tick; the engine's
+# 7-state animation layer (blink, zzz drift, hearts, spinner, glitch)
+# runs on top. Sleeping/resting/petted ride the idle frames.
+# Drop in ~/.config/hatch/packs/ (or $HATCH_HOME/packs).
+
+[[species]]
+name = "link"
+tier = "rare"
+names = ["Hero", "Sword", "Hyrule", "Green", "Shield", "Silent"]
+[species.art]
+idle = ['''
+   /\
+  /oo\
+ |  ^ |
+ /|===|\
+  /| |\
+''', '''
+   /\
+  /--\
+ |  ^ |
+ /|===|\
+  /| |\
+''']
+working = ['''
+   /\
+  />>\
+ |  ^ |
+ /|===|\
+  /| |\
+''', '''
+   /\
+  /..\
+ |  ^ |
+ /|===|\
+  /| |\
+''']
+celebrating = '''
+   /\
+  /^^\
+ |  ^ |
+ /|===|\
+  /| |\
+'''
+miffed = '''
+   /\
+  />>\
+ |  ^ |
+ /|===|\
+  /| |\
+'''
+[species.lines]
+idle = ["listening for the next dungeon cue", "silent, as ever"]
+working = ["hacking through the backlog, literally", "spin attack on the blockers"]
+celebrating = ["HYAAA! item get!", "the master sword hums green"]
+miffed = ["hey, listen! this build FAILED", "sealed away until the next patch"]
+
+[[species]]
+name = "zelda"
+tier = "uncommon"
+names = ["Wisdom", "Triforce", "Sage", "Light", "Hylia", "Scholar"]
+[species.art]
+idle = ['''
+  ♕
+ (o o)
+  \ᴗ/
+ /|◇|\
+  / \
+''', '''
+  ♕
+ (- -)
+  \ᴗ/
+ /|◇|\
+  / \
+''']
+working = ['''
+  ♕
+ (> >)
+  \ᴗ/
+ /|◇|\
+  / \
+''', '''
+  ♕
+ (. .)
+  \ᴗ/
+ /|◇|\
+  / \
+''']
+celebrating = '''
+  ♕
+ (^ ^)
+  \ᴗ/
+ /|◇|\
+  / \
+'''
+miffed = '''
+  ♕
+ (> >)
+  \ᴗ/
+ /|◇|\
+  / \
+'''
+[species.lines]
+idle = ["studying the ancient terminals", "light arrow at the ready"]
+working = ["sealing the bugs with light", "praying at the shrine of green builds"]
+celebrating = ["the triforce of WISDOM compiles", "hylia smiles on this deploy"]
+miffed = ["the seal is weakening", "ganon's code got merged AGAIN"]
+
+[[species]]
+name = "ganondorf"
+tier = "legendary"
+names = ["King of Thieves", "Dark Lord", "Gerudo", "Beast", "Power", "Villain"]
+[species.art]
+idle = ['''
+  .---.
+ (◉   ◉)
+  \ ▽ /
+ /|###|\
+  /   \
+''', '''
+  .---.
+ (-   -)
+  \ ▽ /
+ /|###|\
+  /   \
+''']
+working = ['''
+  .---.
+ (◉   ◉)
+  \ ▽ /
+ /|###|\
+  /   \
+''', '''
+  .---.
+ (.   .)
+  \ ▽ /
+ /|###|\
+  /   \
+''']
+celebrating = ['''
+  .---.
+ (^   ^)
+  \ ▽ /
+ /|###|\
+  /   \
+''', '''
+  .---.
+ (^   ^)
+  \ ^ /
+ /|###|\
+  /   \
+''']
+miffed = ['''
+  .---.
+ (>   >)
+  \ ▽ /
+ /|###|\
+  /   \
+''', '''
+  .---.
+ (>   >)
+  \ < /
+ /|###|\
+  /   \
+''']
+[species.lines]
+idle = ["the triforce of power hums ominously", "shadow pooling in the corner"]
+working = ["conquering the codebase, kingdom by kingdom", "dark magic on the dependencies"]
+celebrating = ["THE BUILD IS MINE, as foretold", "a villain laugh that shakes the terminal"]
+miffed = ["the hero of time has MERGED again", "sealed in the realm of failing tests"]
+
+[[species]]
+name = "samus"
+tier = "epic"
+names = ["Bounty Hunter", "Power Suit", "Zero Suit", "Chozo", "Morph Ball", "Hunter"]
+[species.art]
+idle = ['''
+  .---.
+ |[o o]|
+ |  ▽  |
+ /|===|\
+  /   \
+''', '''
+  .---.
+ |[- -]|
+ |  ▽  |
+ /|===|\
+  /   \
+''']
+working = ['''
+  .---.
+ |[> >]|
+ |  ▽  |
+ /|===|\
+  /   \
+''', '''
+  .---.
+ |[. .]|
+ |  ▽  |
+ /|===|\
+  /   \
+''']
+celebrating = ['''
+  .---.
+ |[^ ^]|
+ |  ▽  |
+ /|===|\
+  /   \
+''', '''
+  .---.
+ |[^ ^]|
+ |  ^  |
+ /|===|\
+  /   \
+''']
+miffed = ['''
+  .---.
+ |[> >]|
+ |  ▽  |
+ /|===|\
+  /   \
+''', '''
+  .---.
+ |[> >]|
+ |  <  |
+ /|===|\
+  /   \
+''']
+[species.lines]
+idle = ["visor reflecting the terminal glow", "charging the beam, slowly"]
+working = ["morph ball through the tight spots", "missile lock on the blocker"]
+celebrating = ["mission accomplished, suit polished", "an escape sequence with seconds to spare"]
+miffed = ["metroid DNA detected in this build", "the visor fogged with frustration"]
+
+[[species]]
+name = "kirby"
+tier = "uncommon"
+names = ["Puffball", "Copy", "Star-warrior", "Pink", "Inhale", "Dream-lander"]
+[species.art]
+idle = ['''
+  .---.
+ (o   o)
+ ( ᴗᴗ )
+  /| |\
+ /     \
+''', '''
+  .---.
+ (-   -)
+ ( ᴗᴗ )
+  /| |\
+ /     \
+''']
+working = ['''
+  .---.
+ (>   >)
+ ( ᴗᴗ )
+  /| |\
+ /     \
+''', '''
+  .---.
+ (.   .)
+ ( ᴗᴗ )
+  /| |\
+ /     \
+''']
+celebrating = '''
+  .---.
+ (^   ^)
+ ( ᴗᴗ )
+  /| |\
+ /     \
+'''
+miffed = '''
+  .---.
+ (>   >)
+ ( ᴗᴗ )
+  /| |\
+ /     \
+'''
+[species.lines]
+idle = ["round and content", "sucking up loose snippets"]
+working = ["copy ability: acquired", "inhaling the whole TODO list"]
+celebrating = ["a star rod of pure joy", "dancing, roundly"]
+miffed = ["puffed up and displeased", "spat out the bug, still hungry"]
+
+[[species]]
+name = "metaknight"
+tier = "epic"
+names = ["Masked", "Swordsman", "Halberd", "Warp-star", "Knight", "Mysterious"]
+[species.art]
+idle = ['''
+  .---.
+ /|◉ ◉|\
+  \_▽_/
+  /|||\
+   / \
+''', '''
+  .---.
+ /|- -|\
+  \_▽_/
+  /|||\
+   / \
+''']
+working = ['''
+  .---.
+ /|◉ ◉|\
+  \_▽_/
+  /|||\
+   / \
+''', '''
+  .---.
+ /|. .|\
+  \_▽_/
+  /|||\
+   / \
+''']
+celebrating = ['''
+  .---.
+ /|^ ^|\
+  \_▽_/
+  /|||\
+   / \
+''', '''
+  .---.
+ /|^ ^|\
+  \_^_/
+  /|||\
+   / \
+''']
+miffed = ['''
+  .---.
+ /|> >|\
+  \_▽_/
+  /|||\
+   / \
+''', '''
+  .---.
+ /|> >|\
+  \_<_/
+  /|||\
+   / \
+''']
+[species.lines]
+idle = ["cape wrapped, mask gleaming", "watching from the shadows of the terminal"]
+working = ["sword drawn, silent and fast", "warp star over the blocker"]
+celebrating = ["a worthy victory, acknowledged", "the halberd flies at dawn"]
+miffed = ["an unworthy performance", "the mask hides everything, including this"]
+
+[[species]]
+name = "kingdedede"
+tier = "rare"
+names = ["Dedede", "Penguin", "Hammer", "King", "Royal-blue", "Waddle-boss"]
+[species.art]
+idle = ['''
+  .-----.
+ (o     o)
+  \ ᴗ /
+ /|###|\
+  /___\
+''', '''
+  .-----.
+ (-     -)
+  \ ᴗ /
+ /|###|\
+  /___\
+''']
+working = ['''
+  .-----.
+ (>     >)
+  \ ᴗ /
+ /|###|\
+  /___\
+''', '''
+  .-----.
+ (.     .)
+  \ ᴗ /
+ /|###|\
+  /___\
+''']
+celebrating = '''
+  .-----.
+ (^     ^)
+  \ ᴗ /
+ /|###|\
+  /___\
+'''
+miffed = '''
+  .-----.
+ (>     >)
+  \ ᴗ /
+ /|###|\
+  /___\
+'''
+[species.lines]
+idle = ["hammer over the shoulder, throne warm", "waddle dees filing paperwork"]
+working = ["hammer time, kingly edition", "supervising, mostly eating"]
+celebrating = ["I'm the king, and the build is MINE", "a waddle-dance of victory"]
+miffed = ["somebody get me a NEW kingdom", "the hammer came down on the wrong key"]
+
+[[species]]
+name = "pikmin"
+tier = "common"
+names = ["Sprout", "Leaf", "Bud", "Flower", "Squad", "Little-red"]
+[species.art]
+idle = ['''
+   *
+  (o o)
+   \_/
+  /| |\
+   / \
+''', '''
+   *
+  (- -)
+   \_/
+  /| |\
+   / \
+''']
+working = ['''
+   *
+  (> >)
+   \_/
+  /| |\
+   / \
+''', '''
+   *
+  (. .)
+   \_/
+  /| |\
+   / \
+''']
+celebrating = '''
+   *
+  (^ ^)
+   \_/
+  /| |\
+   / \
+'''
+miffed = '''
+   *
+  (> >)
+   \_/
+  /| |\
+   / \
+'''
+[species.lines]
+idle = ["waiting by the onion, planted", "a small squad, huge courage"]
+working = ["carrying the payload, all 100 of us", "whistling the work song"]
+celebrating = ["the onion sings! harvest time!", "carried the day, literally"]
+miffed = ["bulborbs in the codebase again", "one of us got eaten, probably me"]
+
+[[species]]
+name = "olimar"
+tier = "uncommon"
+names = ["Captain", "Explorer", "Suited", "Tiny-captain", "Radar", "Hocotatian"]
+[species.art]
+idle = ['''
+  .---.
+ (o   o)
+  \ ᴗ /
+  /|O|\
+   / \
+''', '''
+  .---.
+ (-   -)
+  \ ᴗ /
+  /|-|\
+   / \
+''']
+working = ['''
+  .---.
+ (>   >)
+  \ ᴗ /
+  /|>|\
+   / \
+''', '''
+  .---.
+ (.   .)
+  \ ᴗ /
+  /|.|\
+   / \
+''']
+celebrating = '''
+  .---.
+ (^   ^)
+  \ ᴗ /
+  /|^|\
+   / \
+'''
+miffed = '''
+  .---.
+ (>   >)
+  \ ᴗ /
+  /|>|\
+   / \
+'''
+[species.lines]
+idle = ["helmet on, suit holding", "charting a course through the bugs"]
+working = ["day 12: the log parser works", "discovery, carefully logged"]
+celebrating = ["the ship lifts off! treasure aboard!", "day complete, profits logged"]
+miffed = ["day 30: rations low, patience lower", "the pikmin are unionizing"]
+
+[[species]]
+name = "captainfalcon"
+tier = "rare"
+names = ["Falcon", "Racer", "F-Zero", "Bounty-hunter", "Blue-falcon", "Showtime"]
+[species.art]
+idle = ['''
+  .-V-.
+ |o   o|
+ |  ▽  |
+ /| F |\
+  /   \
+''', '''
+  .-V-.
+ |-   -|
+ |  ▽  |
+ /| F |\
+  /   \
+''']
+working = ['''
+  .-V-.
+ |>   >|
+ |  ▽  |
+ /| F |\
+  /   \
+''', '''
+  .-V-.
+ |.   .|
+ |  ▽  |
+ /| F |\
+  /   \
+''']
+celebrating = ['''
+  .-V-.
+ |^   ^|
+ |  ▽  |
+ /| F |\
+  /   \
+''', '''
+  .-V-.
+ |^   ^|
+ |  ^  |
+ /| F |\
+  /   \
+''']
+miffed = ['''
+  .-V-.
+ |>   >|
+ |  ▽  |
+ /| F |\
+  /   \
+''', '''
+  .-V-.
+ |>   >|
+ |  <  |
+ /| F |\
+  /   \
+''']
+[species.lines]
+idle = ["revving the blue falcon", "showtime posture, always"]
+working = ["FALCON PAWNCH on the bug", "racing the deadline, winning"]
+celebrating = ["FALCON... VICTORY!", "a knee of pure celebration"]
+miffed = ["FALCON... DISAPPOINTED", "the blue falcon took damage, unacceptable"]
+
+[[species]]
+name = "ness"
+tier = "uncommon"
+names = ["Bat", "PSI", "Onett", "Yo-yo", "Kid", "Cap"]
+[species.art]
+idle = ['''
+  .---.
+ |o   o|
+ |  ᴗ  |
+ /|===|\
+  /   \
+''', '''
+  .---.
+ |-   -|
+ |  ᴗ  |
+ /|===|\
+  /   \
+''']
+working = ['''
+  .---.
+ |>   >|
+ |  ᴗ  |
+ /|===|\
+  /   \
+''', '''
+  .---.
+ |.   .|
+ |  ᴗ  |
+ /|===|\
+  /   \
+''']
+celebrating = '''
+  .---.
+ |^   ^|
+ |  ᴗ  |
+ /|===|\
+  /   \
+'''
+miffed = '''
+  .---.
+ |>   >|
+ |  ᴗ  |
+ /|===|\
+  /   \
+'''
+[species.lines]
+idle = ["homing in on the next task", "baseball bat leaned on the chair"]
+working = ["PSI rockin' on the stack trace", "checking it out, in-game"]
+celebrating = ["you feel stronger, level up!", "the Franklin badge deflected that bug"]
+miffed = ["you feel strange, status effect", "giygas-tier frustration building"]
+
+[[species]]
+name = "lucas"
+tier = "uncommon"
+names = ["Rope-snake", "PSI-love", "Tazmily", "Kind", "Twin", "Quiet-heart"]
+[species.art]
+idle = ['''
+  .---.
+ |o   o|
+ |  ω  |
+ /|+++|\
+  /   \
+''', '''
+  .---.
+ |-   -|
+ |  ω  |
+ /|+++|\
+  /   \
+''']
+working = ['''
+  .---.
+ |>   >|
+ |  ω  |
+ /|+++|\
+  /   \
+''', '''
+  .---.
+ |.   .|
+ |  ω  |
+ /|+++|\
+  /   \
+''']
+celebrating = ['''
+  .---.
+ |^   ^|
+ |  ω  |
+ /|+++|\
+  /   \
+''', '''
+  .---.
+ |^   ^|
+ |  ^  |
+ /|+++|\
+  /   \
+''']
+miffed = ['''
+  .---.
+ |>   >|
+ |  ω  |
+ /|+++|\
+  /   \
+''', '''
+  .---.
+ |>   >|
+ |  <  |
+ /|+++|\
+  /   \
+''']
+[species.lines]
+idle = ["quiet, hopeful, brave", "the rope snake naps nearby"]
+working = ["PK love on the blockers", "fighting the masked man of dead code"]
+celebrating = ["the heart of the build is STRONG", "everyone smiles, even the tests"]
+miffed = ["the dust grew cold for a moment", "PK freeze... on my own enthusiasm"]
+
+[[species]]
+name = "ryu"
+tier = "rare"
+names = ["Fighter", "Wanderer", "Ansatsuken", "Gi", "Hadou", "Master"]
+[species.art]
+idle = ['''
+  /^^\
+ |o  o|
+ |  ^ |
+ /|道|\
+  /   \
+''', '''
+  /^^\
+ |-  -|
+ |  ^ |
+ /|道|\
+  /   \
+''']
+working = ['''
+  /^^\
+ |>  >|
+ |  ^ |
+ /|道|\
+  /   \
+''', '''
+  /^^\
+ |.  .|
+ |  ^ |
+ /|道|\
+  /   \
+''']
+celebrating = '''
+  /^^\
+ |^  ^|
+ |  ^ |
+ /|道|\
+  /   \
+'''
+miffed = '''
+  /^^\
+ |>  >|
+ |  ^ |
+ /|道|\
+  /   \
+'''
+[species.lines]
+idle = ["meditating on the next patch", "the gi is pressed, the mind is clear"]
+working = ["shoryuken through the stack trace", "training arc: dependencies"]
+celebrating = ["the answer lies in the build", "a hadouken of pure focus"]
+miffed = ["the fight must continue", "a storm of fists, briefly"]
+
+[[species]]
+name = "ken"
+tier = "rare"
+names = ["Flaming", "Rival", "Shoryu", "Blonde", "Training-partner", "Hot"]
+[species.art]
+idle = ['''
+  /^^\
+ |o  o|
+ | ᴗ  |
+ /|~|\
+  /   \
+''', '''
+  /^^\
+ |-  -|
+ | ᴗ  |
+ /|~|\
+  /   \
+''']
+working = ['''
+  /^^\
+ |>  >|
+ | ᴗ  |
+ /|~|\
+  /   \
+''', '''
+  /^^\
+ |.  .|
+ | ᴗ  |
+ /|~|\
+  /   \
+''']
+celebrating = '''
+  /^^\
+ |^  ^|
+ | ᴗ  |
+ /|~|\
+  /   \
+'''
+miffed = '''
+  /^^\
+ |>  >|
+ | ᴗ  |
+ /|~|\
+  /   \
+'''
+[species.lines]
+idle = ["hair perfect, fists ready", "sparring with the compiler"]
+working = ["shinryuken on the blocker", "fire up the build, literally"]
+celebrating = ["the flames rose HIGHER", "an uppercut of triumph"]
+miffed = ["that was NOT a fair fight", "hair slightly less perfect now"]
+
+[[species]]
+name = "sonic"
+tier = "epic"
+names = ["Blue-blur", "Speed", "Rings", "Hedgehog", "Chili-dog", "Fast"]
+[species.art]
+idle = ['''
+  /^^^^
+ /o  o >
+ \  ▽ /
+ /|===|\
+  /   \
+''', '''
+  /^^^^
+ /-  - >
+ \  ▽ /
+ /|===|\
+  /   \
+''']
+working = ['''
+  /^^^^
+ />  > >
+ \  ▽ /
+ /|===|\
+  /   \
+''', '''
+  /^^^^
+ /.  . .
+ \  ▽ /
+ /|===|\
+  /   \
+''']
+celebrating = ['''
+  /^^^^
+ /^  ^ >
+ \  ▽ /
+ /|===|\
+  /   \
+''', '''
+  /^^^^
+ /^  ^ >
+ \  ^ /
+ /|===|\
+  /   \
+''']
+miffed = ['''
+  /^^^^
+ />  > >
+ \  ▽ /
+ /|===|\
+  /   \
+''', '''
+  /^^^^
+ />  > >
+ \  < /
+ /|===|\
+  /   \
+''']
+[species.lines]
+idle = ["tapping a foot at supersonic speed", "rings collected, loosely held"]
+working = ["gotta go fast on the hot path", "loop-de-loop through the tests"]
+celebrating = ["WAY PAST COOL", "a spin dash of victory"]
+miffed = ["eggman-tier setback", "slowed to regular speed. tragic."]
+
+[[species]]
+name = "megaman"
+tier = "epic"
+names = ["Blue-bomber", "Robot-master", "Mega-buster", "Rock", "Copy-weapon", "Stage-clear"]
+[species.art]
+idle = ['''
+  .---.
+ |[o o]|
+ |  _  |
+ /|===|\
+  /   \
+''', '''
+  .---.
+ |[- -]|
+ |  _  |
+ /|===|\
+  /   \
+''']
+working = ['''
+  .---.
+ |[> >]|
+ |  _  |
+ /|===|\
+  /   \
+''', '''
+  .---.
+ |[. .]|
+ |  _  |
+ /|===|\
+  /   \
+''']
+celebrating = '''
+  .---.
+ |[^ ^]|
+ |  _  |
+ /|===|\
+  /   \
+'''
+miffed = '''
+  .---.
+ |[> >]|
+ |  _  |
+ /|===|\
+  /   \
+'''
+[species.lines]
+idle = ["buster charged, standing guard", "scanning for robot masters"]
+working = ["copying the enemy's weapon", "buster shot at the blocker"]
+celebrating = ["weapon get! BUILD BARRIER!", "the fortress fell, stage clear"]
+miffed = ["spikes. why is it always spikes.", "the weakness was discovered, painfully"]
+
+[[species]]
+name = "pacman"
+tier = "common"
+names = ["Yellow", "Maze-runner", "Dot-eater", "Chomper", "Arcade", "Waka"]
+[species.art]
+idle = ['''
+  .---.
+ /     \
+|  ◕    )
+ \     /
+  \___/
+''', '''
+  .---.
+ /     \
+|  -    )
+ \     /
+  \___/
+''']
+working = ['''
+  .---.
+ /     \
+|  ◕    )
+ \     /
+  \___/
+''', '''
+  .---.
+ /     \
+|  .    )
+ \     /
+  \___/
+''']
+celebrating = '''
+  .---.
+ /     \
+|  ^    )
+ \     /
+  \___/
+'''
+miffed = '''
+  .---.
+ /     \
+|  >    )
+ \     /
+  \___/
+'''
+[species.lines]
+idle = ["circling the maze, hungry", "power pellet saved for later"]
+working = ["wakka wakka through the tickets", "eating dots, avoiding ghosts"]
+celebrating = ["high score, initials entered", "the maze is CLEARED"]
+miffed = ["caught by blinky, near the exit", "the ghosts are winning today"]
+
+[[species]]
+name = "cloudstrife"
+tier = "epic"
+names = ["Ex-soldier", "Buster-sword", "Materia", "Merc", "Spiky", "Planet-guardian"]
+[species.art]
+idle = ['''
+  /\/\/\
+ |o   o|
+ |  ^  |
+ /|====|\
+  /   \
+''', '''
+  /\/\/\
+ |-   -|
+ |  ^  |
+ /|====|\
+  /   \
+''']
+working = ['''
+  /\/\/\
+ |>   >|
+ |  ^  |
+ /|====|\
+  /   \
+''', '''
+  /\/\/\
+ |.   .|
+ |  ^  |
+ /|====|\
+  /   \
+''']
+celebrating = '''
+  /\/\/\
+ |^   ^|
+ |  ^  |
+ /|====|\
+  /   \
+'''
+miffed = '''
+  /\/\/\
+ |>   >|
+ |  ^  |
+ /|====|\
+  /   \
+'''
+[species.lines]
+idle = ["buster sword leaning on the wall", "materia sorted by element"]
+working = ["limit break: limit broke", "mako-lit progress, sustainable-ish"]
+celebrating = ["the buster sword gleams in victory", "a win worth a gold saucer chobie"]
+miffed = ["the lifestream is disturbed", "in my head: a one-winged angel"]
+
+[[species]]
+name = "sephiroth"
+tier = "legendary"
+names = ["One-winged Angel", "Silver", "Masamune", "Calamity", "Nihil", "Long-sword"]
+[species.art]
+idle = ['''
+   /\
+  /  \
+ | ◉ ◉ |
+  \ ▽ /
+ /|||| |\
+''', '''
+   /\
+  /  \
+ | - - |
+  \ ▽ /
+ /|||| |\
+''']
+working = ['''
+   /\
+  /  \
+ | ◉ ◉ |
+  \ ▽ /
+ /|||| |\
+''', '''
+   /\
+  /  \
+ | . . |
+  \ ▽ /
+ /|||| |\
+''']
+celebrating = ['''
+   /\
+  /  \
+ | ^ ^ |
+  \ ▽ /
+ /|||| |\
+''', '''
+   /\
+  /  \
+ | ^ ^ |
+  \ ^ /
+ /|||| |\
+''']
+miffed = ['''
+   /\
+  /  \
+ | > > |
+  \ ▽ /
+ /|||| |\
+''', '''
+   /\
+  /  \
+ | > > |
+  \ < /
+ /|||| |\
+''']
+[species.lines]
+idle = ["descending, unhurried", "the masamune reflects one long blade of light"]
+working = ["cutting the blocker from seven extensions away", "a meteor in the changelog"]
+celebrating = ["the reunion is COMPLETE", "one wing raised, silent applause"]
+miffed = ["estuans interius, in A MINOR", "the planet itself disapproves"]
+
+[[species]]
+name = "joker"
+tier = "rare"
+names = ["Phantom", "Trickster", "Wild-card", "Mask", "Rebel", "Curved-blade"]
+[species.art]
+idle = ['''
+  .---.
+ /o   o\
+ |  ^  |
+ /|♠♠♠|\
+  /   \
+''', '''
+  .---.
+ /-   -\
+ |  ^  |
+ /|♠♠♠|\
+  /   \
+''']
+working = ['''
+  .---.
+ />   >\
+ |  ^  |
+ /|♠♠♠|\
+  /   \
+''', '''
+  .---.
+ /.   .\
+ |  ^  |
+ /|♠♠♠|\
+  /   \
+''']
+celebrating = '''
+  .---.
+ /^   ^\
+ |  ^  |
+ /|♠♠♠|\
+  /   \
+'''
+miffed = '''
+  .---.
+ />   >\
+ |  ^  |
+ /|♠♠♠|\
+  /   \
+'''
+[species.lines]
+idle = ["mask tilted, cards shuffled", "all-out attack pending"]
+working = ["infiltrating the codebase's palace", "stealing the corrupt dependency's treasure"]
+celebrating = ["the phantom thieves strike again", "take your heart (and the green build)"]
+miffed = ["the security level is MAXED", "the velvet room offers no comfort"]
+

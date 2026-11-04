@@ -91,19 +91,7 @@ a species name that matches a built-in replaces it, a new name is added.
 Files that do not parse are skipped, so a bad pack never takes the buddy
 down. See `packs/example-newt.toml` for a working example.
 
-## State
-
-State lives in `~/.config/hatch/` (`state.toml` plus an append-only
-`events.jsonl`; override the directory with `HATCH_HOME`). A truncated final
-line in the event log is skipped, never fatal. Corrupt or version-mismatched
-`state.toml` is backed up to `state.toml.bak-<unix>` and your companion
-re-hatches. Older state files migrate forward (v1 through v5) without losing
-anything.
-
-Privacy: events never record command content, paths, or secrets. Only kind,
-timestamp, duration, and exit code.
-
-## Uninstall
-
-Delete the binary (`~/.local/bin/tb` or `$HATCH_BIN/tb`) and the
-`~/.config/hatch/` directory. That is everything hatch keeps.
+Art can be a single frame or a list of frames per mood. A list cycles
+one frame per tick, and the engine's 7-state animation layer (blink,
+zzz drift, hearts, spinner, glitch frames) runs on top. Sleeping,
+resting, and petted ride the idle frames.

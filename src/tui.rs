@@ -34,10 +34,7 @@ fn draw(
     chaos: i64,
 ) {
     let area = f.area();
-    let base_art = match mood {
-        Mood::Sleeping | Mood::Resting | Mood::Petted => sp.art.idle.as_str(),
-        _ => sp.art.for_mood(mood),
-    };
+    let base_art = sp.art.frame_for(mood, tick);
     let art = anim::frame(mood, base_art, tick, chaos);
     let blurb = species::pick_line(sp.lines.for_mood(mood), now);
     let mood_style = match mood {

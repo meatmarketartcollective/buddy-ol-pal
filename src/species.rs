@@ -13,12 +13,40 @@ pub struct Species {
     pub lines: MoodLines,
 }
 
+/// One art frame, or a list of frames that cycle with the tick. A single
+/// string keeps the old format working; a list animates by cycling.
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum ArtFrames {
+    One(String),
+    Many(Vec<String>),
+}
+
+impl ArtFrames {
+    pub fn frames(&self) -> Vec<&str> {
+        match self {
+            ArtFrames::One(s) => vec![s.as_str()],
+            ArtFrames::Many(v) => v.iter().map(|s| s.as_str()).collect(),
+        }
+    }
+
+    pub fn frame_for(&self, tick: u64) -> &str {
+        match self {
+            ArtFrames::One(s) => s,
+            ArtFrames::Many(v) if !v.is_empty() => {
+                &v[(tick % v.len() as u64) as usize]
+            }
+            ArtFrames::Many(_) => "",
+        }
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct MoodArt {
-    pub idle: String,
-    pub working: String,
-    pub celebrating: String,
-    pub miffed: String,
+    pub idle: ArtFrames,
+    pub working: ArtFrames,
+    pub celebrating: ArtFrames,
+    pub miffed: ArtFrames,
 }
 
 #[derive(Debug, Deserialize)]
@@ -31,13 +59,20 @@ pub struct MoodLines {
 
 impl MoodArt {
     pub fn for_mood(&self, mood: Mood) -> &str {
-        match mood {
+        self.frame_for(mood, 0)
+    }
+
+    /// The frame for this mood at this tick. Sleeping, resting, and petted
+    /// ride the idle art; the animation layer adds their motion on top.
+    pub fn frame_for(&self, mood: Mood, tick: u64) -> &str {
+        let frames = match mood {
             Mood::Idle => &self.idle,
             Mood::Working => &self.working,
             Mood::Celebrate => &self.celebrating,
             Mood::Miffed => &self.miffed,
             Mood::Sleeping | Mood::Resting | Mood::Petted => &self.idle,
-        }
+        };
+        frames.frame_for(tick)
     }
 }
 
@@ -204,6 +239,78 @@ pub fn pick_line(pool: &[String], now: i64) -> &str {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn art_frames_cycle_per_tick() {
+        let pack = r#"
+[[species]]
+name = "framer"
+tier = "common"
+names = ["A","B","C","D","E","F","G","H"]
+[species.art]
+idle = ["a\n(o o)\n", "a\n(- -)\n"]
+working = "w"
+celebrating = "c"
+miffed = "m"
+[species.lines]
+idle = ["x"]
+working = ["x"]
+celebrating = ["x"]
+miffed = ["x"]
+"#;
+        let parsed: SpeciesFile = toml::from_str(pack).expect("list art parses");
+        let sp = &parsed.species[0];
+        assert_ne!(
+            sp.art.frame_for(Mood::Idle, 0),
+            sp.art.frame_for(Mood::Idle, 1),
+            "two frames must differ per tick"
+        );
+        assert_eq!(
+            sp.art.frame_for(Mood::Idle, 2),
+            sp.art.frame_for(Mood::Idle, 0),
+            "frames cycle"
+        );
+        assert_eq!(sp.art.frame_for(Mood::Working, 5), "w", "single art stays one frame");
+        assert_eq!(
+            sp.art.frame_for(Mood::Sleeping, 0),
+            sp.art.frame_for(Mood::Idle, 0),
+            "the 7-state matrix rides idle art when no state art is given"
+        );
+    }
+
+    #[test]
+    fn shipped_packs_parse_and_stay_unique() {
+        let entries = std::fs::read_dir("packs").expect("repo packs/ dir exists");
+        let mut names: Vec<String> = Vec::new();
+        let mut files = 0;
+        for entry in entries.filter_map(|e| e.ok()) {
+            let path = entry.path();
+            if path.extension().map(|e| e != "toml").unwrap_or(true) {
+                continue;
+            }
+            let text = std::fs::read_to_string(&path).expect("pack file reads");
+            let parsed: SpeciesFile = toml::from_str(&text)
+                .unwrap_or_else(|e| panic!("{} failed to parse: {}", path.display(), e));
+            files += 1;
+            for sp in parsed.species {
+                names.push(sp.name);
+            }
+        }
+        assert!(files >= 4, "expected the four shipped packs, got {}", files);
+        assert!(names.len() >= 80, "expected at least 80 shipped species, got {}", names.len());
+        let before = names.len();
+        names.sort();
+        names.dedup();
+        assert_eq!(names.len(), before, "duplicate species names across packs");
+        let builtins = builtin_table();
+        for n in &names {
+            assert!(
+                !builtins.iter().any(|b| &b.name == n),
+                "pack species {} collides with a built-in",
+                n
+            );
+        }
+    }
 
     #[test]
     fn table_loads_and_names_are_unique() {
