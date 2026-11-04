@@ -59,7 +59,7 @@ fn draw(f: &mut Frame, st: &CompanionState, mood: Mood, last: Option<&Event>, no
         )));
     }
     lines.push(Line::from(Span::styled(
-        format!("{} the {} ({})", st.name, st.species, mood.label()),
+        format!("{} the {} L{} ({})", st.name, st.species, st.level, mood.label()),
         Style::default()
             .fg(Color::White)
             .add_modifier(Modifier::BOLD),
