@@ -94,10 +94,26 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
         }
     }
 
-    // XP accrual. Also persists any pending migration on the first run.
+    // XP accrual against the daily cap. Work pays up to XP_DAILY_CAP per
+    // unix day; past the cap events still log and still move chaos, they
+    // just stop printing XP, so a loop of toy runs cannot mint a level 5
+    // buddy. Also persists any pending migration on the first run.
     let mut st = state::load_or_hatch(dir);
     let threshold = threshold_secs();
-    st.xp += state::xp_gain(code, duration_secs, threshold);
+    let gain = state::xp_gain(code, duration_secs, threshold);
+    let prev_level = st.level;
+    if gain > 0 {
+        let today = state::now_secs() / 86400;
+        if st.xp_day != today {
+            st.xp_day = today;
+            st.xp_today = 0;
+        }
+        if st.xp_today < state::XP_DAILY_CAP {
+            let room = (state::XP_DAILY_CAP - st.xp_today).min(gain);
+            st.xp += room;
+            st.xp_today += room;
+        }
+    }
     st.level = state::level_for(st.xp);
     if let Some(k) = kind {
         state::apply_event_chaos(&mut st, k);
@@ -131,6 +147,14 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
                     st.name,
                     species::display_name(&st.species),
                     line
+                ));
+            }
+            if st.level > prev_level {
+                speak_text(&format!(
+                    "{} the {} grew to level {}!",
+                    st.name,
+                    species::display_name(&st.species),
+                    st.level
                 ));
             }
             notify(&notification_message(k, duration_secs, code));
