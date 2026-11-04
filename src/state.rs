@@ -5,7 +5,6 @@ use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 pub const STATE_VERSION: i64 = 2;
-pub const SPECIES: &str = "ember";
 pub const CELEBRATE_SECS: i64 = 6;
 pub const MIFF_SECS: i64 = 600;
 pub const MIFF_WINDOW_SECS: i64 = 3600;
@@ -75,21 +74,15 @@ pub fn config_dir() -> PathBuf {
     base.join("hatch")
 }
 
-const NAMES: &[&str] = &[
-    "Pip", "Momo", "Biscuit", "Echo", "Waffle", "Pixel", "Sprout", "Noodle",
-    "Comet", "Pebble", "Tofu", "Ziggy", "Maple", "Clover", "Dot", "Miso",
-    "Bumble", "Fig", "Scooter", "Waldo", "Juniper", "Crumb", "Beacon", "Tango",
-];
-
-pub fn pick_name(seed: u64) -> &'static str {
-    NAMES[(seed % NAMES.len() as u64) as usize]
-}
-
 pub fn default_state(now: i64, seed: u64) -> CompanionState {
+    // A new hatch picks a species uniformly at random; the name comes from
+    // that species' own pool. Existing state files keep their species.
+    let sp = crate::species::pick(seed);
+    let name_idx = ((seed >> 16) as usize) % sp.names.len();
     CompanionState {
         version: STATE_VERSION,
-        name: pick_name(seed).to_string(),
-        species: SPECIES.to_string(),
+        name: sp.names[name_idx].clone(),
+        species: sp.name.clone(),
         hatched_at: now,
         mood: Mood::Idle.label().to_string(),
         xp: 0,
@@ -328,6 +321,7 @@ pub fn is_miffed(events: &[Event], now: i64) -> bool {
 /// One plain line for `tb status`: name, species, derived mood, xp, last event.
 pub fn format_status(
     st: &CompanionState,
+    species_label: &str,
     mood: Mood,
     last: Option<&Event>,
     now: i64,
@@ -339,7 +333,7 @@ pub fn format_status(
     format!(
         "{} the {} L{} ({}) xp={} {}",
         st.name,
-        st.species,
+        species_label,
         st.level,
         mood.label(),
         st.xp,
@@ -469,9 +463,27 @@ mod tests {
     }
 
     #[test]
-    fn name_comes_from_list() {
-        assert!(NAMES.contains(&default_state(1, 0).name.as_str()));
-        assert!(NAMES.contains(&default_state(1, 999).name.as_str()));
+    fn name_comes_from_the_hatched_species_pool() {
+        for seed in [0u64, 1, 2, 3, 999] {
+            let st = default_state(1, seed);
+            let sp = crate::species::resolve(&st.species);
+            assert!(sp.names.contains(&st.name), "name {} not in pool of {}", st.name, st.species);
+        }
+    }
+
+    #[test]
+    fn hatched_species_is_always_known() {
+        for seed in 0..64u64 {
+            let st = default_state(1, seed);
+            assert!(crate::species::get(&st.species).is_some());
+        }
+    }
+
+    #[test]
+    fn unknown_species_in_state_falls_back_to_ember() {
+        let mut st = default_state(1, 0);
+        st.species = "trilobite".to_string();
+        assert_eq!(crate::species::display_name(&st.species), "ember");
     }
 
     #[test]
@@ -495,7 +507,7 @@ mod tests {
     #[test]
     fn status_format_and_no_events() {
         let st = default_state(1_700_000_000, 0);
-        let line = format_status(&st, Mood::Idle, None, 1_700_000_100);
+        let line = format_status(&st, &st.species.clone(), Mood::Idle, None, 1_700_000_100);
         assert!(line.starts_with(&format!("{} the {} L1 (idle) xp=0", st.name, st.species)));
         assert!(line.ends_with("no events yet"));
         let ev = Event {
@@ -504,7 +516,7 @@ mod tests {
             duration_secs: 30,
             exit_code: 0,
         };
-        let line2 = format_status(&st, Mood::Celebrate, Some(&ev), 1_700_000_100);
+        let line2 = format_status(&st, &st.species.clone(), Mood::Celebrate, Some(&ev), 1_700_000_100);
         assert!(line2.ends_with("last=build_finished 10s ago"));
     }
 
@@ -599,7 +611,7 @@ mod tests {
         assert_eq!(st.xp, 3);
         assert_eq!(st.version, STATE_VERSION);
         assert_eq!(st.level, 1);
-        let line = format_status(&st, Mood::Idle, None, 2);
+        let line = format_status(&st, crate::species::display_name(&st.species), Mood::Idle, None, 2);
         assert!(line.contains("(idle)"));
         assert!(!line.contains("banana"));
     }
