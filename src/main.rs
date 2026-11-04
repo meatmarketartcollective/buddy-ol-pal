@@ -116,6 +116,7 @@ fn pet_cmd() -> i32 {
 /// and ease the chaos, talk just gets a line back. Feed and play cool down.
 fn interaction(kind: &str, cooldown_secs: i64, xp: i64, verb: &str, full: &str) -> i32 {
     let dir = state::config_dir();
+    let _lock = state::lock_state(&dir);
     let mut st = state::load_or_hatch(&dir);
     let now = state::now_secs();
     let events = state::read_events_tail(&dir, 50);
