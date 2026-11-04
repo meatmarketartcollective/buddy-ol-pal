@@ -35,6 +35,7 @@ pub fn run_and_log(argv: &[String]) -> i32 {
     };
 
     let threshold = threshold_secs();
+    let mut logged_kind: Option<String> = None;
 
     if let Some(kind) = state::classify(code, duration_secs, threshold) {
         let ev = Event {
@@ -46,12 +47,16 @@ pub fn run_and_log(argv: &[String]) -> i32 {
         if let Err(e) = state::append_event(&dir, &ev) {
             eprintln!("hatch: could not write event: {}", e);
         }
+        logged_kind = Some(kind.to_string());
     }
 
     // XP accrual. Also persists the v1 -> v2 migration on the first run.
     let mut st = state::load_or_hatch(&dir);
     st.xp += state::xp_gain(code, duration_secs, threshold);
     st.level = state::level_for(st.xp);
+    if let Some(k) = &logged_kind {
+        state::apply_event_chaos(&mut st, k);
+    }
     if let Err(e) = state::save_state(&dir, &st) {
         eprintln!("hatch: could not save state: {}", e);
     }

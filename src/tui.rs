@@ -1,3 +1,4 @@
+use crate::anim;
 use crate::species::{self, Species};
 use crate::state::{self, CompanionState, Event, Mood};
 use ratatui::{
@@ -22,15 +23,31 @@ fn last_line(last: Option<&Event>, now: i64) -> String {
     }
 }
 
-fn draw(f: &mut Frame, st: &CompanionState, sp: &Species, mood: Mood, last: Option<&Event>, now: i64) {
+fn draw(
+    f: &mut Frame,
+    st: &CompanionState,
+    sp: &Species,
+    mood: Mood,
+    last: Option<&Event>,
+    now: i64,
+    tick: u64,
+    chaos: i64,
+) {
     let area = f.area();
-    let art = sp.art.for_mood(mood);
+    let base_art = match mood {
+        Mood::Sleeping | Mood::Resting | Mood::Petted => sp.art.idle.as_str(),
+        _ => sp.art.for_mood(mood),
+    };
+    let art = anim::frame(mood, base_art, tick, chaos);
     let blurb = species::pick_line(sp.lines.for_mood(mood), now);
     let mood_style = match mood {
         Mood::Idle => Style::default().fg(Color::Gray),
         Mood::Working => Style::default().fg(Color::Yellow),
         Mood::Celebrate => Style::default().fg(Color::Green),
         Mood::Miffed => Style::default().fg(Color::Red),
+        Mood::Sleeping => Style::default().fg(Color::DarkGray),
+        Mood::Resting => Style::default().fg(Color::Gray),
+        Mood::Petted => Style::default().fg(Color::Magenta),
     };
     let mut lines: Vec<Line> = Vec::new();
     for l in art.lines() {
@@ -85,16 +102,21 @@ pub fn run_ui() -> i32 {
     };
 
     let mut quit = false;
+    let mut tick: u64 = 0;
+    let mut wake: Option<i64> = None;
     loop {
         while crossterm::event::poll(Duration::from_millis(0)).unwrap_or(false) {
             if let Ok(crossterm::event::Event::Key(k)) = crossterm::event::read() {
-                if k.kind == crossterm::event::KeyEventKind::Press
-                    && matches!(
+                if k.kind == crossterm::event::KeyEventKind::Press {
+                    if matches!(
                         k.code,
                         crossterm::event::KeyCode::Char('q') | crossterm::event::KeyCode::Esc
-                    )
-                {
-                    quit = true;
+                    ) {
+                        quit = true;
+                    } else {
+                        // Any other keypress wakes the buddy from sleep.
+                        wake = Some(state::now_secs());
+                    }
                 }
             }
         }
@@ -105,10 +127,19 @@ pub fn run_ui() -> i32 {
         let now = state::now_secs();
         let events = state::read_events_tail(&dir, 8);
         let active = state::is_active(&dir);
-        let mood = state::current_mood(active, &events, now);
+        let mut mood = state::current_mood(active, &events, now);
+        if mood == Mood::Sleeping {
+            if let Some(w) = wake {
+                if now - w <= state::REST_SECS {
+                    mood = Mood::Resting;
+                }
+            }
+        }
         st.mood = mood.label().to_string();
+        let chaos = state::effective_chaos(&st, &events, now);
 
-        let _ = terminal.draw(|f| draw(f, &st, sp, mood, events.last(), now));
+        let _ = terminal.draw(|f| draw(f, &st, sp, mood, events.last(), now, tick, chaos));
+        tick += 1;
         std::thread::sleep(Duration::from_millis(250));
     }
 
