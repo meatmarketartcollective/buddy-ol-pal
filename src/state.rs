@@ -154,10 +154,10 @@ pub fn append_event(dir: &Path, ev: &Event) -> std::io::Result<()> {
         .open(events_path(dir))?;
     let mut line =
         serde_json::to_string(ev).map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
-    line.push('\n');
-    f.write_all(line.as_bytes())?;
     rotate_events_if_needed(dir);
-    Ok(())
+    line.push('\n');
+    f.write_all(line.as_bytes())
+}
 }
 
 /// Bounded tail read: reads at most the last TAIL_READ_CAP bytes of the log
@@ -276,9 +276,16 @@ pub fn is_miffed(events: &[Event], now: i64) -> bool {
         return false;
     }
     let n = events.len();
-    let last = &events[n - 1];
-    let first = &events[n - streak];
-    now - last.ts <= MIFF_SECS && now - first.ts <= MIFF_WINDOW_SECS
+    if now - events[n - 1].ts > MIFF_SECS {
+        return false;
+    }
+    let streak_events = &events[n - streak..];
+    let recent = streak_events
+        .iter()
+        .rev()
+        .take_while(|e| now - e.ts <= MIFF_WINDOW_SECS)
+        .count();
+    recent >= 2
 }
 
 /// One plain line for `tb status`: name, species, derived mood, xp, last event.
@@ -308,9 +315,10 @@ fn count_event_lines(path: &Path) -> usize {
         .unwrap_or(0)
 }
 
-/// Bounding the log: at ROTATE_LINES events, events.jsonl becomes
-/// events-1.jsonl and older archives shift, capped at MAX_ARCHIVE files.
-/// The oldest archive is replaced, never accumulated forever.
+/// Bounding the log: when appending would push events.jsonl past
+/// ROTATE_LINES lines, it first becomes events-1.jsonl and older archives
+/// shift, capped at MAX_ARCHIVE files. The oldest archive is replaced,
+/// never accumulated forever.
 pub fn rotate_events_if_needed(dir: &Path) {
     let path = events_path(dir);
     if count_event_lines(&path) < ROTATE_LINES {
