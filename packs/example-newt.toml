@@ -4,11 +4,10 @@
 # built-in replaces it, a new name is added.
 
 [[species]]
-name = "moth"
+name = "newt"
 tier = "common"
 names = [
-  "Rasputin", "Lampwick", "Fuzzy", "Duster", "Sweater", "Parchment", "Gauze",
-  "Velvet", "Clotho", "Flapper", "Mote", "Dustbun",
+  "Newton", "Slippery", "Regrow", "Squiggle", "Puddle", "Gill", "newt galaxy skip",
 ]
 
 [species.art]

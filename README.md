@@ -89,7 +89,7 @@ Drop a TOML file in `~/.config/hatch/packs/` (or `$HATCH_HOME/packs`) and it
 loads at startup, next to the 38 built-ins. Same shape as `species.toml`:
 a species name that matches a built-in replaces it, a new name is added.
 Files that do not parse are skipped, so a bad pack never takes the buddy
-down. See `packs/example-moth.toml` for a working example.
+down. See `packs/example-newt.toml` for a working example.
 
 ## State
 
