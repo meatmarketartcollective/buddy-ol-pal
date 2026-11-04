@@ -148,16 +148,17 @@ pub fn events_path(dir: &Path) -> PathBuf {
 
 pub fn append_event(dir: &Path, ev: &Event) -> std::io::Result<()> {
     fs::create_dir_all(dir)?;
+    // Rotate BEFORE opening the handle: a rename under an open append handle
+    // would send this event into the archived file, not the fresh log.
+    rotate_events_if_needed(dir);
     let mut f = fs::OpenOptions::new()
         .create(true)
         .append(true)
         .open(events_path(dir))?;
     let mut line =
         serde_json::to_string(ev).map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
-    rotate_events_if_needed(dir);
     line.push('\n');
     f.write_all(line.as_bytes())
-}
 }
 
 /// Bounded tail read: reads at most the last TAIL_READ_CAP bytes of the log
