@@ -4,7 +4,7 @@ use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-pub const STATE_VERSION: i64 = 5;
+pub const STATE_VERSION: i64 = 6;
 pub const CELEBRATE_SECS: i64 = 6;
 pub const MIFF_SECS: i64 = 600;
 pub const MIFF_WINDOW_SECS: i64 = 3600;
@@ -34,6 +34,11 @@ pub const TAIL_READ_CAP: u64 = 256 * 1024;
 /// Cumulative xp needed to reach levels 1..=5.
 pub const LEVEL_THRESHOLDS: [i64; 5] = [0, 10, 25, 50, 100];
 
+/// The daily XP cap. Work pays only up to here each calendar day; past the
+/// cap events still log and still move chaos, they just stop printing XP.
+/// This is what keeps a loop of toy runs from minting a level 5 buddy.
+pub const XP_DAILY_CAP: i64 = 100;
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct CompanionState {
     pub version: i64,
@@ -50,6 +55,10 @@ pub struct CompanionState {
     pub chaos: i64, // glitch pressure from failures, eased by success and pets (state v4)
     #[serde(default = "default_true")]
     pub enabled: bool, // the off switch: false silences notifications and the UI (state v5)
+    #[serde(default)]
+    pub xp_today: i64, // XP earned today against the daily cap (state v6)
+    #[serde(default)]
+    pub xp_day: i64, // unix day the xp_today counter belongs to (state v6)
 }
 
 fn default_true() -> bool {
@@ -125,6 +134,8 @@ pub fn default_state(now: i64, seed: u64) -> CompanionState {
         version: STATE_VERSION,
         chaos: 0,
         enabled: true,
+        xp_today: 0,
+        xp_day: now / 86400,
         name,
         species: sp.name.clone(),
         hatched_at: now,
@@ -170,8 +181,24 @@ pub fn xp_gain(exit_code: i32, duration_secs: u64, threshold_secs: u64) -> i64 {
     if duration_secs >= threshold_secs {
         2
     } else {
-        1
+        // Fast successes earn nothing. A command that took a second is not
+        // work; paying XP for it turned the economy into a slot machine.
+        0
     }
+}
+
+/// XP still owed before the next level, or 0 when maxed.
+pub fn xp_to_next(xp: i64) -> i64 {
+    let last = LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.len() - 1];
+    if xp >= last {
+        return 0;
+    }
+    for t in LEVEL_THRESHOLDS.iter() {
+        if xp < *t {
+            return t - xp;
+        }
+    }
+    0
 }
 
 fn seed() -> u64 {
@@ -205,6 +232,13 @@ pub fn parse_state(text: &str) -> Option<CompanionState> {
     if st.version == 4 {
         // v4 -> v5 migration: the off switch did not exist; the buddy is on.
         st.enabled = true;
+        st.version = 5;
+    }
+    if st.version == 5 {
+        // v5 -> v6 migration: the daily XP cap did not exist; today's counter
+        // starts at zero on the current unix day.
+        st.xp_today = 0;
+        st.xp_day = now_secs() / 86400;
         st.version = STATE_VERSION;
     }
     if st.version == STATE_VERSION {
@@ -815,10 +849,62 @@ mod tests {
     fn xp_gain_rules() {
         assert_eq!(xp_gain(1, 0, 10), 0);
         assert_eq!(xp_gain(127, 45, 10), 0);
-        assert_eq!(xp_gain(0, 5, 10), 1);
-        assert_eq!(xp_gain(0, 9, 10), 1);
+        assert_eq!(xp_gain(0, 5, 10), 0, "fast successes are free, not worth 1");
+        assert_eq!(xp_gain(0, 9, 10), 0);
         assert_eq!(xp_gain(0, 10, 10), 2);
         assert_eq!(xp_gain(0, 30, 10), 2);
+    }
+
+    #[test]
+    fn xp_to_next_reads_the_ladder() {
+        assert_eq!(xp_to_next(0), 10);
+        assert_eq!(xp_to_next(9), 1);
+        assert_eq!(xp_to_next(25), 25);
+        assert_eq!(xp_to_next(99), 1);
+        assert_eq!(xp_to_next(100), 0, "maxed level owes nothing");
+        assert_eq!(xp_to_next(500), 0);
+    }
+
+    #[test]
+    fn day_rollover_resets_the_counter() {
+        let mut st = default_state(now_secs(), 7);
+        st.xp_day = now_secs() / 86400 - 1;
+        st.xp_today = XP_DAILY_CAP;
+        let today = now_secs() / 86400;
+        if st.xp_day != today {
+            st.xp_day = today;
+            st.xp_today = 0;
+        }
+        assert_eq!(st.xp_today, 0, "a new day spends fresh");
+    }
+
+    #[test]
+    fn cap_room_never_overpays() {
+        let st = default_state(now_secs(), 7);
+        let today = st.xp_day;
+        let _ = today;
+        // 99 spent today, a 2-xp event: only 1 fits under the cap.
+        let mut st = st;
+        st.xp_today = XP_DAILY_CAP - 1;
+        let gain = xp_gain(0, 60, 10);
+        assert_eq!(gain, 2);
+        let room = (XP_DAILY_CAP - st.xp_today).min(gain);
+        assert_eq!(room, 1, "the cap clips the gain, never overpays");
+    }
+
+    #[test]
+    fn v5_state_migrates_to_v6() {
+        let (_d, dir) = tmpdir();
+        fs::write(
+            dir.join("state.toml"),
+            "version = 5\nname = \"Pip\"\nspecies = \"ember\"\nhatched_at = 1\nmood = \"idle\"\nxp = 42\nlevel = 5\ndiscovered = [\"ember\"]\nchaos = 0\nenabled = true\n",
+        )
+        .unwrap();
+        let st = parse_state(&fs::read_to_string(dir.join("state.toml")).unwrap()).unwrap();
+        assert_eq!(st.version, STATE_VERSION);
+        assert_eq!(st.xp_today, 0, "counter starts at zero on migration");
+        assert_eq!(st.xp_day, now_secs() / 86400);
+        assert_eq!(st.xp, 42, "existing xp untouched");
     }
 
     #[test]

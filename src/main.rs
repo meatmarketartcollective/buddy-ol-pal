@@ -261,6 +261,10 @@ fn status_cmd() -> i32 {
         println!();
         println!("\"{line}\"");
     }
+    let next = state::xp_to_next(st.xp);
+    if next > 0 {
+        println!("{} xp to level {}", next, st.level + 1);
+    }
     0
 }
 
