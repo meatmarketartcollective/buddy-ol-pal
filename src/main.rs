@@ -10,6 +10,7 @@ fn help() {
     println!("  tb ui              open the companion (plain `tb` also works)");
     println!("  tb run -- <cmd>    run a command; long runs and failures get logged as events");
     println!("  tb status          one-line companion status for scripts and panes");
+    println!("  tb dex             the discovery list; undiscovered species show as ???");
     println!("  tb tail [-n N]     print the last N events as JSON lines (default 10)\n");
     println!("state lives in ~/.config/hatch (override with HATCH_HOME)");
 }
@@ -20,6 +21,7 @@ fn main() {
         None | Some("ui") => tui::run_ui(),
         Some("run") => watcher::run_and_log(&run_argv(&args[1..])),
         Some("status") => status_cmd(),
+        Some("dex") => dex_cmd(),
         Some("tail") => tail_cmd(&args[1..]),
         Some("-h") | Some("--help") | Some("help") => {
             help();
@@ -86,6 +88,17 @@ fn status_cmd() -> i32 {
         "{}",
         state::format_status(&st, species::display_name(&st.species), mood, events.last(), now)
     );
+    0
+}
+
+/// `tb dex`: the discovery list. Discovered species show name, species and
+/// tier; undiscovered ones are hidden behind ???.
+fn dex_cmd() -> i32 {
+    let dir = state::config_dir();
+    let st = state::load_or_hatch(&dir);
+    for row in species::dex_rows(&st.discovered) {
+        println!("{row}");
+    }
     0
 }
 
