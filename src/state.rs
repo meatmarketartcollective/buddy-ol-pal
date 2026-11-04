@@ -4,7 +4,7 @@ use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-pub const STATE_VERSION: i64 = 1;
+pub const STATE_VERSION: i64 = 2;
 pub const SPECIES: &str = "ember";
 pub const CELEBRATE_SECS: i64 = 6;
 pub const MIFF_SECS: i64 = 600;
@@ -13,6 +13,9 @@ pub const ROTATE_LINES: usize = 1000;
 pub const MAX_ARCHIVE: usize = 3;
 pub const TAIL_READ_CAP: u64 = 256 * 1024;
 
+/// Cumulative xp needed to reach levels 1..=5.
+pub const LEVEL_THRESHOLDS: [i64; 5] = [0, 10, 25, 50, 100];
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct CompanionState {
     pub version: i64,
@@ -20,7 +23,9 @@ pub struct CompanionState {
     pub species: String,
     pub hatched_at: i64,
     pub mood: String,
-    pub xp: i64, // reserved, unused in milestone one
+    pub xp: i64,
+    #[serde(default)]
+    pub level: i64, // display-only, derived from xp (state v2)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -88,6 +93,30 @@ pub fn default_state(now: i64, seed: u64) -> CompanionState {
         hatched_at: now,
         mood: Mood::Idle.label().to_string(),
         xp: 0,
+        level: 1,
+    }
+}
+
+/// Level is derived from xp, never stored as truth beyond a cache.
+pub fn level_for(xp: i64) -> i64 {
+    let mut lvl = 1;
+    for (i, t) in LEVEL_THRESHOLDS.iter().enumerate() {
+        if xp >= *t {
+            lvl = (i + 1) as i64;
+        }
+    }
+    lvl
+}
+
+/// XP per run: +1 short success, +2 success at/above the threshold, 0 on failure.
+pub fn xp_gain(exit_code: i32, duration_secs: u64, threshold_secs: u64) -> i64 {
+    if exit_code != 0 {
+        return 0;
+    }
+    if duration_secs >= threshold_secs {
+        2
+    } else {
+        1
     }
 }
 
@@ -100,7 +129,14 @@ fn seed() -> u64 {
 }
 
 pub fn parse_state(text: &str) -> Option<CompanionState> {
-    let st: CompanionState = toml::from_str(text).ok()?;
+    let mut st: CompanionState = toml::from_str(text).ok()?;
+    if st.version == 1 {
+        // v1 -> v2 migration: level did not exist; derive it, bump the
+        // version. The next save persists the migration; nothing is deleted.
+        st.version = STATE_VERSION;
+        st.level = level_for(st.xp);
+        return Some(st);
+    }
     if st.version == STATE_VERSION {
         Some(st)
     } else {
@@ -301,9 +337,10 @@ pub fn format_status(
         None => "no events yet".to_string(),
     };
     format!(
-        "{} the {} ({}) xp={} {}",
+        "{} the {} L{} ({}) xp={} {}",
         st.name,
         st.species,
+        st.level,
         mood.label(),
         st.xp,
         last_part
@@ -459,7 +496,7 @@ mod tests {
     fn status_format_and_no_events() {
         let st = default_state(1_700_000_000, 0);
         let line = format_status(&st, Mood::Idle, None, 1_700_000_100);
-        assert!(line.starts_with(&format!("{} the {} (idle) xp=0", st.name, st.species)));
+        assert!(line.starts_with(&format!("{} the {} L1 (idle) xp=0", st.name, st.species)));
         assert!(line.ends_with("no events yet"));
         let ev = Event {
             ts: 1_700_000_090,
@@ -560,8 +597,69 @@ mod tests {
         .unwrap();
         let st = load_or_hatch(&dir);
         assert_eq!(st.xp, 3);
+        assert_eq!(st.version, STATE_VERSION);
+        assert_eq!(st.level, 1);
         let line = format_status(&st, Mood::Idle, None, 2);
         assert!(line.contains("(idle)"));
         assert!(!line.contains("banana"));
+    }
+
+    #[test]
+    fn level_boundaries() {
+        assert_eq!(level_for(0), 1);
+        assert_eq!(level_for(9), 1);
+        assert_eq!(level_for(10), 2);
+        assert_eq!(level_for(24), 2);
+        assert_eq!(level_for(25), 3);
+        assert_eq!(level_for(49), 3);
+        assert_eq!(level_for(50), 4);
+        assert_eq!(level_for(99), 4);
+        assert_eq!(level_for(100), 5);
+        assert_eq!(level_for(1000), 5);
+        assert_eq!(level_for(-5), 1);
+    }
+
+    #[test]
+    fn xp_gain_rules() {
+        assert_eq!(xp_gain(1, 0, 10), 0);
+        assert_eq!(xp_gain(127, 45, 10), 0);
+        assert_eq!(xp_gain(0, 5, 10), 1);
+        assert_eq!(xp_gain(0, 9, 10), 1);
+        assert_eq!(xp_gain(0, 10, 10), 2);
+        assert_eq!(xp_gain(0, 30, 10), 2);
+    }
+
+    #[test]
+    fn v1_state_migrates_to_v2() {
+        let (_d, dir) = tmpdir();
+        fs::write(
+            dir.join("state.toml"),
+            "version = 1\nname = \"Pip\"\nspecies = \"ember\"\nhatched_at = 1\nmood = \"idle\"\nxp = 17\n",
+        )
+        .unwrap();
+        let st = load_or_hatch(&dir);
+        assert_eq!(st.version, 2);
+        assert_eq!(st.xp, 17);
+        assert_eq!(st.level, level_for(17));
+        assert_eq!(st.level, 2);
+        let baks: Vec<String> = fs::read_dir(&dir)
+            .unwrap()
+            .filter_map(|e| e.ok())
+            .map(|e| e.file_name().to_string_lossy().to_string())
+            .filter(|n| n.starts_with("state.toml.bak"))
+            .collect();
+        assert!(baks.is_empty(), "migration is not corruption; no backup churn");
+    }
+
+    #[test]
+    fn v2_state_round_trip_keeps_level() {
+        let (_d, dir) = tmpdir();
+        let mut st = default_state(1_700_000_000, 2);
+        st.xp = 42;
+        st.level = level_for(42);
+        save_state(&dir, &st).unwrap();
+        let loaded = load_or_hatch(&dir);
+        assert_eq!(loaded, st);
+        assert_eq!(loaded.level, 3);
     }
 }
