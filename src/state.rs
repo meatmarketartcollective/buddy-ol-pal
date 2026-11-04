@@ -4,10 +4,21 @@ use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-pub const STATE_VERSION: i64 = 3;
+pub const STATE_VERSION: i64 = 4;
 pub const CELEBRATE_SECS: i64 = 6;
 pub const MIFF_SECS: i64 = 600;
 pub const MIFF_WINDOW_SECS: i64 = 3600;
+// The original 7-state matrix: sleep after a quiet stretch, resting after a
+// wake keypress, petted after `tb pet`. Chaos builds from failures and throws
+// random glitch frames once it crosses the glitch threshold.
+pub const SLEEP_AFTER_SECS: i64 = 300;
+pub const REST_SECS: i64 = 10;
+pub const PET_SECS: i64 = 12;
+pub const GLITCH_THRESHOLD: i64 = 50;
+pub const CHAOS_PER_ERROR: i64 = 8;
+pub const CHAOS_SUCCESS_RELIEF: i64 = 3;
+pub const CHAOS_PET_RELIEF: i64 = 2;
+pub const CHAOS_MAX: i64 = 100;
 pub const ROTATE_LINES: usize = 1000;
 pub const MAX_ARCHIVE: usize = 3;
 pub const TAIL_READ_CAP: u64 = 256 * 1024;
@@ -27,6 +38,8 @@ pub struct CompanionState {
     pub level: i64, // display-only, derived from xp (state v2)
     #[serde(default)]
     pub discovered: Vec<String>, // species names seen at least once (state v3)
+    #[serde(default)]
+    pub chaos: i64, // glitch pressure from failures, eased by success and pets (state v4)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -43,6 +56,9 @@ pub enum Mood {
     Working,
     Celebrate,
     Miffed,
+    Sleeping,
+    Resting,
+    Petted,
 }
 
 impl Mood {
@@ -52,6 +68,9 @@ impl Mood {
             Mood::Working => "working",
             Mood::Celebrate => "celebrating",
             Mood::Miffed => "miffed",
+            Mood::Sleeping => "sleeping",
+            Mood::Resting => "resting",
+            Mood::Petted => "petted",
         }
     }
 }
@@ -90,6 +109,7 @@ pub fn default_state(now: i64, seed: u64) -> CompanionState {
     };
     CompanionState {
         version: STATE_VERSION,
+        chaos: 0,
         name,
         species: sp.name.clone(),
         hatched_at: now,
@@ -159,6 +179,12 @@ pub fn parse_state(text: &str) -> Option<CompanionState> {
         // v2 -> v3 migration: the dex did not exist; the companion's own
         // species counts as its first discovery.
         st.discovered = vec![st.species.clone()];
+        st.version = 3;
+    }
+    if st.version == 3 {
+        // v3 -> v4 migration: chaos did not exist; every companion starts
+        // calm. The next save persists it; nothing is deleted.
+        st.chaos = 0;
         st.version = STATE_VERSION;
     }
     if st.version == STATE_VERSION {
@@ -316,8 +342,34 @@ pub fn current_mood(child_running: bool, events: &[Event], now: i64) -> Mood {
         if is_miffed(events, now) {
             return Mood::Miffed;
         }
+        if last.kind == "petted" && now - last.ts <= PET_SECS {
+            return Mood::Petted;
+        }
+        if now - last.ts >= SLEEP_AFTER_SECS {
+            return Mood::Sleeping;
+        }
+    } else {
+        // Nothing has ever happened: the buddy dozes off from the start.
+        return Mood::Sleeping;
     }
     Mood::Idle
+}
+
+/// Chaos as it feels right now: the stored pressure decays one point per
+/// hour since the companion's last event.
+pub fn effective_chaos(st: &CompanionState, events: &[Event], now: i64) -> i64 {
+    let since = events.last().map(|e| (now - e.ts).max(0)).unwrap_or(0);
+    (st.chaos - since / 3600).max(0).min(CHAOS_MAX)
+}
+
+/// A fresh event nudges chaos: failures pile it on, successes and pets ease it.
+pub fn apply_event_chaos(st: &mut CompanionState, kind: &str) {
+    st.chaos = match kind {
+        "command_failed" => (st.chaos + CHAOS_PER_ERROR).min(CHAOS_MAX),
+        "build_finished" => st.chaos.saturating_sub(CHAOS_SUCCESS_RELIEF),
+        "petted" => st.chaos.saturating_sub(CHAOS_PET_RELIEF),
+        _ => st.chaos,
+    };
 }
 
 /// Trailing run of consecutive command_failed events.
@@ -356,18 +408,20 @@ pub fn format_status(
     mood: Mood,
     last: Option<&Event>,
     now: i64,
+    chaos: i64,
 ) -> String {
     let last_part = match last {
         Some(ev) => format!("last={} {}s ago", ev.kind, (now - ev.ts).max(0)),
         None => "no events yet".to_string(),
     };
     format!(
-        "{} the {} L{} ({}) xp={} {}",
+        "{} the {} L{} ({}) xp={} chaos={} {}",
         st.name,
         species_label,
         st.level,
         mood.label(),
         st.xp,
+        chaos,
         last_part
     )
 }
@@ -490,7 +544,8 @@ mod tests {
         assert_eq!(current_mood(true, &evs, 101), Mood::Working);
         assert_eq!(current_mood(false, &evs, 103), Mood::Celebrate);
         assert_eq!(current_mood(false, &evs, 200), Mood::Idle);
-        assert_eq!(current_mood(false, &[], 200), Mood::Idle);
+        // The state matrix: nothing has ever happened, so the buddy dozes.
+        assert_eq!(current_mood(false, &[], 200), Mood::Sleeping);
     }
 
     #[test]
@@ -538,7 +593,7 @@ mod tests {
     #[test]
     fn status_format_and_no_events() {
         let st = default_state(1_700_000_000, 0);
-        let line = format_status(&st, &st.species.clone(), Mood::Idle, None, 1_700_000_100);
+        let line = format_status(&st, &st.species.clone(), Mood::Idle, None, 1_700_000_100, 0);
         assert!(line.starts_with(&format!("{} the {} L1 (idle) xp=0", st.name, st.species)));
         assert!(line.ends_with("no events yet"));
         let ev = Event {
@@ -547,7 +602,7 @@ mod tests {
             duration_secs: 30,
             exit_code: 0,
         };
-        let line2 = format_status(&st, &st.species.clone(), Mood::Celebrate, Some(&ev), 1_700_000_100);
+        let line2 = format_status(&st, &st.species.clone(), Mood::Celebrate, Some(&ev), 1_700_000_100, 0);
         assert!(line2.ends_with("last=build_finished 10s ago"));
     }
 
@@ -622,7 +677,8 @@ mod tests {
         ];
         assert_eq!(current_mood(false, &fails, 120), Mood::Miffed);
         assert_eq!(current_mood(true, &fails, 120), Mood::Working);
-        assert_eq!(current_mood(false, &fails, 712), Mood::Idle);
+        // Past the miff window AND the sleep threshold: asleep wins.
+        assert_eq!(current_mood(false, &fails, 712), Mood::Sleeping);
         let mixed = vec![
             Event { ts: 100, kind: "command_failed".into(), duration_secs: 0, exit_code: 1 },
             Event { ts: 112, kind: "build_finished".into(), duration_secs: 30, exit_code: 0 },
@@ -642,7 +698,7 @@ mod tests {
         assert_eq!(st.xp, 3);
         assert_eq!(st.version, STATE_VERSION);
         assert_eq!(st.level, 1);
-        let line = format_status(&st, crate::species::display_name(&st.species), Mood::Idle, None, 2);
+        let line = format_status(&st, crate::species::display_name(&st.species), Mood::Idle, None, 2, 0);
         assert!(line.contains("(idle)"));
         assert!(!line.contains("banana"));
     }

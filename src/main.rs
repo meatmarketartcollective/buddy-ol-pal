@@ -1,3 +1,4 @@
+mod anim;
 mod species;
 mod state;
 mod tui;
@@ -11,6 +12,7 @@ fn help() {
     println!("  tb run -- <cmd>    run a command; long runs and failures get logged as events");
     println!("  tb status          one-line companion status for scripts and panes");
     println!("  tb dex             the discovery list; undiscovered species show as ???");
+    println!("  tb pet             show your buddy some love; eases the chaos");
     println!("  tb tail [-n N]     print the last N events as JSON lines (default 10)\n");
     println!("state lives in ~/.config/hatch (override with HATCH_HOME)");
 }
@@ -21,6 +23,7 @@ fn main() {
         None | Some("ui") => tui::run_ui(),
         Some("run") => watcher::run_and_log(&run_argv(&args[1..])),
         Some("status") => status_cmd(),
+        Some("pet") => pet_cmd(),
         Some("dex") => dex_cmd(),
         Some("tail") => tail_cmd(&args[1..]),
         Some("-h") | Some("--help") | Some("help") => {
@@ -71,6 +74,32 @@ mod tests {
 }
 
 /// `tb status`: one plain line, read-only. Never hatches a companion.
+/// `tb pet`: a little affection. Logs a petted event (the UI shows the petted
+/// state for PET_SECS) and eases the chaos a touch.
+fn pet_cmd() -> i32 {
+    let dir = state::config_dir();
+    let mut st = state::load_or_hatch(&dir);
+    let ev = state::Event {
+        ts: state::now_secs(),
+        kind: "petted".to_string(),
+        duration_secs: 0,
+        exit_code: 0,
+    };
+    if let Err(e) = state::append_event(&dir, &ev) {
+        eprintln!("hatch: could not write event: {}", e);
+    }
+    state::apply_event_chaos(&mut st, "petted");
+    if let Err(e) = state::save_state(&dir, &st) {
+        eprintln!("hatch: could not save state: {}", e);
+    }
+    println!(
+        "{} the {} soaks it in. (petted)",
+        st.name,
+        species::display_name(&st.species)
+    );
+    0
+}
+
 fn status_cmd() -> i32 {
     let dir = state::config_dir();
     let st = fs::read_to_string(dir.join("state.toml"))
@@ -84,9 +113,17 @@ fn status_cmd() -> i32 {
     let events = state::read_events_tail(&dir, 50);
     let active = state::is_active(&dir);
     let mood = state::current_mood(active, &events, now);
+    let chaos = state::effective_chaos(&st, &events, now);
     println!(
         "{}",
-        state::format_status(&st, species::display_name(&st.species), mood, events.last(), now)
+        state::format_status(
+            &st,
+            species::display_name(&st.species),
+            mood,
+            events.last(),
+            now,
+            chaos
+        )
     );
     0
 }

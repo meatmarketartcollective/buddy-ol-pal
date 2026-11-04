@@ -36,6 +36,7 @@ impl MoodArt {
             Mood::Working => &self.working,
             Mood::Celebrate => &self.celebrating,
             Mood::Miffed => &self.miffed,
+            Mood::Sleeping | Mood::Resting | Mood::Petted => &self.idle,
         }
     }
 }
@@ -47,6 +48,7 @@ impl MoodLines {
             Mood::Working => &self.working,
             Mood::Celebrate => &self.celebrating,
             Mood::Miffed => &self.miffed,
+            Mood::Sleeping | Mood::Resting | Mood::Petted => &self.idle,
         }
     }
 }
