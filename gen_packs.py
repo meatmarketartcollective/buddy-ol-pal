@@ -69,6 +69,7 @@ HEADERS = {
     "pokemon": "Pokemon species pack: 20 characters, art by Casey Benson.",
     "starfox": "Star Fox universe species pack: 20 characters, art by Casey Benson.",
     "smash": "Super Smash Bros species pack: 20 characters, art by Casey Benson.",
+    "nostalgia": "90s Nostalgia species pack: 20 objects, silhouettes per Casey's refinement doc.",
 }
 TAIL = ("# Every species and every mood carries two art frames that cycle every\n"
         "# tick; featureless designs get a gentle sway so nothing sits frozen.\n"

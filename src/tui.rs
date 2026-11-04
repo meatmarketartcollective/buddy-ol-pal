@@ -46,12 +46,13 @@ fn draw(
         Mood::Resting => Style::default().fg(Color::Gray),
         Mood::Petted => Style::default().fg(Color::Magenta),
     };
+    let art_style = match mood {
+        Mood::Idle | Mood::Resting => Style::default().fg(Color::White),
+        _ => mood_style,
+    };
     let mut lines: Vec<Line> = Vec::new();
     for l in art.lines() {
-        lines.push(Line::from(Span::styled(
-            l.to_string(),
-            Style::default().fg(Color::White),
-        )));
+        lines.push(Line::from(Span::styled(l.to_string(), art_style)));
     }
     lines.push(Line::from(Span::styled(
         format!("{} the {} L{} ({})", st.name, sp.name, st.level, mood.label()),

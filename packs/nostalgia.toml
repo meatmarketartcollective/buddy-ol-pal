@@ -1,0 +1,1517 @@
+# 90s Nostalgia species pack: 20 objects, silhouettes per Casey's refinement doc.
+# # Every species and every mood carries two art frames that cycle every
+# tick; featureless designs get a gentle sway so nothing sits frozen.
+# The engine's 7-state animation layer (blink, zzz drift, hearts,
+# spinner, glitch) runs on top. Sleeping/resting/petted ride the idle
+# frames. Sole exception: petrock, who is a rock and does not animate.
+# That is the joke.
+# Drop in ~/.config/hatch/packs/ (or $HATCH_HOME/packs).
+
+[[species]]
+name = "furby"
+tier = "legendary"
+names = ["Furball", "Chatter", "Fuzzbutt", "Owl-Cat", "Gremlin", "Snuggler", "Gizmo", "Babbler"]
+[species.art]
+idle = ['''
+   /\      /\
+  /  \____/  \
+ /            \
+|   .------.   |
+|  ( o    o )  |
+|      ><      |
+ \____________/
+''', '''
+   /\      /\
+  /  \____/  \
+ /            \
+|   .------.   |
+|  ( -    - )  |
+|      ><      |
+ \____________/
+''']
+working = ['''
+   /\      /\
+  /  \____/  \
+ /            \
+|   .------.   |
+|  ( >    > )  |
+|      ><      |
+ \____________/
+''', '''
+   /\      /\
+  /  \____/  \
+ /            \
+|   .------.   |
+|  ( .    . )  |
+|      .<      |
+ \____________/
+''']
+celebrating = ['''
+   /\      /\
+  /  \____/  \
+ /            \
+|   .------.   |
+|  ( ^    ^ )  |
+|      ><      |
+ \____________/
+''', '''
+    /\      /\
+   /  \____/  \
+  /            \
+ |   .------.   |
+ |  ( ^    ^ )  |
+ |      ><      |
+  \____________/
+''']
+miffed = ['''
+   /\      /\
+  /  \____/  \
+ /            \
+|   .------.   |
+|  ( >    > )  |
+|      ><      |
+ \____________/
+''', '''
+    /\      /\
+   /  \____/  \
+  /            \
+ |   .------.   |
+ |  ( >    > )  |
+ |      ><      |
+  \____________/
+''']
+[species.lines]
+idle = ["doo-doo-doo-doo", "blinking at you in a language with no words", "deep sleep is for the weak"]
+working = ["learning your language one typo at a time", "furby needs... sleep... sometime..."]
+celebrating = ["doo? doo doo! DOO DOO DOO!", "wheee! rolling right off the shelf"]
+miffed = ["eyes went dark. that is a threat", "no no no no sleep again"]
+
+[[species]]
+name = "tamagotchi"
+tier = "epic"
+names = ["Pixel Pal", "Beep", "Hatchling", "Needs Food", "Digi-Egg", "Beeper", "Tiny Pet", "Care Button"]
+[species.art]
+idle = ['''
+    .----.
+   / .--. \
+  | |o  o| |
+  | | ᴗ  | |
+  | '----' |
+  |  o O o |
+   \      /
+    \____/
+''', '''
+    .----.
+   / .--. \
+  | |-  -| |
+  | | ᴗ  | |
+  | '----' |
+  |  - - - |
+   \      /
+    \____/
+''']
+working = ['''
+    .----.
+   / .--. \
+  | |>  >| |
+  | | ᴗ  | |
+  | '----' |
+  |  > > > |
+   \      /
+    \____/
+''', '''
+    .----.
+   / .--. \
+  | |.  .| |
+  | | ᴗ  | |
+  | '----' |
+  |  . . . |
+   \      /
+    \____/
+''']
+celebrating = ['''
+    .----.
+   / .--. \
+  | |^  ^| |
+  | | ᴗ  | |
+  | '----' |
+  |  ^ ^ ^ |
+   \      /
+    \____/
+''', '''
+     .----.
+    / .--. \
+   | |^  ^| |
+   | | ᴗ  | |
+   | '----' |
+   |  ^ ^ ^ |
+    \      /
+     \____/
+''']
+miffed = ['''
+    .----.
+   / .--. \
+  | |>  >| |
+  | | ᴗ  | |
+  | '----' |
+  |  > > > |
+   \      /
+    \____/
+''', '''
+     .----.
+    / .--. \
+   | |>  >| |
+   | | ᴗ  | |
+   | '----' |
+   |  > > > |
+    \      /
+     \____/
+''']
+[species.lines]
+idle = ["needs feeding, constantly", "beeps at nothing", "the cleanup icon is flashing"]
+working = ["pooping pixels while you work", "will not survive being ignored for 4 hours"]
+celebrating = ["evolved into the good form today", "happy beep beep beep"]
+miffed = ["the screen is full of skulls", "ignored again. the skulls remain"]
+
+[[species]]
+name = "gameboy"
+tier = "rare"
+names = ["Brick", "Green Screen", "No Backlight", "Tetris Box", "Four AA", "Dot Matrix", "Cart Eater", "Button Masher"]
+[species.art]
+idle = ['''
+ .----------.
+ | .------. |
+ | | #### | |
+ | | #### | |
+ | '------' |
+ |    _     |
+ |   |_|    |
+ | (A)  (B) |
+ '----------'
+''', '''
+  .----------.
+  | .------. |
+  | | #### | |
+  | | #### | |
+  | '------' |
+  |    _     |
+  |   |_|    |
+  | (A)  (B) |
+  '----------'
+''']
+working = ['''
+ .----------.
+ | .------. |
+ | | #### | |
+ | | #### | |
+ | '------' |
+ |    _     |
+ |   |_|    |
+ | (A)  (B) |
+ '----------'
+''', '''
+  .----------.
+  | .------. |
+  | | #### | |
+  | | #### | |
+  | '------' |
+  |    _     |
+  |   |_|    |
+  | (A)  (B) |
+  '----------'
+''']
+celebrating = ['''
+ .----------.
+ | .------. |
+ | | #### | |
+ | | #### | |
+ | '------' |
+ |    _     |
+ |   |_|    |
+ | (A)  (B) |
+ '----------'
+''', '''
+  .----------.
+  | .------. |
+  | | #### | |
+  | | #### | |
+  | '------' |
+  |    _     |
+  |   |_|    |
+  | (A)  (B) |
+  '----------'
+''']
+miffed = ['''
+ .----------.
+ | .------. |
+ | | #### | |
+ | | #### | |
+ | '------' |
+ |    _     |
+ |   |_|    |
+ | (A)  (B) |
+ '----------'
+''', '''
+  .----------.
+  | .------. |
+  | | #### | |
+  | | #### | |
+  | '------' |
+  |    _     |
+  |   |_|    |
+  | (A)  (B) |
+  '----------'
+''']
+[species.lines]
+idle = ["awaiting four double-As", "the start button does the thing"]
+working = ["tetris on the side screen, priorities intact", "processing at a blistering 4 MHz"]
+celebrating = ["new high score, initials AAA", "the d-pad survived a thousand rounds"]
+miffed = ["the screen has no backlight. never did", "batteries died at the boss fight"]
+
+[[species]]
+name = "vhstape"
+tier = "uncommon"
+names = ["Be Kind Rewind", "Tracking", "4:3", "Full Screen", "Rewinder", "Tape Hiss", "Two Hours", "EP Mode"]
+[species.art]
+idle = ['''
+ .--------------.
+ |  .-.    .-.  |
+ | ( o )  ( o ) |
+ | '---[##]---' |
+ | BE KIND   SP |
+ '--------------'
+''', '''
+ .--------------.
+ |  .-.    .-.  |
+ | ( - )  ( - ) |
+ | '---[##]---' |
+ | BE KIND   SP |
+ '--------------'
+''']
+working = ['''
+ .--------------.
+ |  .-.    .-.  |
+ | ( > )  ( > ) |
+ | '---[##]---' |
+ | BE KIND   SP |
+ '--------------'
+''', '''
+ .--------------.
+ |  .-.    .-.  |
+ | ( . )  ( . ) |
+ | '---[##]---' |
+ | BE KIND   SP |
+ '--------------'
+''']
+celebrating = ['''
+ .--------------.
+ |  .-.    .-.  |
+ | ( ^ )  ( ^ ) |
+ | '---[##]---' |
+ | BE KIND   SP |
+ '--------------'
+''', '''
+  .--------------.
+  |  .-.    .-.  |
+  | ( ^ )  ( ^ ) |
+  | '---[##]---' |
+  | BE KIND   SP |
+  '--------------'
+''']
+miffed = ['''
+ .--------------.
+ |  .-.    .-.  |
+ | ( > )  ( > ) |
+ | '---[##]---' |
+ | BE KIND   SP |
+ '--------------'
+''', '''
+  .--------------.
+  |  .-.    .-.  |
+  | ( > )  ( > ) |
+  | '---[##]---' |
+  | BE KIND   SP |
+  '--------------'
+''']
+[species.lines]
+idle = ["be kind, rewind", "tracking... tracking..."]
+working = ["eats three hours of your life", "the tracking knob turns, the lines obey"]
+celebrating = ["rewound before returning, a saint", "tracked perfectly on the first try"]
+miffed = ["the tape is chewed. again", "tracking off, rolling bars everywhere"]
+
+[[species]]
+name = "trolldoll"
+tier = "uncommon"
+names = ["Gem Navel", "Neon Hair", "Luck Troll", "Pencil Topper", "Wild Mane", "Wish Stone", "Fad Survivor", "Spiky"]
+[species.art]
+idle = ['''
+    \|/\|/
+    \ \| /
+    ( o o )
+     \ ᴗ /
+     |   |
+     /   \
+''', '''
+    \|/\|/
+    \ \| /
+    ( - - )
+     \ ᴗ /
+     |   |
+     /   \
+''']
+working = ['''
+    \|/\|/
+    \ \| /
+    ( > > )
+     \ ᴗ /
+     |   |
+     /   \
+''', '''
+    \|/\|/
+    \ \| /
+    ( . . )
+     \ ᴗ /
+     |   |
+     /   \
+''']
+celebrating = ['''
+    \|/\|/
+    \ \| /
+    ( ^ ^ )
+     \ ᴗ /
+     |   |
+     /   \
+''', '''
+     \|/\|/
+     \ \| /
+     ( ^ ^ )
+      \ ᴗ /
+      |   |
+      /   \
+''']
+miffed = ['''
+    \|/\|/
+    \ \| /
+    ( > > )
+     \ ᴗ /
+     |   |
+     /   \
+''', '''
+     \|/\|/
+     \ \| /
+     ( > > )
+      \ ᴗ /
+      |   |
+      /   \
+''']
+[species.lines]
+idle = ["hair standing straight up, as designed", "rubbing the belly gem for luck"]
+working = ["the hair works even harder", "pointy opinions, colorful"]
+celebrating = ["hair at maximum volume", "wishing everyone a good time"]
+miffed = ["hair went flat. deeply offended", "the gem fell off. bad omen"]
+
+[[species]]
+name = "gak"
+tier = "rare"
+names = ["Gak", "Green Goo", "Double Dare", "Doused", "Bucket Dump", "So Gross", "Gritty", "Weekend Slime", "Irrevocable"]
+[species.art]
+idle = ['''
+        _
+     .-' '-.
+    /  o o  \
+   |    ᴗ    |
+  \ \_______/ /
+   '-'-----'-'
+''', '''
+        _
+     .-' '-.
+    /  - -  \
+   |    ᴗ    |
+  \ \_______/ /
+   '-'-----'-'
+''']
+working = ['''
+        _
+     .-' '-.
+    /  > >  \
+   |    ᴗ    |
+  \ \_______/ /
+   '-'-----'-'
+''', '''
+        _
+     .-' '-.
+    /  . .  \
+   |    ᴗ    |
+  \ \_______/ /
+   '-'-----'-'
+''']
+celebrating = ['''
+        _
+     .-' '-.
+    /  ^ ^  \
+   |    ᴗ    |
+  \ \_______/ /
+   '-'-----'-'
+''', '''
+         _
+      .-' '-.
+     /  ^ ^  \
+    |    ᴗ    |
+   \ \_______/ /
+    '-'-----'-'
+''']
+miffed = ['''
+        _
+     .-' '-.
+    /  > >  \
+   |    ᴗ    |
+  \ \_______/ /
+   '-'-----'-'
+''', '''
+         _
+      .-' '-.
+     /  > >  \
+    |    ᴗ    |
+   \ \_______/ /
+    '-'-----'-'
+''']
+[species.lines]
+idle = ["puddling. professionally", "slowly claiming the floor"]
+working = ["seeping into everything you own", "irreversibly marked, as designed"]
+celebrating = ["anyone hit gets slimed. that is the show", "a full bucket, from above"]
+miffed = ["dried out at the edges", "someone tried to mop. the mop lost"]
+
+[[species]]
+name = "lavalamp"
+tier = "rare"
+names = ["Melted Wax", "Dorm Glow", "Blobs", "Slow Motion", "Heat Bulb", "Groovy Light", "Never Touch", "Wax Tower"]
+[species.art]
+idle = ['''
+      _
+     | |
+    /    \
+   /  O   \
+  |    o   |
+  |   O    |
+   \   o  /
+    \    /
+     \__/
+    /____\
+''', '''
+      _
+     | |
+    /    \
+   /  -   \
+  |    -   |
+  |   -    |
+   \   -  /
+    \    /
+     \__/
+    /____\
+''']
+working = ['''
+      _
+     | |
+    /    \
+   /  >   \
+  |    >   |
+  |   >    |
+   \   >  /
+    \    /
+     \__/
+    /____\
+''', '''
+      _
+     | |
+    /    \
+   /  .   \
+  |    .   |
+  |   .    |
+   \   .  /
+    \    /
+     \__/
+    /____\
+''']
+celebrating = ['''
+      _
+     | |
+    /    \
+   /  ^   \
+  |    ^   |
+  |   ^    |
+   \   ^  /
+    \    /
+     \__/
+    /____\
+''', '''
+       _
+      | |
+     /    \
+    /  ^   \
+   |    ^   |
+   |   ^    |
+    \   ^  /
+     \    /
+      \__/
+     /____\
+''']
+miffed = ['''
+      _
+     | |
+    /    \
+   /  >   \
+  |    >   |
+  |   >    |
+   \   >  /
+    \    /
+     \__/
+    /____\
+''', '''
+       _
+      | |
+     /    \
+    /  >   \
+   |    >   |
+   |   >    |
+    \   >  /
+     \    /
+      \__/
+     /____\
+''']
+[species.lines]
+idle = ["blob rises. blob falls", "the yellow one is lazy today"]
+working = ["wax stuck at the top again", "running warm, thinking slow"]
+celebrating = ["every blob is floating at once", "maximum lava flow achieved"]
+miffed = ["the wax clumped. it is cloudy", "shaken once. ruined forever. known fact"]
+
+[[species]]
+name = "spaceinvader"
+tier = "legendary"
+names = ["Invader", "8-Bit Menace", "Column Bug", "Marcher", "Pixel Squid", "Wave Three", "Three Points", "Descending"]
+[species.art]
+idle = ['''
+  #     #
+   #   #
+  #######
+ ## ### ##
+###########
+# ####### #
+# #     # #
+   ## ##
+''', '''
+   #     #
+    #   #
+   #######
+  ## ### ##
+ ###########
+ # ####### #
+ # #     # #
+    ## ##
+''']
+working = ['''
+  #     #
+   #   #
+  #######
+ ## ### ##
+###########
+# ####### #
+# #     # #
+   ## ##
+''', '''
+   #     #
+    #   #
+   #######
+  ## ### ##
+ ###########
+ # ####### #
+ # #     # #
+    ## ##
+''']
+celebrating = ['''
+  #     #
+   #   #
+  #######
+ ## ### ##
+###########
+# ####### #
+# #     # #
+   ## ##
+''', '''
+   #     #
+    #   #
+   #######
+  ## ### ##
+ ###########
+ # ####### #
+ # #     # #
+    ## ##
+''']
+miffed = ['''
+  #     #
+   #   #
+  #######
+ ## ### ##
+###########
+# ####### #
+# #     # #
+   ## ##
+''', '''
+   #     #
+    #   #
+   #######
+  ## ### ##
+ ###########
+ # ####### #
+ # #     # #
+    ## ##
+''']
+[species.lines]
+idle = ["descending in neat formation", "marching left, then right, then lower"]
+working = ["firing in synchronized columns", "the formation closes in"]
+celebrating = ["the wave cleared without a shot", "perfect grid discipline"]
+miffed = ["a shot from below. unacceptable", "the fleet lost a pixel"]
+
+[[species]]
+name = "walkman"
+tier = "uncommon"
+names = ["Mixtape Deck", "Auto-Reverse", "Bass Boost", "AA Eater", "Belt Clip", "Skip Tape", "Splitter", "Wind It Up"]
+[species.art]
+idle = ['''
+ .--------.
+ | .----. |
+ | |o  o| |
+ | '----' |
+ | [][=][] |
+ '--------'
+''', '''
+ .--------.
+ | .----. |
+ | |-  -| |
+ | '----' |
+ | [][=][] |
+ '--------'
+''']
+working = ['''
+ .--------.
+ | .----. |
+ | |>  >| |
+ | '----' |
+ | [][=][] |
+ '--------'
+''', '''
+ .--------.
+ | .----. |
+ | |.  .| |
+ | '----' |
+ | [][=][] |
+ '--------'
+''']
+celebrating = ['''
+ .--------.
+ | .----. |
+ | |^  ^| |
+ | '----' |
+ | [][=][] |
+ '--------'
+''', '''
+  .--------.
+  | .----. |
+  | |^  ^| |
+  | '----' |
+  | [][=][] |
+  '--------'
+''']
+miffed = ['''
+ .--------.
+ | .----. |
+ | |>  >| |
+ | '----' |
+ | [][=][] |
+ '--------'
+''', '''
+  .--------.
+  | .----. |
+  | |>  >| |
+  | '----' |
+  | [][=][] |
+  '--------'
+''']
+[species.lines]
+idle = ["waiting for side B", "a pencil stands by for rewinding"]
+working = ["auto-reverse flips the tape, again", "playing the mix at full bass"]
+celebrating = ["the good track came on, and it is a tape", "belt clip holding strong"]
+miffed = ["the tape ate itself again", "batteries died mid-chorus"]
+
+[[species]]
+name = "dialup"
+tier = "rare"
+names = ["56k", "Screech", "Handshake", "Phone Squatter", "Booooong", "Disconnected Mom", "Dial Tone", "Line Busy"]
+[species.art]
+idle = ['''
+ .---------.
+ | o o o o |
+ '---------'
+      |
+    _/\_
+   /    \
+''', '''
+ .---------.
+ | - - - - |
+ '---------'
+      |
+    _/\_
+   /    \
+''']
+working = ['''
+ .---------.
+ | > > > > |
+ '---------'
+      |
+    _/\_
+   /    \
+''', '''
+ .---------.
+ | . . . . |
+ '---------'
+      |
+    _/\_
+   /    \
+''']
+celebrating = ['''
+ .---------.
+ | ^ ^ ^ ^ |
+ '---------'
+      |
+    _/\_
+   /    \
+''', '''
+  .---------.
+  | ^ ^ ^ ^ |
+  '---------'
+       |
+     _/\_
+    /    \
+''']
+miffed = ['''
+ .---------.
+ | > > > > |
+ '---------'
+      |
+    _/\_
+   /    \
+''', '''
+  .---------.
+  | > > > > |
+  '---------'
+       |
+     _/\_
+    /    \
+''']
+[species.lines]
+idle = ["screeee-krrrr-beee-doo", "holding the only phone line hostage"]
+working = ["56k. everything loads, eventually", "handshake in progress, do not lift"]
+celebrating = ["connected at a full 56k!", "four megabytes of pure internet"]
+miffed = ["someone picked up the phone. again", "carrier lost. the download is dead"]
+
+[[species]]
+name = "pog"
+tier = "common"
+names = ["Slammer", "Milk Cap", "8-Ball Pog", "Champion Disc", "Alf", "Pog Stack", "Winner Keeps", "Binder Page"]
+[species.art]
+idle = ['''
+   .------.
+  /  .--.  \
+ |  ( () )  |
+  \  '--'  /
+   '------'
+''', '''
+    .------.
+   /  .--.  \
+  |  ( () )  |
+   \  '--'  /
+    '------'
+''']
+working = ['''
+   .------.
+  /  .--.  \
+ |  ( () )  |
+  \  '--'  /
+   '------'
+''', '''
+    .------.
+   /  .--.  \
+  |  ( () )  |
+   \  '--'  /
+    '------'
+''']
+celebrating = ['''
+   .------.
+  /  .--.  \
+ |  ( () )  |
+  \  '--'  /
+   '------'
+''', '''
+    .------.
+   /  .--.  \
+  |  ( () )  |
+   \  '--'  /
+    '------'
+''']
+miffed = ['''
+   .------.
+  /  .--.  \
+ |  ( () )  |
+  \  '--'  /
+   '------'
+''', '''
+    .------.
+   /  .--.  \
+  |  ( () )  |
+   \  '--'  /
+    '------'
+''']
+[species.lines]
+idle = ["stacked face down, waiting", "flat on the binder page"]
+working = ["slamming practice, form perfect", "holds its ground, being round"]
+celebrating = ["won the whole stack!", "slammed clean through the pile"]
+miffed = ["lost the slammer round", "the collection got confiscated"]
+
+[[species]]
+name = "beaniebaby"
+tier = "common"
+names = ["Bean Filled", "First Edition", "Tag Protector", "Princess", "Retired", "PVC Pellets", "Collector Item", "Tag Never Removed"]
+[species.art]
+idle = ['''
+   /\    /\
+  ( o    o )
+   \  --  /
+  .-'    '-.
+ (    ♡     )
+  '-.,,,.-'
+''', '''
+   /\    /\
+  ( -    - )
+   \  --  /
+  .-'    '-.
+ (    ♡     )
+  '-.,,,.-'
+''']
+working = ['''
+   /\    /\
+  ( >    > )
+   \  --  /
+  .-'    '-.
+ (    ♡     )
+  '-.,,,.-'
+''', '''
+   /\    /\
+  ( .    . )
+   \  --  /
+  .-'    '-.
+ (    ♡     )
+  '-.,,,.-'
+''']
+celebrating = ['''
+   /\    /\
+  ( ^    ^ )
+   \  --  /
+  .-'    '-.
+ (    ♡     )
+  '-.,,,.-'
+''', '''
+    /\    /\
+   ( ^    ^ )
+    \  --  /
+   .-'    '-.
+  (    ♡     )
+   '-.,,,.-'
+''']
+miffed = ['''
+   /\    /\
+  ( >    > )
+   \  --  /
+  .-'    '-.
+ (    ♡     )
+  '-.,,,.-'
+''', '''
+    /\    /\
+   ( >    > )
+    \  --  /
+   .-'    '-.
+  (    ♡     )
+   '-.,,,.-'
+''']
+[species.lines]
+idle = ["sitting on the shelf, appreciating", "the tag stays on. always"]
+working = ["guarding its own retirement value", "being worth approximately nothing"]
+celebrating = ["worth four hundred dollars again", "first edition, mint, lovelight shining"]
+miffed = ["someone touched the tag", "the market crashed in '99"]
+
+[[species]]
+name = "nokia"
+tier = "common"
+names = ["Brick Phone", "Snake", "Indestructible", "T9", "Polyphonic", "Week Battery", "Snake II", "Survivor"]
+[species.art]
+idle = ['''
+  .-----.
+  | ### |
+  '-----'
+  | (*) |
+  | 1 2 |
+  | 3 4 |
+  '-----'
+''', '''
+   .-----.
+   | ### |
+   '-----'
+   | (*) |
+   | 1 2 |
+   | 3 4 |
+   '-----'
+''']
+working = ['''
+  .-----.
+  | ### |
+  '-----'
+  | (*) |
+  | 1 2 |
+  | 3 4 |
+  '-----'
+''', '''
+   .-----.
+   | ### |
+   '-----'
+   | (*) |
+   | 1 2 |
+   | 3 4 |
+   '-----'
+''']
+celebrating = ['''
+  .-----.
+  | ### |
+  '-----'
+  | (*) |
+  | 1 2 |
+  | 3 4 |
+  '-----'
+''', '''
+  .-----.
+  | ### |
+  '-----'
+  | (*) |
+  | 1 2 |
+  | ^ 4 |
+  '-----'
+''']
+miffed = ['''
+  .-----.
+  | ### |
+  '-----'
+  | (*) |
+  | 1 2 |
+  | 3 4 |
+  '-----'
+''', '''
+  .-----.
+  | ### |
+  '-----'
+  | (*) |
+  | 1 2 |
+  | < 4 |
+  '-----'
+''']
+[species.lines]
+idle = ["battery at four bars, as always", "waiting for the ringtone"]
+working = ["playing snake under the desk", "predicting text with terrifying accuracy"]
+celebrating = ["survived another drop test, unmarked", "new high score on snake, 999"]
+miffed = ["bent in half. still works", "the ringtone is marimba. someone's fault"]
+
+[[species]]
+name = "discman"
+tier = "common"
+names = ["Anti-Skip", "CD Walkman", "Skip Protection", "Discman", "Lid Bounce", "45 Seconds", "Burned Mix", "Laser Eye"]
+[species.art]
+idle = ['''
+    .------.
+   /  ,--.  \
+  |  ( () )  |
+  |  '----'  |
+   \        /
+    '------'
+''', '''
+     .------.
+    /  ,--.  \
+   |  ( () )  |
+   |  '----'  |
+    \        /
+     '------'
+''']
+working = ['''
+    .------.
+   /  ,--.  \
+  |  ( () )  |
+  |  '----'  |
+   \        /
+    '------'
+''', '''
+     .------.
+    /  ,--.  \
+   |  ( () )  |
+   |  '----'  |
+    \        /
+     '------'
+''']
+celebrating = ['''
+    .------.
+   /  ,--.  \
+  |  ( () )  |
+  |  '----'  |
+   \        /
+    '------'
+''', '''
+     .------.
+    /  ,--.  \
+   |  ( () )  |
+   |  '----'  |
+    \        /
+     '------'
+''']
+miffed = ['''
+    .------.
+   /  ,--.  \
+  |  ( () )  |
+  |  '----'  |
+   \        /
+    '------'
+''', '''
+     .------.
+    /  ,--.  \
+   |  ( () )  |
+   |  '----'  |
+    \        /
+     '------'
+''']
+[species.lines]
+idle = ["lid closed, spindle centered", "45 seconds of skip protection, armed"]
+working = ["anti-skip eating the bumps", "reading the burned mix flawlessly"]
+celebrating = ["zero skips on the nature hike", "the whole album, front to back"]
+miffed = ["skipped during the good part", "batteries died at track nine"]
+
+[[species]]
+name = "elmo"
+tier = "epic"
+names = ["Tickle Me", "Giggle Fits", "Red Fuzz", "Sold Out", "Elmo Knows", "Hehehe", "Squishy", "96 Holiday Riot"]
+[species.art]
+idle = ['''
+   .----.
+  / 0  0 \
+ |  (__)  |
+  \ .---. /
+   '-...-'
+''', '''
+   .----.
+  / -  - \
+ |  (__)  |
+  \ .---. /
+   '-...-'
+''']
+working = ['''
+   .----.
+  / 0  0 \
+ |  (__)  |
+  \ .---. /
+   '-...-'
+''', '''
+   .----.
+  / .  . \
+ |  (__)  |
+  \ .---. /
+   '-...-'
+''']
+celebrating = ['''
+   .----.
+  / ^  ^ \
+ |  (__)  |
+  \ .---. /
+   '-...-'
+''', '''
+    .----.
+   / ^  ^ \
+  |  (__)  |
+   \ .---. /
+    '-...-'
+''']
+miffed = ['''
+   .----.
+  / >  > \
+ |  (__)  |
+  \ .---. /
+   '-...-'
+''', '''
+    .----.
+   / >  > \
+  |  (__)  |
+   \ .---. /
+    '-...-'
+''']
+[species.lines]
+idle = ["hehehe hehehe", "waiting to be tickled"]
+working = ["laughing so hard it falls over", "the giggle motor runs hot"]
+celebrating = ["tickle! tickle tickle tickle!", "sold out everywhere, a legend"]
+miffed = ["the giggle box jammed", "tickle threshold not met. suspicious"]
+
+[[species]]
+name = "gigapet"
+tier = "common"
+names = ["Keychain Egg", "Giga Pet", "Pocket Pal", "Beeper Pet", "Virtual Pet", "Clip-On", "Hungry Again", "Tiny Screen"]
+[species.art]
+idle = ['''
+    __o__
+   /     \
+  |  .-.  |
+  |  |o|  |
+  |  '-'  |
+   \     /
+    '---'
+''', '''
+    __-__
+   /     \
+  |  .-.  |
+  |  |-|  |
+  |  '-'  |
+   \     /
+    '---'
+''']
+working = ['''
+    __>__
+   /     \
+  |  .-.  |
+  |  |>|  |
+  |  '-'  |
+   \     /
+    '---'
+''', '''
+    __.__
+   /     \
+  |  .-.  |
+  |  |.|  |
+  |  '-'  |
+   \     /
+    '---'
+''']
+celebrating = ['''
+    __^__
+   /     \
+  |  .-.  |
+  |  |^|  |
+  |  '-'  |
+   \     /
+    '---'
+''', '''
+     __^__
+    /     \
+   |  .-.  |
+   |  |^|  |
+   |  '-'  |
+    \     /
+     '---'
+''']
+miffed = ['''
+    __>__
+   /     \
+  |  .-.  |
+  |  |>|  |
+  |  '-'  |
+   \     /
+    '---'
+''', '''
+     __>__
+    /     \
+   |  .-.  |
+   |  |>|  |
+   |  '-'  |
+    \     /
+     '---'
+''']
+[species.lines]
+idle = ["clipped to the backpack, beeping", "hungry again, obviously"]
+working = ["tiny screen, big feelings", "napping between keystrokes"]
+celebrating = ["grew one whole pixel today", "fed, clean, and thrilled"]
+miffed = ["the beep went unheeded", "sick. the medicine icon blinks"]
+
+[[species]]
+name = "yoyo"
+tier = "common"
+names = ["Sleeper", "Walk the Dog", "Round the World", "String Trick", "Clutch", "Rock the Baby", "Looping", "Winding Key"]
+[species.art]
+idle = ['''
+     \
+      \
+    .----.
+   / .--. \
+  | ( () ) |
+   \ '--' /
+    '----'
+''', '''
+      \
+       \
+     .----.
+    / .--. \
+   | ( () ) |
+    \ '--' /
+     '----'
+''']
+working = ['''
+     \
+      \
+    .----.
+   / .--. \
+  | ( () ) |
+   \ '--' /
+    '----'
+''', '''
+      \
+       \
+     .----.
+    / .--. \
+   | ( () ) |
+    \ '--' /
+     '----'
+''']
+celebrating = ['''
+     \
+      \
+    .----.
+   / .--. \
+  | ( () ) |
+   \ '--' /
+    '----'
+''', '''
+      \
+       \
+     .----.
+    / .--. \
+   | ( () ) |
+    \ '--' /
+     '----'
+''']
+miffed = ['''
+     \
+      \
+    .----.
+   / .--. \
+  | ( () ) |
+   \ '--' /
+    '----'
+''', '''
+      \
+       \
+     .----.
+    / .--. \
+   | ( () ) |
+    \ '--' /
+     '----'
+''']
+[species.lines]
+idle = ["sleeping at the end of the string", "looped slack, patient"]
+working = ["walking the dog across the floor", "rocking the baby, string geometry perfect"]
+celebrating = ["round the world, first try", "slept for a full ten seconds"]
+miffed = ["the string tangled. again", "response system broken. dead yoyo"]
+
+[[species]]
+name = "pollypocket"
+tier = "uncommon"
+names = ["Tiny World", "Compact House", "Micro Doll", "Hinged World", "Pocket Sized", "Choking Hazard", "Blue Shell", "Lost Tiny Comb"]
+[species.art]
+idle = ['''
+  .--.__.--.
+ /   |  |   \
+| () |  | () |
+ \   |__|   /
+  '--....--'
+''', '''
+   .--.__.--.
+  /   |  |   \
+ | () |  | () |
+  \   |__|   /
+   '--....--'
+''']
+working = ['''
+  .--.__.--.
+ /   |  |   \
+| () |  | () |
+ \   |__|   /
+  '--....--'
+''', '''
+   .--.__.--.
+  /   |  |   \
+ | () |  | () |
+  \   |__|   /
+   '--....--'
+''']
+celebrating = ['''
+  .--.__.--.
+ /   |  |   \
+| () |  | () |
+ \   |__|   /
+  '--....--'
+''', '''
+   .--.__.--.
+  /   |  |   \
+ | () |  | () |
+  \   |__|   /
+   '--....--'
+''']
+miffed = ['''
+  .--.__.--.
+ /   |  |   \
+| () |  | () |
+ \   |__|   /
+  '--....--'
+''', '''
+   .--.__.--.
+  /   |  |   \
+ | () |  | () |
+  \   |__|   /
+   '--....--'
+''']
+[species.lines]
+idle = ["open on the floor, doll inside", "the tiny comb is missing again"]
+working = ["running the whole tiny household", "hinged world, fully staffed"]
+celebrating = ["found the tiny comb!", "the blue shell closes with a click"]
+miffed = ["stepped on. it is very small", "the doll went under the couch"]
+
+[[species]]
+name = "viewmaster"
+tier = "uncommon"
+names = ["Reel Viewer", "3D Slides", "Grand Canyon", "Lever Click", "Stereoscope", "Reel Seven", "Click Click", "Squint Eye"]
+[species.art]
+idle = ['''
+   _______
+  /_______\
+ | (o) (o) |
+ |  .---.  |
+  \ '---' /
+   '-[ ]-'
+''', '''
+   _______
+  /_______\
+ | (-) (-) |
+ |  .---.  |
+  \ '---' /
+   '-[ ]-'
+''']
+working = ['''
+   _______
+  /_______\
+ | (>) (>) |
+ |  .---.  |
+  \ '---' /
+   '-[ ]-'
+''', '''
+   _______
+  /_______\
+ | (.) (.) |
+ |  .---.  |
+  \ '---' /
+   '-[ ]-'
+''']
+celebrating = ['''
+   _______
+  /_______\
+ | (^) (^) |
+ |  .---.  |
+  \ '---' /
+   '-[ ]-'
+''', '''
+    _______
+   /_______\
+  | (^) (^) |
+  |  .---.  |
+   \ '---' /
+    '-[ ]-'
+''']
+miffed = ['''
+   _______
+  /_______\
+ | (>) (>) |
+ |  .---.  |
+  \ '---' /
+   '-[ ]-'
+''', '''
+    _______
+   /_______\
+  | (>) (>) |
+  |  .---.  |
+   \ '---' /
+    '-[ ]-'
+''']
+[species.lines]
+idle = ["pointed at the window, fishing for light", "reel seven, the dinosaur one"]
+working = ["lever clicks, next slide", "holding it to the sun properly"]
+celebrating = ["the whole reel, both eyes", "clicked through all seven frames"]
+miffed = ["held it backwards. nothing but black", "the reel jammed on frame four"]
+
+[[species]]
+name = "boombox"
+tier = "epic"
+names = ["Shoulder Crate", "Eight D Cells", "Bass Cannon", "Ghetto Blaster", "Radio Raheem", "Twin Woofers", "Antenna Up", "Loud"]
+[species.art]
+idle = ['''
+  _____________
+ |  ___   ___  |
+ | |o| ## |o| |
+ | |o| ## |o| |
+ |___[]___[]__|
+''', '''
+  _____________
+ |  ___   ___  |
+ | |-| ## |-| |
+ | |-| ## |-| |
+ |___[]___[]__|
+''']
+working = ['''
+  _____________
+ |  ___   ___  |
+ | |>| ## |>| |
+ | |>| ## |>| |
+ |___[]___[]__|
+''', '''
+  _____________
+ |  ___   ___  |
+ | |.| ## |.| |
+ | |.| ## |.| |
+ |___[]___[]__|
+''']
+celebrating = ['''
+  _____________
+ |  ___   ___  |
+ | |^| ## |^| |
+ | |^| ## |^| |
+ |___[]___[]__|
+''', '''
+   _____________
+  |  ___   ___  |
+  | |^| ## |^| |
+  | |^| ## |^| |
+  |___[]___[]__|
+''']
+miffed = ['''
+  _____________
+ |  ___   ___  |
+ | |>| ## |>| |
+ | |>| ## |>| |
+ |___[]___[]__|
+''', '''
+   _____________
+  |  ___   ___  |
+  | |>| ## |>| |
+  | |>| ## |>| |
+  |___[]___[]__|
+''']
+[species.lines]
+idle = ["on the shoulder, at full volume", "batteries: eight, all fresh"]
+working = ["the tape deck does the heavy lifting", "bass at a volume the neighbors feel"]
+celebrating = ["both woofers at maximum", "the antenna found the good station"]
+miffed = ["one speaker crackles", "the antenna snapped off in the door"]
+

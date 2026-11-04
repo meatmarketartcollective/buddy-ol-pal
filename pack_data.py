@@ -20,7 +20,7 @@ DATA["mario"] = [
   \♕/
  (o o)
   \ᴗ/
- /|♥|\
+ /|♡|\
   / \
 ''',{"idle":["fanning gently with the parasol","planning the next turnaround"],"working":["turnips pulled, precision strikes","gliding over the hard part"],"celebrating":["a perfect turnaround, as expected","the crowd goes wild for the deploy"],"miffed":["this castle is NOT acceptable","someone forgot tea time"]}),
 ("bowser","epic",["King Koopa","Shellfire","Koopa King","Fang","Big Bad","Spike"],r'''
@@ -32,7 +32,7 @@ DATA["mario"] = [
 ''',{"idle":["filling the dungeon with lava glow","breathing smoke while it waits"],"working":["fire-breathing through the build","gnashing at the dependency graph"],"celebrating":["KING OF THE BUILD","a roar that echoes down the pipeline"],"miffed":["SHOW ME YOUR PAPERS, COMPILER","someone is getting dropped in lava"]}),
 ("toad","uncommon",["Mushroom","Retainer","Spud","Fungus","Cap","Little"],r'''
  .-===-.
-(● ● ●)
+(* * *)
   (o o)
    \_/
   /| |\
@@ -259,6 +259,7 @@ DATA["pokemon"] = [
 ("ditto","common",["Copy","Blob","Mirror","Anyone","Morph","Placeholder"],r'''
  .------.
 |        |
+| o    o |
 |  .--.  |
 |  '--'  |
  \______/''',{"idle":["a puddle of pure potential","practicing being a different rock"],"working":["transforming into the exact tool needed","copying the work, perfectly"],"celebrating":["became a party hat, somehow","morphed into a tiny victory"],"miffed":["transformed into a frown","the copy is imperfect and offended"]}),
@@ -394,7 +395,7 @@ DATA["starfox"] = [
   .---.
  / o o \
  \ ᴗ /
- /|♥|\
+ /|♡|\
   / \
 ''',{"idle":["curls bouncing, eyes bright","flight log pristine"],"working":["new pilot, old soul","flying textbook-perfect"],"celebrating":["first solo flight, flawless","the whole squad cheered"],"miffed":["the textbook did NOT cover this","ears drooped, resolve held"]}),
 ("miyu","common",["Lynx","Wildcat","Feline","Fast","Lone","Sharp"],r'''
@@ -575,3 +576,176 @@ DATA["pokemon"].append(("petrock","common",["Pebble","Rocky","Dwayne","Boulder",
  /    \
  \____/
 ''',{"idle":["does nothing","sits there","has seen things","is a rock"],"working":["still a rock","contains gravel","does not help","rocks do not work"],"celebrating":["vibrates with joy inside","emotionally granite"],"miffed":["unbothered","stays a rock"]}))
+DATA["nostalgia"] = [
+("furby","legendary",["Furball","Chatter","Fuzzbutt","Owl-Cat","Gremlin","Snuggler","Gizmo","Babbler"],r'''
+   /\      /\
+  /  \____/  \
+ /            \
+|   .------.   |
+|  ( o    o )  |
+|      ><      |
+ \____________/
+''',{"idle":["doo-doo-doo-doo","blinking at you in a language with no words","deep sleep is for the weak"],"working":["learning your language one typo at a time","furby needs... sleep... sometime..."],"celebrating":["doo? doo doo! DOO DOO DOO!","wheee! rolling right off the shelf"],"miffed":["eyes went dark. that is a threat","no no no no sleep again"]}),
+("tamagotchi","epic",["Pixel Pal","Beep","Hatchling","Needs Food","Digi-Egg","Beeper","Tiny Pet","Care Button"],r'''
+    .----.
+   / .--. \
+  | |o  o| |
+  | | ᴗ  | |
+  | '----' |
+  |  o O o |
+   \      /
+    \____/
+''',{"idle":["needs feeding, constantly","beeps at nothing","the cleanup icon is flashing"],"working":["pooping pixels while you work","will not survive being ignored for 4 hours"],"celebrating":["evolved into the good form today","happy beep beep beep"],"miffed":["the screen is full of skulls","ignored again. the skulls remain"]}),
+("gameboy","rare",["Brick","Green Screen","No Backlight","Tetris Box","Four AA","Dot Matrix","Cart Eater","Button Masher"],r'''
+ .----------.
+ | .------. |
+ | | #### | |
+ | | #### | |
+ | '------' |
+ |    _     |
+ |   |_|    |
+ | (A)  (B) |
+ '----------'
+''',{"idle":["awaiting four double-As","the start button does the thing"],"working":["tetris on the side screen, priorities intact","processing at a blistering 4 MHz"],"celebrating":["new high score, initials AAA","the d-pad survived a thousand rounds"],"miffed":["the screen has no backlight. never did","batteries died at the boss fight"]}),
+("vhstape","uncommon",["Be Kind Rewind","Tracking","4:3","Full Screen","Rewinder","Tape Hiss","Two Hours","EP Mode"],r'''
+ .--------------.
+ |  .-.    .-.  |
+ | ( o )  ( o ) |
+ | '---[##]---' |
+ | BE KIND   SP |
+ '--------------'
+''',{"idle":["be kind, rewind","tracking... tracking..."],"working":["eats three hours of your life","the tracking knob turns, the lines obey"],"celebrating":["rewound before returning, a saint","tracked perfectly on the first try"],"miffed":["the tape is chewed. again","tracking off, rolling bars everywhere"]}),
+("trolldoll","uncommon",["Gem Navel","Neon Hair","Luck Troll","Pencil Topper","Wild Mane","Wish Stone","Fad Survivor","Spiky"],r'''
+    \|/\|/
+    \ \| /
+    ( o o )
+     \ ᴗ /
+     |   |
+     /   \
+''',{"idle":["hair standing straight up, as designed","rubbing the belly gem for luck"],"working":["the hair works even harder","pointy opinions, colorful"],"celebrating":["hair at maximum volume","wishing everyone a good time"],"miffed":["hair went flat. deeply offended","the gem fell off. bad omen"]}),
+("gak","rare",["Gak","Green Goo","Double Dare","Doused","Bucket Dump","So Gross","Gritty","Weekend Slime","Irrevocable"],r'''
+        _
+     .-' '-.
+    /  o o  \
+   |    ᴗ    |
+  \ \_______/ /
+   '-'-----'-'
+''',{"idle":["puddling. professionally","slowly claiming the floor"],"working":["seeping into everything you own","irreversibly marked, as designed"],"celebrating":["anyone hit gets slimed. that is the show","a full bucket, from above"],"miffed":["dried out at the edges","someone tried to mop. the mop lost"]}),
+("lavalamp","rare",["Melted Wax","Dorm Glow","Blobs","Slow Motion","Heat Bulb","Groovy Light","Never Touch","Wax Tower"],r'''
+      _
+     | |
+    /    \
+   /  O   \
+  |    o   |
+  |   O    |
+   \   o  /
+    \    /
+     \__/
+    /____\
+''',{"idle":["blob rises. blob falls","the yellow one is lazy today"],"working":["wax stuck at the top again","running warm, thinking slow"],"celebrating":["every blob is floating at once","maximum lava flow achieved"],"miffed":["the wax clumped. it is cloudy","shaken once. ruined forever. known fact"]}),
+("spaceinvader","legendary",["Invader","8-Bit Menace","Column Bug","Marcher","Pixel Squid","Wave Three","Three Points","Descending"],r'''
+  #     #
+   #   #
+  #######
+ ## ### ##
+###########
+# ####### #
+# #     # #
+   ## ##
+''',{"idle":["descending in neat formation","marching left, then right, then lower"],"working":["firing in synchronized columns","the formation closes in"],"celebrating":["the wave cleared without a shot","perfect grid discipline"],"miffed":["a shot from below. unacceptable","the fleet lost a pixel"]}),
+("walkman","uncommon",["Mixtape Deck","Auto-Reverse","Bass Boost","AA Eater","Belt Clip","Skip Tape","Splitter","Wind It Up"],r'''
+ .--------.
+ | .----. |
+ | |o  o| |
+ | '----' |
+ | [][=][] |
+ '--------'
+''',{"idle":["waiting for side B","a pencil stands by for rewinding"],"working":["auto-reverse flips the tape, again","playing the mix at full bass"],"celebrating":["the good track came on, and it is a tape","belt clip holding strong"],"miffed":["the tape ate itself again","batteries died mid-chorus"]}),
+("dialup","rare",["56k","Screech","Handshake","Phone Squatter","Booooong","Disconnected Mom","Dial Tone","Line Busy"],r'''
+ .---------.
+ | o o o o |
+ '---------'
+      |
+    _/\_
+   /    \
+''',{"idle":["screeee-krrrr-beee-doo","holding the only phone line hostage"],"working":["56k. everything loads, eventually","handshake in progress, do not lift"],"celebrating":["connected at a full 56k!","four megabytes of pure internet"],"miffed":["someone picked up the phone. again","carrier lost. the download is dead"]}),
+("pog","common",["Slammer","Milk Cap","8-Ball Pog","Champion Disc","Alf","Pog Stack","Winner Keeps","Binder Page"],r'''
+   .------.
+  /  .--.  \
+ |  ( () )  |
+  \  '--'  /
+   '------'
+''',{"idle":["stacked face down, waiting","flat on the binder page"],"working":["slamming practice, form perfect","holds its ground, being round"],"celebrating":["won the whole stack!","slammed clean through the pile"],"miffed":["lost the slammer round","the collection got confiscated"]}),
+("beaniebaby","common",["Bean Filled","First Edition","Tag Protector","Princess","Retired","PVC Pellets","Collector Item","Tag Never Removed"],r'''
+   /\    /\
+  ( o    o )
+   \  --  /
+  .-'    '-.
+ (    ♡     )
+  '-.,,,.-'
+''',{"idle":["sitting on the shelf, appreciating","the tag stays on. always"],"working":["guarding its own retirement value","being worth approximately nothing"],"celebrating":["worth four hundred dollars again","first edition, mint, lovelight shining"],"miffed":["someone touched the tag","the market crashed in '99"]}),
+("nokia","common",["Brick Phone","Snake","Indestructible","T9","Polyphonic","Week Battery","Snake II","Survivor"],r'''
+  .-----.
+  | ### |
+  '-----'
+  | (*) |
+  | 1 2 |
+  | 3 4 |
+  '-----'
+''',{"idle":["battery at four bars, as always","waiting for the ringtone"],"working":["playing snake under the desk","predicting text with terrifying accuracy"],"celebrating":["survived another drop test, unmarked","new high score on snake, 999"],"miffed":["bent in half. still works","the ringtone is marimba. someone's fault"]}),
+("discman","common",["Anti-Skip","CD Walkman","Skip Protection","Discman","Lid Bounce","45 Seconds","Burned Mix","Laser Eye"],r'''
+    .------.
+   /  ,--.  \
+  |  ( () )  |
+  |  '----'  |
+   \        /
+    '------'
+''',{"idle":["lid closed, spindle centered","45 seconds of skip protection, armed"],"working":["anti-skip eating the bumps","reading the burned mix flawlessly"],"celebrating":["zero skips on the nature hike","the whole album, front to back"],"miffed":["skipped during the good part","batteries died at track nine"]}),
+("elmo","epic",["Tickle Me","Giggle Fits","Red Fuzz","Sold Out","Elmo Knows","Hehehe","Squishy","96 Holiday Riot"],r'''
+   .----.
+  / 0  0 \
+ |  (__)  |
+  \ .---. /
+   '-...-'
+''',{"idle":["hehehe hehehe","waiting to be tickled"],"working":["laughing so hard it falls over","the giggle motor runs hot"],"celebrating":["tickle! tickle tickle tickle!","sold out everywhere, a legend"],"miffed":["the giggle box jammed","tickle threshold not met. suspicious"]}),
+("gigapet","common",["Keychain Egg","Giga Pet","Pocket Pal","Beeper Pet","Virtual Pet","Clip-On","Hungry Again","Tiny Screen"],r'''
+    __o__
+   /     \
+  |  .-.  |
+  |  |o|  |
+  |  '-'  |
+   \     /
+    '---'
+''',{"idle":["clipped to the backpack, beeping","hungry again, obviously"],"working":["tiny screen, big feelings","napping between keystrokes"],"celebrating":["grew one whole pixel today","fed, clean, and thrilled"],"miffed":["the beep went unheeded","sick. the medicine icon blinks"]}),
+("yoyo","common",["Sleeper","Walk the Dog","Round the World","String Trick","Clutch","Rock the Baby","Looping","Winding Key"],r'''
+     \
+      \
+    .----.
+   / .--. \
+  | ( () ) |
+   \ '--' /
+    '----'
+''',{"idle":["sleeping at the end of the string","looped slack, patient"],"working":["walking the dog across the floor","rocking the baby, string geometry perfect"],"celebrating":["round the world, first try","slept for a full ten seconds"],"miffed":["the string tangled. again","response system broken. dead yoyo"]}),
+("pollypocket","uncommon",["Tiny World","Compact House","Micro Doll","Hinged World","Pocket Sized","Choking Hazard","Blue Shell","Lost Tiny Comb"],r'''
+  .--.__.--.
+ /   |  |   \
+| () |  | () |
+ \   |__|   /
+  '--....--'
+''',{"idle":["open on the floor, doll inside","the tiny comb is missing again"],"working":["running the whole tiny household","hinged world, fully staffed"],"celebrating":["found the tiny comb!","the blue shell closes with a click"],"miffed":["stepped on. it is very small","the doll went under the couch"]}),
+("viewmaster","uncommon",["Reel Viewer","3D Slides","Grand Canyon","Lever Click","Stereoscope","Reel Seven","Click Click","Squint Eye"],r'''
+   _______
+  /_______\
+ | (o) (o) |
+ |  .---.  |
+  \ '---' /
+   '-[ ]-'
+''',{"idle":["pointed at the window, fishing for light","reel seven, the dinosaur one"],"working":["lever clicks, next slide","holding it to the sun properly"],"celebrating":["the whole reel, both eyes","clicked through all seven frames"],"miffed":["held it backwards. nothing but black","the reel jammed on frame four"]}),
+("boombox","epic",["Shoulder Crate","Eight D Cells","Bass Cannon","Ghetto Blaster","Radio Raheem","Twin Woofers","Antenna Up","Loud"],r'''
+  _____________
+ |  ___   ___  |
+ | |o| ## |o| |
+ | |o| ## |o| |
+ |___[]___[]__|
+''',{"idle":["on the shoulder, at full volume","batteries: eight, all fresh"],"working":["the tape deck does the heavy lifting","bass at a volume the neighbors feel"],"celebrating":["both woofers at maximum","the antenna found the good station"],"miffed":["one speaker crackles","the antenna snapped off in the door"]}),
+]
