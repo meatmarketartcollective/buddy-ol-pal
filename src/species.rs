@@ -60,6 +60,17 @@ struct SpeciesFile {
     species: Vec<Species>,
 }
 
+/// One spoken line for a mood, rotated by seed so back-to-back calls
+/// usually differ. An empty pool returns "" and callers skip speaking
+/// rather than print silence.
+pub fn speak(sp: &Species, mood: Mood, seed: u64) -> &str {
+    let pool = sp.lines.for_mood(mood);
+    if pool.is_empty() {
+        return "";
+    }
+    &pool[(seed % pool.len() as u64) as usize]
+}
+
 pub fn table() -> &'static [Species] {
     static TABLE: OnceLock<Vec<Species>> = OnceLock::new();
     TABLE.get_or_init(|| {
@@ -255,5 +266,25 @@ mod tests {
         let none = dex_rows(&[]);
         assert_eq!(none[0].starts_with("0/"), true);
         assert_eq!(none.iter().filter(|r| r.contains("???")).count(), t.len());
+    }
+
+    #[test]
+    fn speak_rotates_within_pools() {
+        let sp = resolve("overlord");
+        let a = speak(sp, Mood::Idle, 0);
+        let b = speak(sp, Mood::Idle, 1);
+        assert_ne!(a, b, "seed should move through the pool");
+        assert_eq!(speak(sp, Mood::Idle, 0), a, "same seed, same line");
+    }
+
+    #[test]
+    fn every_species_can_speak_in_every_mood() {
+        // Table integrity: no empty pools, so every voice path finds a line
+        // and never prints silence.
+        for s in table() {
+            for m in [Mood::Idle, Mood::Working, Mood::Celebrate, Mood::Miffed] {
+                assert!(!speak(s, m, 0).is_empty(), "{} has an empty pool", s.name);
+            }
+        }
     }
 }

@@ -1,3 +1,4 @@
+use crate::species;
 use crate::state::{self, Event};
 use std::process::Command;
 use std::time::Instant;
@@ -42,6 +43,16 @@ pub fn run_and_log(argv: &[String]) -> i32 {
 /// Fold one logged event into the companion: write it, pay the XP, apply the
 /// chaos effect, save, and notify while the buddy is on. Shared by `tb run`
 /// and `tb emit` so adapters get exactly the same reactions.
+/// Voice: print one spoken line, but only when stdout is a real terminal.
+/// Piped output stays machine-clean; that lesson cost a bug already.
+pub fn speak_text(msg: &str) {
+    use std::io::IsTerminal;
+    if !std::io::stdout().is_terminal() {
+        return;
+    }
+    println!("{msg}");
+}
+
 pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, code: i32) -> i32 {
     let _lock = state::lock_state(dir);
 
@@ -100,6 +111,28 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
     // on the status line so other panes see it.
     if st.enabled {
         if let Some(k) = kind {
+            // Voice: the buddy speaks a line right where the run happened.
+            // The ping is the notification half; this is the text half. Both
+            // stay gated on the off switch and on stdout being a terminal.
+            let mood = if k == "command_failed" {
+                state::Mood::Miffed
+            } else {
+                state::Mood::Celebrate
+            };
+            let sp = species::get(&st.species).unwrap_or_else(species::fallback);
+            let line = species::speak(
+                sp,
+                mood,
+                (state::now_secs() as u64) + st.chaos.unsigned_abs(),
+            );
+            if !line.is_empty() {
+                speak_text(&format!(
+                    "{} the {}: {}",
+                    st.name,
+                    species::display_name(&st.species),
+                    line
+                ));
+            }
             notify(&notification_message(k, duration_secs, code));
         }
     }

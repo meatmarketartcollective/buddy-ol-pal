@@ -27,7 +27,16 @@ and saves it locally. No config, no account.
     tb off / tb on              # the off switch: no notifications, no UI; events still log
     tb emit <kind> [--exit N] [--secs S]  # adapter: feed hatch an event from any harness
 
-#### Passive capture (no wrapping)
+#### The voice
+
+The buddy speaks in text, not noise. `tb talk` asks for a line, `tb status`
+quotes the mood it is in, and after every qualifying event (a wrapped run, an
+emit, or a captured shell command) it says a line that matches the mood:
+celebrating on a green build, miffed on a failure. All 38 species have pools
+per mood, and the 20 ported characters carry their signature quotes. Spoken
+lines only reach a real terminal; piped output stays clean.
+
+### Passive capture (no wrapping)
 
 Interactive shells can feed hatch without wrapping anything:
 

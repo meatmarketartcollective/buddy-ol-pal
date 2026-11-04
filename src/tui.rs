@@ -67,9 +67,13 @@ fn draw(
         last_line(last, now),
         Style::default().fg(Color::DarkGray),
     )));
+    lines.push(Line::from(Span::styled(
+        species::speak(sp, mood, (now / 5) as u64).to_string(),
+        Style::default().fg(Color::Cyan),
+    )));
 
     let w = 36u16;
-    let h = (art.lines().count() as u16).saturating_add(6);
+    let h = (art.lines().count() as u16).saturating_add(7);
     let popup = Rect {
         x: area.width.saturating_sub(w + 1),
         y: area.height.saturating_sub(h + 1),

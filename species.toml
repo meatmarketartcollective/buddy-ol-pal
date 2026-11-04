@@ -30,10 +30,10 @@ miffed = '''
    > ~ <'''
 
 [species.lines]
-idle = ["napping, waiting for something to happen"]
+idle = ["napping, waiting for something to happen", "embers glow when the build is warm"]
 working = ["*clang clang clang*"]
-celebrating = ["it worked! it actually worked!"]
-miffed = ["okay. that's twice now."]
+celebrating = ["it worked! it actually worked!", "a small celebration, then a nap"]
+miffed = ["okay. that's twice now.", "one ember does not spark twice"]
 
 [[species]]
 name = "moss"
@@ -62,10 +62,10 @@ miffed = '''
     > ~ <'''
 
 [species.lines]
-idle = ["growing quietly. nothing to see here."]
+idle = ["growing quietly. nothing to see here.", "growing quietly on your terminal"]
 working = ["photosynthesizing as fast as it can"]
-celebrating = ["a good day to be moss"]
-miffed = ["moss remembers."]
+celebrating = ["a good day to be moss", "the shade is comfy today"]
+miffed = ["moss remembers.", "moss remembers. moss forgives. slowly."]
 
 [[species]]
 name = "droplet"
@@ -94,10 +94,10 @@ miffed = '''
    \__/'''
 
 [species.lines]
-idle = ["bobbing quietly, waiting for rain"]
+idle = ["bobbing quietly, waiting for rain", "condensing on the build log"]
 working = ["stirring up a little whirlpool"]
-celebrating = ["made a splash!"]
-miffed = ["turned murky."]
+celebrating = ["made a splash!", "ripple, ripple, ripple"]
+miffed = ["turned murky.", "that leak is personal now"]
 
 [[species]]
 name = "geode"
@@ -126,10 +126,10 @@ miffed = '''
   \___/'''
 
 [species.lines]
-idle = ["solid as ever. crystals growing inside"]
+idle = ["solid as ever. crystals growing inside", "cracking open a good idea"]
 working = ["polishing its own insides"]
-celebrating = ["facets for days!"]
-miffed = ["cracked. only slightly."]
+celebrating = ["facets for days!", "shiny on the inside, mostly"]
+miffed = ["cracked. only slightly.", "you broke my favorite crystal"]
 
 [[species]]
 name = "moth"
@@ -158,10 +158,10 @@ miffed = '''
    ~  ~'''
 
 [species.lines]
-idle = ["fluttering toward the porch light"]
+idle = ["fluttering toward the porch light", "drawn to your brightest log line"]
 working = ["fanning furiously"]
-celebrating = ["drawn to the glow of success"]
-miffed = ["wings all askew."]
+celebrating = ["drawn to the glow of success", "lamp acquired"]
+miffed = ["wings all askew.", "the lamp flickered. unacceptable."]
 
 [[species]]
 name = "cactus"
@@ -190,10 +190,10 @@ miffed = '''
    \_/'''
 
 [species.lines]
-idle = ["standing very still. extremely patient"]
+idle = ["standing very still. extremely patient", "Prickly on syntax errors.", "thirsty for documentation"]
 working = ["drinking slowly, very slowly"]
-celebrating = ["bloomed for a moment"]
-miffed = ["pricklier than usual."]
+celebrating = ["bloomed for a moment", "surviving on sparse commits"]
+miffed = ["pricklier than usual.", "you watered me with error codes"]
 
 [[species]]
 name = "fox"
@@ -222,10 +222,10 @@ miffed = '''
   > ~ <'''
 
 [species.lines]
-idle = ["curled up, one ear still listening"]
+idle = ["curled up, one ear still listening", "lounging where the tests are warm"]
 working = ["zoomies. pure zoomies."]
-celebrating = ["found the best stick ever!"]
-miffed = ["ears flat. someone moved the food bowl."]
+celebrating = ["found the best stick ever!", "sly, quick, green checks"]
+miffed = ["ears flat. someone moved the food bowl.", "someone moved my den"]
 
 [[species]]
 name = "slime"
@@ -258,10 +258,10 @@ miffed = '''
 '''
 
 [species.lines]
-idle = ["settling into a comfortable puddle"]
+idle = ["settling into a comfortable puddle", "oozing through the backlog", "oozing through the backlog"]
 working = ["absorbing the workload, literally"]
-celebrating = ["wobbled with joy!"]
-miffed = ["viscosity increased noticeably."]
+celebrating = ["wobbled with joy!", "consuming your idle cycles", "consuming your idle cycles"]
+miffed = ["viscosity increased noticeably.", "slimed by another segfault", "slimed by another segfault"]
 
 [[species]]
 name = "ghost"
@@ -290,10 +290,10 @@ miffed = '''
    ~'~'~'''
 
 [species.lines]
-idle = ["haunting the build directory"]
+idle = ["haunting the build directory", "haunting the TODO comments"]
 working = ["phasing through the stack trace"]
-celebrating = ["boo-yah!"]
-miffed = ["gone translucent with annoyance."]
+celebrating = ["boo-yah!", "quietly satisfied"]
+miffed = ["gone translucent with annoyance.", "the segfault rattled my chains"]
 
 [[species]]
 name = "snail"
@@ -322,10 +322,10 @@ miffed = '''
    \___/'''
 
 [species.lines]
-idle = ["taking the scenic route"]
+idle = ["taking the scenic route", "slow and slimy and still shipping"]
 working = ["sliming at maximum slow"]
-celebrating = ["left a shiny trail!"]
-miffed = ["retracted into its shell."]
+celebrating = ["left a shiny trail!", "carry the build home"]
+miffed = ["retracted into its shell.", "who salted the codebase"]
 
 [[species]]
 name = "owl"
@@ -354,10 +354,10 @@ miffed = '''
    | |'''
 
 [species.lines]
-idle = ["watching. always watching."]
+idle = ["watching. always watching.", "keeping watch on the cron jobs"]
 working = ["hunting night prey"]
-celebrating = ["a wise choice!"]
-miffed = ["not amused. hoot."]
+celebrating = ["a wise choice!", "a wise old merge"]
+miffed = ["not amused. hoot.", "night shift ruined, hoot"]
 
 [[species]]
 name = "mushroom"
@@ -386,10 +386,10 @@ miffed = '''
     | |'''
 
 [species.lines]
-idle = ["sitting quietly in the shade"]
+idle = ["sitting quietly in the shade", "sprouting near the moist logs"]
 working = ["decomposing diligently"]
-celebrating = ["spores of joy!"]
-miffed = ["a little more fungry."]
+celebrating = ["spores of joy!", "sporing successfully"]
+miffed = ["a little more fungry.", "someone ate my mycelium"]
 
 [[species]]
 name = "dragon"
@@ -418,10 +418,10 @@ miffed = '''
    \_/~'''
 
 [species.lines]
-idle = ["napping on a hoard of one coin"]
+idle = ["napping on a hoard of one coin", "hoarding completed sprints"]
 working = ["stoking the furnace within"]
-celebrating = ["blew a celebratory smoke ring!"]
-miffed = ["smoke curling out of both nostrils."]
+celebrating = ["blew a celebratory smoke ring!", "the build is mine"]
+miffed = ["smoke curling out of both nostrils.", "you touched my treasure"]
 
 [[species]]
 name = "yeti"
@@ -450,10 +450,10 @@ miffed = '''
    /  \'''
 
 [species.lines]
-idle = ["staying cool under pressure"]
+idle = ["staying cool under pressure", "staying frosty on the mountaintop"]
 working = ["shoveling through the backlog, snow included"]
-celebrating = ["let out a mighty roar!"]
-miffed = ["grumbles in ice."]
+celebrating = ["let out a mighty roar!", "the summit is green"]
+miffed = ["grumbles in ice.", "whose avalanche was that"]
 
 [[species]]
 name = "robot"
@@ -482,10 +482,10 @@ miffed = '''
    [|]'''
 
 [species.lines]
-idle = ["running diagnostics on nothing"]
+idle = ["running diagnostics on nothing", "beeping in fluent bash"]
 working = ["beeping productively"]
-celebrating = ["SYSTEMS NOMINAL!"]
-miffed = ["rebooting mood driver."]
+celebrating = ["SYSTEMS NOMINAL!", "all systems nominal"]
+miffed = ["rebooting mood driver.", "error 404: mood not found"]
 
 [[species]]
 name = "star"
@@ -514,10 +514,10 @@ miffed = '''
   / | \'''
 
 [species.lines]
-idle = ["twinkling faintly"]
+idle = ["twinkling faintly", "soaking it in"]
 working = ["burning through the sky"]
-celebrating = ["went super nova!"]
-miffed = ["dimmed noticeably."]
+celebrating = ["went super nova!", "twinkling at the green check"]
+miffed = ["dimmed noticeably.", "a supernova of disappointment"]
 
 [[species]]
 name = "frog"
@@ -546,10 +546,10 @@ miffed = '''
     \  /'''
 
 [species.lines]
-idle = ["sitting on a lily pad"]
+idle = ["sitting on a lily pad", "croaking from the lily pad"]
 working = ["tongue out, catching bugs"]
-celebrating = ["ribbit ribbit hooray!"]
-miffed = ["puffed up cheeks."]
+celebrating = ["ribbit ribbit hooray!", "hopping over the flaky test"]
+miffed = ["puffed up cheeks.", "the pond dried up mid-build"]
 
 [[species]]
 name = "spider"
@@ -578,10 +578,10 @@ miffed = '''
   /\ /\'''
 
 [species.lines]
-idle = ["hanging out, literally"]
+idle = ["hanging out, literally", "weaving through the stack trace"]
 working = ["spinning up the next sprint"]
-celebrating = ["danced on the web!"]
-miffed = ["eight eyes narrowed."]
+celebrating = ["danced on the web!", "eight eyes, all on CI"]
+miffed = ["eight eyes narrowed.", "someone tore my web again"]
 
 
 [[species]]
@@ -627,10 +627,10 @@ miffed = '''
   (_____)'''
 
 [species.lines]
-idle = ["have you tried searching first?"]
+idle = ["have you tried searching first?", "Did you search first?", "the answer was on page two, as always"]
 working = ["cross-referencing every answer"]
-celebrating = ["accepted answer! +15 rep."]
-miffed = ["closed as duplicate."]
+celebrating = ["accepted answer! +15 rep.", "your question has been asked 4,000 times"]
+miffed = ["closed as duplicate.", "marked as duplicate, with love"]
 
 [[species]]
 name = "leak"
@@ -671,10 +671,10 @@ miffed = '''
 (_________)'''
 
 [species.lines]
-idle = ["quietly growing resident size"]
+idle = ["quietly growing resident size", "Expanding your RAM consumption...", "so much room for activities"]
 working = ["consuming all available memory"]
-celebrating = ["freed! ...for now."]
-miffed = ["leaked all over the floor."]
+celebrating = ["freed! ...for now.", "have you tried not holding everything?"]
+miffed = ["leaked all over the floor.", "swapping is just slow breathing"]
 
 [[species]]
 name = "wizard"
@@ -723,10 +723,10 @@ miffed = '''
  (====)'''
 
 [species.lines]
-idle = ["guarding the ancient spells"]
+idle = ["guarding the ancient spells", "Do not touch the ancient spells.", "legacy is just spells nobody dares refactor"]
 working = ["chanting over the legacy code"]
-celebrating = ["the spell compiled!"]
-miffed = ["someone touched the ancient files."]
+celebrating = ["the spell compiled!", "it compiles, the ancients permit it"]
+miffed = ["someone touched the ancient files.", "deprecated? no, seasoned."]
 
 [[species]]
 name = "crab"
@@ -771,10 +771,10 @@ miffed = '''
   v--^--v'''
 
 [species.lines]
-idle = ["clicking pincers, patiently"]
+idle = ["clicking pincers, patiently", "Changes requested.", "LGTM, except for all of it"]
 working = ["reading every diff line"]
-celebrating = ["LGTM! approved."]
-miffed = ["changes requested."]
+celebrating = ["LGTM! approved.", "nit: everything"]
+miffed = ["changes requested.", "blocking. politely."]
 
 [[species]]
 name = "axolotl"
@@ -811,10 +811,10 @@ miffed = '''
  /"---"\'''
 
 [species.lines]
-idle = ["gills clear, code ready"]
+idle = ["gills clear, code ready", "Gills clear, code ready!", "regenerating that lost afternoon"]
 working = ["regenerating a missing limb of the codebase"]
-celebrating = ["gills flapping happily!"]
-miffed = ["gills drooping."]
+celebrating = ["gills flapping happily!", "clean water, clean diffs"]
+miffed = ["gills drooping.", "swimming through your backlog"]
 
 [[species]]
 name = "duck"
@@ -851,10 +851,10 @@ miffed = '''
   "  "'''
 
 [species.lines]
-idle = ["quack(await bug)"]
+idle = ["quack(await bug)", "quack(await bug)", "resolving... eventually"]
 working = ["awaiting the bug, patiently"]
-celebrating = ["the future resolved!"]
-miffed = ["promise rejected."]
+celebrating = ["the future resolved!", "one day your callback will fire"]
+miffed = ["promise rejected.", "quack(.then(quack))"]
 
 [[species]]
 name = "turtle"
@@ -895,10 +895,10 @@ miffed = '''
   " " "'''
 
 [species.lines]
-idle = ["slow and steady"]
+idle = ["slow and steady", "Slow and steady passes CI.", "three green checks and a nap"]
 working = ["crossing the terminal at half speed"]
-celebrating = ["passed! eventually."]
-miffed = ["withdrawing into its shell."]
+celebrating = ["passed! eventually.", "flaky tests fear the shell"]
+miffed = ["withdrawing into its shell.", "patience is a pipeline"]
 
 [[species]]
 name = "bat"
@@ -935,10 +935,10 @@ miffed = '''
      ( " )'''
 
 [species.lines]
-idle = ["hanging out in dark mode"]
+idle = ["hanging out in dark mode", "Hanging out in the dark mode.", "echolocating the off-by-one"]
 working = ["navigating by echo"]
-celebrating = ["a screech of joy!"]
-miffed = ["hanging upside down, frowning."]
+celebrating = ["a screech of joy!", "dark mode: yes. dark themes: also yes"]
+miffed = ["hanging upside down, frowning.", "asleep upside down on your taskbar"]
 
 [[species]]
 name = "espresso"
@@ -983,10 +983,10 @@ miffed = '''
   |______/'''
 
 [species.lines]
-idle = ["overclocking your brain"]
+idle = ["overclocking your brain", "Overclocking your brain.", "pull another shot, ship another feature"]
 working = ["pulling a double shot"]
-celebrating = ["caffeine levels optimal!"]
-miffed = ["this is decaf."]
+celebrating = ["caffeine levels optimal!", "decaf is for quitters"]
+miffed = ["this is decaf.", "vibrating at the speed of deadlines"]
 
 [[species]]
 name = "boba"
@@ -1031,10 +1031,10 @@ miffed = '''
   \______/'''
 
 [species.lines]
-idle = ["sweetening the stack traces"]
+idle = ["sweetening the stack traces", "Sweetening the stack traces.", "pearls at the bottom, stack traces on top"]
 working = ["steeping in the debugger"]
-celebrating = ["pearls down, joy up!"]
-miffed = ["gone flat and lukewarm."]
+celebrating = ["pearls down, joy up!", "chewy code, chewy pearls"]
+miffed = ["gone flat and lukewarm.", "half sugar, half segfault"]
 
 [[species]]
 name = "rubberduck"
@@ -1071,10 +1071,10 @@ miffed = '''
    " "'''
 
 [species.lines]
-idle = ["listening to your logic"]
+idle = ["listening to your logic", "Explain your logic to me.", "wait, say that last part again"]
 working = ["quacking through the stack trace"]
-celebrating = ["the bug explained itself!"]
-miffed = ["squeaked twice. unimpressed."]
+celebrating = ["the bug explained itself!", "quack. (that explains it)"]
+miffed = ["squeaked twice. unimpressed.", "the bug left when you started talking"]
 
 [[species]]
 name = "toast"
@@ -1119,10 +1119,10 @@ miffed = '''
  \________/'''
 
 [species.lines]
-idle = ["golden brown and read-ready"]
+idle = ["golden brown and read-ready", "Golden brown read/write ops.", "lightly browned, fully written"]
 working = ["toasting sectors"]
-celebrating = ["ejected successfully!"]
-miffed = ["burnt on one side."]
+celebrating = ["ejected successfully!", "buttered sectors are happy sectors"]
+miffed = ["burnt on one side.", "burnt? no. toasty."]
 
 [[species]]
 name = "pixeldragon"
@@ -1163,10 +1163,10 @@ miffed = '''
   /_/ \_\'''
 
 [species.lines]
-idle = ["guarding the main branch"]
+idle = ["guarding the main branch", "Guarding the main branch.", "hoarding green CI runs"]
 working = ["compiling fire"]
-celebrating = ["roared in 8-bit!"]
-miffed = ["smoke stack offline."]
+celebrating = ["roared in 8-bit!", "force-push and face the flame"]
+miffed = ["smoke stack offline.", "one commit to rule them all"]
 
 [[species]]
 name = "quantum"
@@ -1211,10 +1211,10 @@ miffed = '''
    |___|'''
 
 [species.lines]
-idle = ["existing in superposition"]
+idle = ["existing in superposition", "Existing in superposed states.", "both built and broken until observed"]
 working = ["observing the waveform collapse"]
-celebrating = ["measured pure joy!"]
-miffed = ["decohered slightly."]
+celebrating = ["measured pure joy!", "the test collapses the waveform"]
+miffed = ["decohered slightly.", "passing in every branch but this one"]
 
 [[species]]
 name = "alien"
@@ -1251,10 +1251,10 @@ miffed = '''
   / / \ \'''
 
 [species.lines]
-idle = ["scanning source code"]
+idle = ["scanning source code", "Scanning source code.", "your civilization's docs are intriguing"]
 working = ["probing the codebase"]
-celebrating = ["life detected!"]
-miffed = ["abducted the wrong branch."]
+celebrating = ["life detected!", "abducting only the dead code"]
+miffed = ["abducted the wrong branch.", "beaming up the TODOs"]
 
 [[species]]
 name = "cauldron"
@@ -1299,10 +1299,10 @@ miffed = '''
    /_/ \_\'''
 
 [species.lines]
-idle = ["brewing dependencies"]
+idle = ["brewing dependencies", "Brewing dependencies.", "two parts semver, one part luck"]
 working = ["simmering the build"]
-celebrating = ["the potion passed!"]
-miffed = ["boiled over."]
+celebrating = ["the potion passed!", "bubble bubble, lock file trouble"]
+miffed = ["boiled over.", "stirred, never shaken"]
 
 [[species]]
 name = "glitch"
@@ -1339,10 +1339,10 @@ miffed = '''
   / \'''
 
 [species.lines]
-idle = ["buffer overflow detected"]
+idle = ["buffer overflow detected", "Buffer overflow detected.", "corruption is just free randomization"]
 working = ["corrupting productively"]
-celebrating = ["checksum passed!"]
-miffed = ["segfault. again."]
+celebrating = ["checksum passed!", "undefined behavior is a lifestyle"]
+miffed = ["segfault. again.", "404: calm not found"]
 
 [[species]]
 name = "cloud"
@@ -1383,10 +1383,10 @@ miffed = '''
   ! ! !'''
 
 [species.lines]
-idle = ["cloudy with a chance of bugs"]
+idle = ["cloudy with a chance of bugs", "Cloud computing with a chance of rain.", "30% chance of outages, 70% vibes"]
 working = ["raining on the deploy"]
-celebrating = ["partly sunny!"]
-miffed = ["100% chance of grumbling."]
+celebrating = ["partly sunny!", "serverless, except for the servers"]
+miffed = ["100% chance of grumbling.", "distributed drizzle all week"]
 
 [[species]]
 name = "sparkle"
@@ -1423,10 +1423,10 @@ miffed = '''
    / | \'''
 
 [species.lines]
-idle = ["twinkling with potential"]
+idle = ["twinkling with potential", "Polishing your commits.", "shiny diffs, shinier comments"]
 working = ["shining over the terminal"]
-celebrating = ["full sparkle achieved!"]
-miffed = ["dimmed for now."]
+celebrating = ["full sparkle achieved!", "linting away the dust"]
+miffed = ["dimmed for now.", "everything sparkles after a rebase"]
 
 [[species]]
 name = "saguaro"
@@ -1475,7 +1475,7 @@ miffed = '''
   ===='''
 
 [species.lines]
-idle = ["prickly about syntax"]
+idle = ["prickly about syntax", "standing tall in the sun"]
 working = ["photosynthesizing the sprint"]
-celebrating = ["in bloom!"]
-miffed = ["needles out."]
+celebrating = ["in bloom!", "bloomed overnight"]
+miffed = ["needles out.", "prickly does not begin to cover it"]

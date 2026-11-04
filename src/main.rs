@@ -172,7 +172,18 @@ fn play_cmd() -> i32 {
 }
 
 fn talk_cmd() -> i32 {
-    interaction("talked", 0, 0, "chirps a hello back. (talked)", "")
+    // Voice: the buddy answers with a real line from its species pool,
+    // matched to the mood it is in right now.
+    let dir = state::config_dir();
+    let st = state::load_or_hatch(&dir);
+    let events = state::read_events_tail(&dir, 50);
+    let now = state::now_secs();
+    let active = state::is_active(&dir);
+    let mood = state::current_mood(active, &events, now);
+    let sp = species::get(&st.species).unwrap_or_else(species::fallback);
+    let seed = (now as u64) + st.chaos.unsigned_abs() + st.xp.unsigned_abs();
+    let line = species::speak(sp, mood, seed);
+    interaction("talked", 0, 0, &format!("{line} (talked)"), "")
 }
 
 /// `tb off` / `tb on`: the off switch. Events keep logging either way; off
@@ -240,6 +251,16 @@ fn status_cmd() -> i32 {
             chaos
         )
     );
+    let sp = species::get(&st.species).unwrap_or_else(species::fallback);
+    let line = species::speak(
+        sp,
+        mood,
+        (now as u64) + chaos.unsigned_abs() + st.xp.unsigned_abs(),
+    );
+    if !line.is_empty() {
+        println!();
+        println!("\"{line}\"");
+    }
     0
 }
 
