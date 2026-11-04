@@ -34,30 +34,36 @@ pub fn run_and_log(argv: &[String]) -> i32 {
         }
     };
 
-    let threshold = threshold_secs();
-    let mut logged_kind: Option<String> = None;
+    let kind = state::classify(code, duration_secs, threshold_secs()).map(|k| k.to_string());
+    settle(&dir, kind.as_deref(), duration_secs, code);
+    code
+}
 
-    if let Some(kind) = state::classify(code, duration_secs, threshold) {
+/// Fold one logged event into the companion: write it, pay the XP, apply the
+/// chaos effect, save, and notify while the buddy is on. Shared by `tb run`
+/// and `tb emit` so adapters get exactly the same reactions.
+pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, code: i32) -> i32 {
+    if let Some(k) = kind {
         let ev = Event {
             ts: state::now_secs(),
-            kind: kind.to_string(),
+            kind: k.to_string(),
             duration_secs,
             exit_code: code,
         };
-        if let Err(e) = state::append_event(&dir, &ev) {
+        if let Err(e) = state::append_event(dir, &ev) {
             eprintln!("hatch: could not write event: {}", e);
         }
-        logged_kind = Some(kind.to_string());
     }
 
-    // XP accrual. Also persists the v1 -> v2 migration on the first run.
-    let mut st = state::load_or_hatch(&dir);
+    // XP accrual. Also persists any pending migration on the first run.
+    let mut st = state::load_or_hatch(dir);
+    let threshold = threshold_secs();
     st.xp += state::xp_gain(code, duration_secs, threshold);
     st.level = state::level_for(st.xp);
-    if let Some(k) = &logged_kind {
+    if let Some(k) = kind {
         state::apply_event_chaos(&mut st, k);
     }
-    if let Err(e) = state::save_state(&dir, &st) {
+    if let Err(e) = state::save_state(dir, &st) {
         eprintln!("hatch: could not save state: {}", e);
     }
 
@@ -65,12 +71,76 @@ pub fn run_and_log(argv: &[String]) -> i32 {
     // terminal for a desktop notification; inside tmux the message also lands
     // on the status line so other panes see it.
     if st.enabled {
-        if let Some(k) = &logged_kind {
+        if let Some(k) = kind {
             notify(&notification_message(k, duration_secs, code));
         }
     }
 
     code
+}
+
+/// `tb emit <kind> [--exit N] [--secs S]`: the adapter surface. Any harness
+/// can feed hatch an event without wrapping its command: kind names what
+/// happened ("build_finished", "command_failed", or its own), --exit and
+/// --secs carry the outcome. Same effects as a real run.
+pub fn parse_emit_args(argv: &[String]) -> Result<(String, i32, u64), String> {
+    let mut kind: Option<String> = None;
+    let mut exit_code = 0i32;
+    let mut secs = 0u64;
+    let mut it = argv.iter();
+    while let Some(a) = it.next() {
+        match a.as_str() {
+            "--exit" => match it.next().and_then(|v| v.parse().ok()) {
+                Some(v) => exit_code = v,
+                None => return Err("--exit needs a number".into()),
+            },
+            "--secs" => match it.next().and_then(|v| v.parse().ok()) {
+                Some(v) => secs = v,
+                None => return Err("--secs needs a number".into()),
+            },
+            _ if kind.is_none() => kind = Some(a.clone()),
+            _ => return Err("too many arguments".into()),
+        }
+    }
+    kind.ok_or_else(|| "no kind given".to_string())
+        .map(|k| (k, exit_code, secs))
+}
+
+pub fn emit(argv: &[String]) -> i32 {
+    let (kind, exit_code, secs) = match parse_emit_args(argv) {
+        Ok(parsed) => parsed,
+        Err(e) => {
+            eprintln!("hatch: {}. usage: tb emit <kind> [--exit N] [--secs S]", e);
+            return 2;
+        }
+    };
+    settle(&state::config_dir(), Some(&kind), secs, exit_code);
+    0
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn notification_messages_name_the_outcome() {
+        assert_eq!(notification_message("build_finished", 42, 0), "hatch: build finished in 42s");
+        assert_eq!(notification_message("command_failed", 3, 2), "hatch: command failed (exit 2)");
+        assert_eq!(notification_message("petted", 0, 0), "hatch: petted");
+    }
+
+    #[test]
+    fn emit_args_parse() {
+        let a: Vec<String> = vec!["build_finished".into()];
+        assert_eq!(parse_emit_args(&a).unwrap(), ("build_finished".into(), 0, 0));
+        let b: Vec<String> = vec!["command_failed".into(), "--exit".into(), "2".into(), "--secs".into(), "7".into()];
+        assert_eq!(parse_emit_args(&b).unwrap(), ("command_failed".into(), 2, 7));
+        assert!(parse_emit_args(&[]).is_err());
+        let c: Vec<String> = vec!["k".into(), "--exit".into()];
+        assert!(parse_emit_args(&c).is_err());
+        let d: Vec<String> = vec!["k".into(), "extra".into()];
+        assert!(parse_emit_args(&d).is_err());
+    }
 }
 
 /// The notification line for an event, in the buddy's voice.
@@ -95,14 +165,3 @@ pub fn notify(msg: &str) {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn notification_messages_name_the_outcome() {
-        assert_eq!(notification_message("build_finished", 42, 0), "hatch: build finished in 42s");
-        assert_eq!(notification_message("command_failed", 3, 2), "hatch: command failed (exit 2)");
-        assert_eq!(notification_message("petted", 0, 0), "hatch: petted");
-    }
-}

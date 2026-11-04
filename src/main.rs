@@ -17,6 +17,7 @@ fn help() {
     println!("  tb play            play with your buddy (+2 xp, eases chaos more, 5m cooldown)");
     println!("  tb talk            say hi; your buddy answers with a line");
     println!("  tb off / tb on     silence notifications and hide the UI, or wake it back up");
+    println!("  tb emit <kind>     feed hatch an event from any harness (e.g. build_finished --exit 0 --secs 42)");
     println!("  tb tail [-n N]     print the last N events as JSON lines (default 10)\n");
     println!("state lives in ~/.config/hatch (override with HATCH_HOME)");
 }
@@ -35,6 +36,7 @@ fn main() {
         Some("on") => switch_cmd(true),
         Some("dex") => dex_cmd(),
         Some("tail") => tail_cmd(&args[1..]),
+        Some("emit") => watcher::emit(&args[1..]),
         Some("-h") | Some("--help") | Some("help") => {
             help();
             0
