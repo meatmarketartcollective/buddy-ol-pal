@@ -1,4 +1,4 @@
-# buddy ol pal
+# /buddy ol pal
 
 A terminal companion that lives in your terminal and reacts to real events.
 One creature, 38 species across five rarity tiers, zero accounts. It remembers
