@@ -125,7 +125,7 @@ pub fn resolve(cfg: &AiConfig) -> Resolved {
         base_url,
         model: cfg.model.clone().unwrap_or_default(),
         key,
-        max_tokens: cfg.max_tokens.unwrap_or(64),
+        max_tokens: cfg.max_tokens.unwrap_or(512),
         timeout: Duration::from_secs(cfg.timeout_secs.unwrap_or(DEFAULT_TIMEOUT_SECS)),
     }
 }
@@ -263,6 +263,40 @@ fn http_post_err(
         .map_err(|e| format!("could not read {url} response body: {e}"))
 }
 
+/// Extract the reply text from an OpenAI-compat message object. Reasoning
+/// models on NVIDIA NIM return thinking in a separate `reasoning_content`
+/// field and can leave `content` null or empty when a small max_tokens cap
+/// is spent on thinking; fall back to reasoning_content in that case, and
+/// strip inline <think>...</think> blocks from whichever text we use.
+fn openai_message_text(msg: &serde_json::Value) -> Option<String> {
+    fn strip_think(s: &str) -> String {
+        let mut out = String::new();
+        let mut rest = s;
+        while let Some(i) = rest.find("<think>") {
+            out.push_str(&rest[..i]);
+            match rest[i..].find("</think>") {
+                Some(j) => rest = &rest[i + j + 8..],
+                None => {
+                    rest = "";
+                    break;
+                }
+            }
+        }
+        out.push_str(rest);
+        out
+    }
+    let content = msg.get("content").and_then(|c| c.as_str()).map(str::to_string);
+    match content {
+        Some(c) if !c.trim().is_empty() => Some(strip_think(&c)).filter(|s| !s.is_empty()),
+        _ => msg
+            .get("reasoning_content")
+            .and_then(|c| c.as_str())
+            .filter(|s| !s.trim().is_empty())
+            .map(|s| strip_think(s))
+            .filter(|s| !s.is_empty()),
+    }
+}
+
 fn parse_line(text: &str, provider: Provider) -> Option<String> {
     let j: serde_json::Value = match serde_json::from_str(text) {
         Ok(v) => v,
@@ -272,20 +306,16 @@ fn parse_line(text: &str, provider: Provider) -> Option<String> {
         }
     };
     match provider {
-        Provider::OpenAiCompat => match j
-            .get("choices")
-            .and_then(|c| c.get(0))
-            .and_then(|c| c.get("message"))
-            .and_then(|m| m.get("content"))
-            .and_then(|c| c.as_str())
-            .map(str::to_string)
-        {
-            Some(l) => Some(l),
-            None => {
-                ai_debug("openai-compat response had no choices[0].message.content");
-                None
+        Provider::OpenAiCompat => {
+            let msg = j.get("choices").and_then(|c| c.get(0)).and_then(|c| c.get("message"));
+            match msg.and_then(openai_message_text) {
+                Some(l) => Some(l),
+                None => {
+                    ai_debug("openai-compat response had no usable message content");
+                    None
+                }
             }
-        },
+        }
         Provider::Anthropic => {
             let arr = j.get("content")?.as_array()?;
             for item in arr {
@@ -429,11 +459,9 @@ fn parse_content(text: &str, provider: Provider) -> Result<String, String> {
             .get("choices")
             .and_then(|c| c.get(0))
             .and_then(|c| c.get("message"))
-            .and_then(|m| m.get("content"))
-            .and_then(|c| c.as_str())
-            .map(str::to_string)
+            .and_then(openai_message_text)
             .ok_or_else(|| {
-                "openai-compat response had no choices[0].message.content".to_string()
+                "openai-compat response had no usable message content".to_string()
             }),
         Provider::Anthropic => {
             let arr = j
@@ -465,7 +493,7 @@ fn probe_tool_call(r: &Resolved) -> bool {
         ),
         ("user".to_string(), "acknowledge".to_string()),
     ];
-    match chat(r, &msgs, Some(48), Duration::from_secs(15)) {
+    match chat(r, &msgs, Some(1024), Duration::from_secs(45)) {
         Ok(text) => parse_agent_probe(&text)
             .map(|v| v.get("action").is_some())
             .unwrap_or(false),
@@ -520,11 +548,11 @@ fn ping_body(r: &Resolved) -> (String, String) {
     match r.provider {
         Provider::OpenAiCompat => (
             format!("{}/chat/completions", r.base_url.trim_end_matches('/')),
-            serde_json::json!({"model": r.model, "max_tokens": 8u32, "messages": [msg]}).to_string(),
+            serde_json::json!({"model": r.model, "max_tokens": 1024u32, "messages": [msg]}).to_string(),
         ),
         Provider::Anthropic => (
             format!("{}/messages", r.base_url.trim_end_matches('/')),
-            serde_json::json!({"model": r.model, "max_tokens": 8u32, "messages": [msg]}).to_string(),
+            serde_json::json!({"model": r.model, "max_tokens": 1024u32, "messages": [msg]}).to_string(),
         ),
     }
 }
@@ -534,8 +562,8 @@ fn ping(r: &Resolved) -> Result<(), String> {
         return Err("no API key found".to_string());
     }
     let (url, body) = ping_body(r);
-    let text = http_post(r, &url, &body)
-        .ok_or_else(|| "no answer (bad key, quota, or unreachable endpoint)".to_string())?;
+    // Reasoning models can think for tens of seconds before any content.
+    let text = http_post_err(r, &url, &body, Duration::from_secs(120))?;
     let line =
         parse_line(&text, r.provider).ok_or_else(|| "reply shape not recognized".to_string())?;
     if line.trim().is_empty() {
@@ -704,7 +732,7 @@ fn setup_cmd(rest: &[String]) -> i32 {
         api_key: key,
         api_key_env: key_env,
         base_url,
-        max_tokens: Some(64),
+        max_tokens: Some(512),
         timeout_secs: Some(DEFAULT_TIMEOUT_SECS),
         enabled: Some(true),
         tier: None,
@@ -986,5 +1014,50 @@ mod tests {
         )
         .unwrap();
         assert!(speak(dir.path(), &voice()).is_none());
+    }
+}
+
+#[cfg(test)]
+mod reasoning_reply_tests {
+    use super::*;
+
+    fn msg(s: &str) -> serde_json::Value {
+        serde_json::from_str(s).unwrap()
+    }
+
+    #[test]
+    fn falls_back_to_reasoning_content_when_content_null() {
+        let v = msg(r#"{"content": null, "reasoning_content": "deep thought"}"#);
+        assert_eq!(openai_message_text(&v).as_deref(), Some("deep thought"));
+    }
+
+    #[test]
+    fn falls_back_when_content_blank() {
+        let v = msg(r#"{"content": "   ", "reasoning_content": " reason "}"#);
+        assert_eq!(openai_message_text(&v).as_deref(), Some(" reason "));
+    }
+
+    #[test]
+    fn strips_think_blocks_from_content() {
+        let v = msg(r#"{"content": "<think>hmm</think>Hi there"}"#);
+        assert_eq!(openai_message_text(&v).as_deref(), Some("Hi there"));
+    }
+
+    #[test]
+    fn plain_content_untouched() {
+        let v = msg(r#"{"content": "ready"}"#);
+        assert_eq!(openai_message_text(&v).as_deref(), Some("ready"));
+    }
+
+    #[test]
+    fn unterminated_think_block_yields_nothing() {
+        let v = msg(r#"{"content": "<think>leaked"}"#);
+        assert_eq!(openai_message_text(&v), None);
+    }
+
+    #[test]
+    fn nothing_usable_is_none() {
+        let v = msg(r#"{"content": null}"#);
+        assert_eq!(openai_message_text(&v), None);
     }
 }
