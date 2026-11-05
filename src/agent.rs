@@ -432,8 +432,23 @@ fn open_agent_window(g: &Gate, task: &str, flags: &Flags) -> i32 {
         cmd.push_str(wrap);
         cmd.push(' ');
     }
+    // The tmux server gives new windows its own environment, not this
+    // process's: forward the state dir (and AI debug flag) explicitly so
+    // the inner agent reads the same ai.toml and state as the caller.
+    let mut envs = String::new();
+    if let Ok(h) = std::env::var("HATCH_HOME") {
+        if !h.trim().is_empty() {
+            envs.push_str(&format!("HATCH_HOME={} ", shell_quote(&h)));
+        }
+    }
+    if std::env::var("HATCH_AI_DEBUG")
+        .map(|v| !v.trim().is_empty())
+        .unwrap_or(false)
+    {
+        envs.push_str("HATCH_AI_DEBUG=1 ");
+    }
     cmd.push_str(&format!(
-        "HATCH_AGENT_TASK={b64} {} agent --inner",
+        "{envs}HATCH_AGENT_TASK={b64} {} agent --inner",
         shell_quote(&exe.display().to_string())
     ));
     if flags.yes {
