@@ -1,11 +1,21 @@
-# hatch
+# buddy ol pal
 
 A terminal companion that lives in your terminal and reacts to real events.
 One creature, 38 species across five rarity tiers, zero accounts. It remembers
 your builds, not your business: events record that a command ran and how long,
 never what it was.
 
-Rust + ratatui, single binary.
+Rust + ratatui, single binary. (This project was previously called **hatch**;
+the binary is still `tb` and state still lives in `~/.config/hatch`.)
+
+## Miss your /buddy?
+
+Claude Code shipped `/buddy` pets, 18 species across five rarity tiers, and
+removed them in v2.1.97. If you miss yours, buddy ol pal keeps a companion in
+your terminal instead: it hatches on first run, remembers your builds and
+failures, reacts to real events, and talks back. No account, no telemetry;
+the pet lives in your own home directory. Its species packs also let you
+recreate your old buddy's species and look yourself.
 
 ## Install
 
