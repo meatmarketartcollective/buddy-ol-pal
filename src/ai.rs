@@ -216,7 +216,7 @@ fn http_post(r: &Resolved, url: &str, body: &str) -> Option<String> {
         return None;
     }
     match resp.into_string() {
-        Ok(t) => t,
+        Ok(t) => Some(t),
         Err(e) => {
             ai_debug(&format!("could not read {url} response body: {e}"));
             None
