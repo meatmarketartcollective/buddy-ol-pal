@@ -187,7 +187,7 @@ pub fn ask_cmd(rest: &[String]) -> i32 {
         .cfg
         .ask_max_tokens
         .unwrap_or(if g.tier >= 2 { 512 } else { 256 });
-    let timeout = Duration::from_secs(g.cfg.ask_timeout_secs.unwrap_or(15));
+    let timeout = Duration::from_secs(g.cfg.ask_timeout_secs.unwrap_or(60));
     let r = ai::resolve(&g.cfg);
     match ai::chat(&r, &msgs, Some(max_tokens), timeout) {
         Ok(answer) => {
@@ -522,8 +522,8 @@ fn run_agent(g: &Gate, task: &str, flags: &Flags) -> i32 {
 
     for step in 1..=flags.max_steps {
         let r = ai::resolve(&g.cfg);
-        let max_tokens = g.cfg.agent_max_tokens.unwrap_or(if g.tier >= 3 { 0 } else { 1024 });
-        let timeout = Duration::from_secs(g.cfg.agent_timeout_secs.unwrap_or(60));
+        let max_tokens = g.cfg.agent_max_tokens.unwrap_or(if g.tier >= 3 { 0 } else { 2048 });
+        let timeout = Duration::from_secs(g.cfg.agent_timeout_secs.unwrap_or(120));
         let msgs_snapshot = msgs.clone();
         let (tx, rx) = mpsc::channel();
         std::thread::spawn(move || {
