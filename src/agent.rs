@@ -303,14 +303,21 @@ fn is_destructive(cmd: &str) -> bool {
         return true;
     }
     // Judge each pipeline/chain segment by its leading command: `echo rm`
-    // is harmless, `cat x; rm -rf y` is not.
+    // is harmless, `cat x; rm -rf y` is not, and `sudo` in front of a
+    // segment does not hide it.
     c.split(|ch| ch == ';' || ch == '|' || ch == '&')
-        .any(|seg| match seg.trim_start().split_whitespace().next() {
-            Some(tok) => {
-                DESTRUCTIVE_TOKENS.contains(&tok.trim_end_matches('/'))
-                    || tok.starts_with("mkfs")
+        .any(|seg| {
+            let mut seg = seg.trim_start();
+            while let Some(rest) = seg.strip_prefix("sudo ") {
+                seg = rest.trim_start();
             }
-            None => false,
+            match seg.split_whitespace().next() {
+                Some(tok) => {
+                    DESTRUCTIVE_TOKENS.contains(&tok.trim_end_matches('/'))
+                        || tok.starts_with("mkfs")
+                }
+                None => false,
+            }
         })
 }
 
