@@ -302,8 +302,16 @@ fn is_destructive(cmd: &str) -> bool {
     if DESTRUCTIVE_PHRASES.iter().any(|p| c.contains(p)) {
         return true;
     }
-    c.split_whitespace()
-        .any(|tok| DESTRUCTIVE_TOKENS.contains(&tok.trim_end_matches("/")))
+    // Judge each pipeline/chain segment by its leading command: `echo rm`
+    // is harmless, `cat x; rm -rf y` is not.
+    c.split(|ch| ch == ';' || ch == '|' || ch == '&')
+        .any(|seg| match seg.trim_start().split_whitespace().next() {
+            Some(tok) => {
+                DESTRUCTIVE_TOKENS.contains(&tok.trim_end_matches('/'))
+                    || tok.starts_with("mkfs")
+            }
+            None => false,
+        })
 }
 
 fn clip(s: &str, n: usize) -> String {
@@ -902,6 +910,9 @@ mod tests {
         assert!(!is_destructive("echo rm"));
         assert!(!is_destructive("git push origin feat/agent"));
         assert!(!is_destructive("git commit -m \"rm anything\""));
+        assert!(is_destructive("cat x; rm -rf y"));
+        assert!(is_destructive("echo hi && sudo mkfs.btrfs /dev/sda"));
+        assert!(!is_destructive("ls file | wc -l"));
     }
 
     #[test]
