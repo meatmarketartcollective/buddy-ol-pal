@@ -183,6 +183,14 @@ fn build_body(r: &Resolved, v: &Voice) -> Option<(String, String)> {
     }
 }
 
+/// One-line diagnostics to stderr, only when HATCH_AI_DEBUG is set.
+/// Normal runs stay silent: unreachable endpoints fall back quietly.
+fn ai_debug(msg: &str) {
+    if std::env::var_os("HATCH_AI_DEBUG").is_some() {
+        eprintln!("hatch ai: {msg}");
+    }
+}
+
 fn http_post(r: &Resolved, url: &str, body: &str) -> Option<String> {
     let agent = ureq::AgentBuilder::new().timeout(r.timeout).build();
     let mut req = agent.post(url).set("Content-Type", "application/json");
@@ -196,23 +204,49 @@ fn http_post(r: &Resolved, url: &str, body: &str) -> Option<String> {
             req = req.set("anthropic-version", "2023-06-01");
         }
     }
-    let resp = req.send_string(body).ok()?;
+    let resp = match req.send_string(body) {
+        Ok(r) => r,
+        Err(e) => {
+            ai_debug(&format!("request to {url} failed: {e}"));
+            return None;
+        }
+    };
     if resp.status() != 200 {
+        ai_debug(&format!("{url} answered HTTP {}", resp.status()));
         return None;
     }
-    resp.into_string().ok()
+    match resp.into_string() {
+        Ok(t) => t,
+        Err(e) => {
+            ai_debug(&format!("could not read {url} response body: {e}"));
+            None
+        }
+    }
 }
 
 fn parse_line(text: &str, provider: Provider) -> Option<String> {
-    let j: serde_json::Value = serde_json::from_str(text).ok()?;
+    let j: serde_json::Value = match serde_json::from_str(text) {
+        Ok(v) => v,
+        Err(e) => {
+            ai_debug(&format!("response was not valid JSON: {e} (first 200 bytes: {:.200})", text));
+            return None;
+        }
+    };
     match provider {
-        Provider::OpenAiCompat => j
-            .get("choices")?
-            .get(0)?
-            .get("message")?
-            .get("content")?
-            .as_str()
-            .map(str::to_string),
+        Provider::OpenAiCompat => match j
+            .get("choices")
+            .and_then(|c| c.get(0))
+            .and_then(|c| c.get("message"))
+            .and_then(|m| m.get("content"))
+            .and_then(|c| c.as_str())
+            .map(str::to_string)
+        {
+            Some(l) => Some(l),
+            None => {
+                ai_debug("openai-compat response had no choices[0].message.content");
+                None
+            }
+        },
         Provider::Anthropic => {
             let arr = j.get("content")?.as_array()?;
             for item in arr {
