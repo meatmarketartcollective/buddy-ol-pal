@@ -9,10 +9,9 @@
 //! explicit `tier = N` in ai.toml; no key, no agent, ever a silent fallback.
 
 use crate::ai;
-use crate::state::{self, Event};
-use crate::{anim, species, Species};
+use crate::state::{self, Event, Mood};
+use crate::species::{self, Species};
 use serde_json::Value;
-use std::io::Write as _;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::mpsc;
@@ -173,7 +172,7 @@ pub fn ask_cmd(rest: &[String]) -> i32 {
             eprintln!("usage: tb ask \"question\"  |  tb ask --recap");
             return 2;
         }
-        ask_prompt(&st.name, sp.name, &mood, &events, &q)
+        ask_prompt(&st.name, &sp.name, &mood, &events, &q)
     };
     let sys = format!(
         "You are {} the {}, a tiny terminal companion. You answer questions about what has been happening in the user's terminal, using the event log you are given. Be concrete and useful, plain text, no preamble.",
@@ -369,7 +368,7 @@ pub fn agent_cmd(rest: &[String]) -> i32 {
     if !flags.inner && std::env::var_os("TMUX").is_some() {
         return open_agent_window(&g, &task, &flags);
     }
-    run_agent(g, &task, &flags)
+    run_agent(&g, &task, &flags)
 }
 
 const B64: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -449,7 +448,7 @@ fn tool_result_msg(label: &str, body: &str) -> String {
     format!("Tool result for {label}:\n{body}\nRespond with the next JSON step, or done when finished.")
 }
 
-fn run_agent(g: Gate, task: &str, flags: &Flags) -> i32 {
+fn run_agent(g: &Gate, task: &str, flags: &Flags) -> i32 {
     let dir = g.dir.clone();
     let st = state::load_or_hatch(&dir);
     let sp = species::get(&st.species).unwrap_or_else(species::fallback);
@@ -616,7 +615,7 @@ fn run_agent(g: Gate, task: &str, flags: &Flags) -> i32 {
                 t.push(format!("  -> exit {code}"));
                 msgs.push((
                     "user".to_string(),
-                    tool_result_msg(&format!("write: {path}"), if ok { "written".to_string() } else { "write failed".to_string() }),
+                    tool_result_msg(&format!("write: {path}"), if ok { "written" } else { "write failed" }),
                 ));
             }
         }
