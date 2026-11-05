@@ -518,6 +518,7 @@ fn run_agent(g: &Gate, task: &str, flags: &Flags) -> i32 {
     let mut exit_code = 0i32;
     let mut final_msg = String::new();
     let started_all = Instant::now();
+    let mut completed = false;
 
     for step in 1..=flags.max_steps {
         let r = ai::resolve(&g.cfg);
@@ -594,6 +595,7 @@ fn run_agent(g: &Gate, task: &str, flags: &Flags) -> i32 {
                 t.push(format!("done: {message}"));
                 final_msg = message;
                 exit_code = if success { 0 } else { 1 };
+                completed = true;
                 break;
             }
             Action::Run { command } => {
@@ -659,6 +661,10 @@ fn run_agent(g: &Gate, task: &str, flags: &Flags) -> i32 {
                 ));
             }
         }
+    }
+    // Fell out of the loop without a done step: the run did not finish.
+    if !completed && exit_code == 0 {
+        exit_code = 1;
     }
     if exit_code != 0 && final_msg.is_empty() {
         final_msg = "hit the step limit or failed".to_string();
