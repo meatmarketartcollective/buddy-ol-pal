@@ -132,6 +132,7 @@ disk.
     tb ai test     one test call
     tb ai on/off   wake or silence the voice
     tb ai clear    remove the config
+- `HATCH_AI_DEBUG=1` prints the reason an AI call failed (connection error, HTTP status, malformed response) to stderr; without it, failures fall back to built-in lines silently.
 
 If the endpoint is unreachable or out of credits, the buddy falls back to its
 built-in lines; nothing breaks. Requests carry only the buddy's name,
