@@ -74,7 +74,7 @@ enum Provider {
     Anthropic,
 }
 
-struct Resolved {
+pub struct Resolved {
     provider: Provider,
     base_url: String,
     model: String,
