@@ -173,6 +173,16 @@ picked.
   `confirm_destructive = false` in ai.toml; a headless run (no terminal
   attached) refuses to act without `--yes`.
 
+Why tiers? Because the buddy's power and the cost of a bad AI answer move
+together. A model that only talks (tier 1) can waste your time at worst. A
+model that reads files and runs commands (tier 2) can do real damage if it
+misunderstands you, so it only gets those hands after the test call proves it
+speaks the protocol. A model that edits files (tier 3) is the most useful and
+the most dangerous, so the software never grants it on its own: you set
+`tier = 3` yourself, when you trust the model. Each step up is a decision you
+make, not one the software makes. A weak free model still makes a fine chat
+buddy at tier 1 even when it cannot be trusted with your repo.
+
 Every action the agent takes lands in the same event ledger your own commands
 write to, so `tb tail` shows its work right next to yours.
 
