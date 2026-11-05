@@ -219,7 +219,53 @@ fn http_post(r: &Resolved, url: &str, body: &str) -> Option<String> {
 
 /// Honest variant for ask/agent: returns the real failure reason instead of
 /// silently falling back. `timeout` overrides the voice timeout.
+/// Transient NVIDIA-style failures worth another try: connection errors and
+/// read timeouts ("request to ... failed"), rate limits and server errors,
+/// and truncated response reads. Auth and 4xx request errors are not retried.
+fn transient_failure(e: &str) -> bool {
+    if e.starts_with("request to ") || e.starts_with("could not read ") {
+        return true;
+    }
+    if let Some(i) = e.find("answered HTTP ") {
+        let digits: String = e[i + "answered HTTP ".len()..].chars().take(3).collect();
+        if let Ok(status) = digits.parse::<u32>() {
+            return status == 429 || status >= 500;
+        }
+    }
+    false
+}
+
 fn http_post_err(
+    r: &Resolved,
+    url: &str,
+    body: &str,
+    timeout: Duration,
+) -> Result<String, String> {
+    // NVIDIA's API drops connections and hangs regularly; retry the transient
+    // failures with a short backoff instead of failing the whole call.
+    const RETRIES: usize = 3;
+    const BACKOFF_SECS: [u64; RETRIES] = [1, 3, 8];
+    let mut attempt = 0usize;
+    loop {
+        match http_once_err(r, url, body, timeout) {
+            Ok(text) => return Ok(text),
+            Err(e) => {
+                if attempt >= RETRIES || !transient_failure(&e) {
+                    return Err(e);
+                }
+                let wait = BACKOFF_SECS[attempt];
+                ai_debug(&format!(
+                    "attempt {} failed, retrying in {wait}s: {e}",
+                    attempt + 1
+                ));
+                std::thread::sleep(Duration::from_secs(wait));
+                attempt += 1;
+            }
+        }
+    }
+}
+
+fn http_once_err(
     r: &Resolved,
     url: &str,
     body: &str,
@@ -1059,5 +1105,32 @@ mod reasoning_reply_tests {
     fn nothing_usable_is_none() {
         let v = msg(r#"{"content": null}"#);
         assert_eq!(openai_message_text(&v), None);
+    }
+}
+
+#[cfg(test)]
+mod retry_tests {
+    use super::*;
+    #[test]
+    fn transient_failure_classifies_nvidia_flakiness() {
+        assert!(transient_failure(
+            "request to https://integrate.api.nvidia.com/v1/chat/completions failed: timed out"
+        ));
+        assert!(transient_failure(
+            "https://x answered HTTP 429: rate limited"
+        ));
+        assert!(transient_failure(
+            "https://x answered HTTP 500: internal"
+        ));
+        assert!(transient_failure(
+            "could not read https://x response body: connection reset"
+        ));
+        assert!(!transient_failure(
+            "https://x answered HTTP 401: bad key"
+        ));
+        assert!(!transient_failure(
+            "https://x answered HTTP 404: no such model"
+        ));
+        assert!(!transient_failure("no API key found"));
     }
 }
