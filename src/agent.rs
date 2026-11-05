@@ -660,12 +660,10 @@ fn run_agent(g: &Gate, task: &str, flags: &Flags) -> i32 {
 }
 
 fn is_tty() -> bool {
-    // A TUI needs a writable tty: crossterm would fail on a plain pipe.
-    std::fs::OpenOptions::new()
-        .write(true)
-        .open("/dev/tty")
-        .is_ok()
-        && std::env::var_os("TERM").is_some()
+    // A TUI needs stdout to be a terminal itself: /dev/tty existing is not
+    // enough (a redirected run inside a tmux pane still has one).
+    use crossterm::tty::IsTty;
+    std::io::stdout().is_tty()
 }
 
 fn needs_confirm_run(g: &Gate, command: &str) -> bool {
