@@ -321,6 +321,110 @@ fn is_destructive(cmd: &str) -> bool {
         })
 }
 
+const WRITE_TOKENS: [&str; 10] = ["tee", "cp", "mv", "touch", "mkdir", "truncate", "ln", "chmod", "chown", "install"];
+
+/// Interpreters and nested shells: their payload can write anything, so
+/// with confirm_writes on they always need the human check, quoted payload
+/// or not. `python3 -c "open('f','w')..."` hides every write marker behind
+/// quotes, and this is how a refused write gets routed around.
+const INTERPRETER_TOKENS: [&str; 15] = [
+    "sh", "bash", "zsh", "dash", "perl", "ruby", "php", "node", "nodejs",
+    "lua", "awk", "gawk", "tclsh", "python", "python3",
+];
+
+/// Runners whose argument is another command: the payload can be anything,
+/// so with confirm_writes on they need the human check too.
+const RUNNER_TOKENS: [&str; 8] = [
+    "xargs", "busybox", "env", "nohup", "timeout", "setsid", "stdbuf", "rsync",
+];
+
+/// Drop quoted spans so operators inside quoted text (a grep pattern like
+/// "a > b") do not read as redirection.
+fn strip_quoted(s: &str) -> String {
+    let mut out = String::new();
+    let mut quote: Option<char> = None;
+    let mut chars = s.chars().peekable();
+    while let Some(c) = chars.next() {
+        match quote {
+            Some(q) => {
+                if c == '\\' {
+                    let _ = chars.next();
+                } else if c == q {
+                    quote = None;
+                }
+            }
+            None => {
+                if c == '\'' || c == '"' {
+                    quote = Some(c);
+                } else {
+                    out.push(c);
+                }
+            }
+        }
+    }
+    out
+}
+
+/// Commands that create or modify files through the shell: redirection into
+/// a real file, tee, sed -i, and the usual copy/move/permission family.
+/// Judged per pipeline/chain segment like is_destructive, so `echo rm` stays
+/// harmless. Keeps the write gate honest: a refused write tool call cannot
+/// be routed around with `echo x > file` through the run tool.
+fn looks_like_write(cmd: &str) -> bool {
+    // Descriptor duplication (2>&1) must be neutralized before the segment
+    // split: splitting on '&' would cut "2>&1" into "2>" and "1" and read
+    // the bare ">" as a file redirect.
+    // Descriptor duplication (2>&1) is not a file write; strip it before the
+    // segment split, which would otherwise cut "2>&1" at the '&' into "2>"
+    // and "1" and read the bare ">" as a redirect into a file.
+    let cmd = cmd.replace(">&1", "").replace(">&2", "");
+    cmd.split(|ch| ch == ';' || ch == '|' || ch == '&').any(|seg| {
+        let bare = strip_quoted(seg.trim_start());
+        let mut bare_head = bare.as_str();
+        while let Some(rest) = bare_head.strip_prefix("sudo ") {
+            bare_head = rest.trim_start();
+        }
+        let head = bare_head
+            .split_whitespace()
+            .next()
+            .unwrap_or("")
+            .trim_end_matches('/')
+            .to_string();
+        if WRITE_TOKENS.contains(&head.as_str())
+            || INTERPRETER_TOKENS.contains(&head.as_str())
+            || RUNNER_TOKENS.contains(&head.as_str())
+            || head.starts_with("python")
+        {
+            return true;
+        }
+        if head == "sed" {
+            return bare
+                .split_whitespace()
+                .any(|a| a == "-i" || a.starts_with("--in-place"));
+        }
+        if head == "find" {
+            return bare.split_whitespace().any(|a| {
+                a == "-delete" || a == "-exec" || a == "-execdir" || a == "-ok"
+                    || a == "-okdir" || a.starts_with("-fprint")
+            });
+        }
+        // redirection: > or >> with a target. >&1 and >&2 duplicate
+        // descriptors instead of writing, and /dev/null goes nowhere.
+        let chars: Vec<char> = bare.chars().collect();
+        for i in 0..chars.len() {
+            if chars[i] == '>' {
+                let after: String = chars[i + 1..].iter().collect();
+                let after = after.trim_start();
+                if after.starts_with('&') || after.starts_with("/dev/null") {
+                    continue;
+                }
+                return true;
+            }
+        }
+        false
+    })
+}
+
 fn clip(s: &str, n: usize) -> String {
     if s.chars().count() <= n {
         return s.to_string();
@@ -330,6 +434,9 @@ fn clip(s: &str, n: usize) -> String {
 }
 
 fn run_capture(cmd: &str) -> (String, i32, u64) {
+    if std::env::var_os("HATCH_AGENT_DEBUG").is_some() {
+        eprintln!("hatch agent: run: {cmd}");
+    }
     let start = Instant::now();
     match Command::new("sh").arg("-c").arg(cmd).output() {
         Ok(o) => {
@@ -601,6 +708,17 @@ fn run_agent(g: &Gate, task: &str, flags: &Flags) -> i32 {
             Action::Run { command } => {
                 t.push(format!("step {step}: {thought}"));
                 t.push(format!("  run: {command}"));
+                // The write tool is not the only way to change a file: shell
+                // redirection gets there too. Same tier rule as writes.
+                if looks_like_write(&command) && g.tier < 3 {
+                    t.push("  -> refused: writes need tier 3".to_string());
+                    msgs.push((
+                        "user".to_string(),
+                        "Writes are not allowed at your tier. Use done with the proposed change as a diff instead.".to_string(),
+                    ));
+                    audit(&dir, "agent_run", 2, 0);
+                    continue;
+                }
                 if needs_confirm_run(&g, &command) && !may_proceed(&mut ui, &t, sp, &st.name, step, &format!("run: {command}"), flags) {
                     t.push("  (declined)".to_string());
                     msgs.push((
@@ -688,7 +806,8 @@ fn is_tty() -> bool {
 }
 
 fn needs_confirm_run(g: &Gate, command: &str) -> bool {
-    g.cfg.confirm_destructive != Some(false) && is_destructive(command)
+    (g.cfg.confirm_destructive != Some(false) && is_destructive(command))
+        || (g.cfg.confirm_writes != Some(false) && looks_like_write(command))
 }
 
 fn needs_confirm_write(g: &Gate) -> bool {
@@ -706,10 +825,13 @@ fn may_proceed(
     what: &str,
     flags: &Flags,
 ) -> bool {
+    // --yes is the operator's standing yes, headless or in a window alike:
+    // the windowed agent runs unattended, so stopping to wait for a keypress
+    // there would hang it forever on the first confirmation.
+    if flags.yes {
+        return true;
+    }
     if ui.is_none() {
-        if flags.yes {
-            return true;
-        }
         eprintln!("hatch agent: refusing {what}: no terminal to confirm in; pass --yes to allow it.");
         return false;
     }
@@ -1012,5 +1134,54 @@ mod tests {
         assert_eq!(g.tier, 2);
         let e = gate(dir.path(), 3, "agent").unwrap_err();
         assert!(e.contains("needs tier 3"), "got: {e}");
+    }
+}
+
+#[cfg(test)]
+mod write_gate_tests {
+    use super::*;
+    #[test]
+    fn shell_writes_are_flagged() {
+        assert!(looks_like_write("echo hi > /tmp/f"));
+        assert!(looks_like_write("echo hi >> /tmp/f"));
+        assert!(looks_like_write("printf x | tee /tmp/f"));
+        assert!(looks_like_write("sed -i 's/a/b/' f"));
+        assert!(looks_like_write("sed --in-place 's/a/b/' f"));
+        assert!(looks_like_write("cp a b"));
+        assert!(looks_like_write("mv a b"));
+        assert!(looks_like_write("touch f"));
+        assert!(looks_like_write("mkdir d"));
+        assert!(looks_like_write("chmod +x run.sh"));
+    }
+
+    #[test]
+    fn reads_and_harmless_shapes_pass() {
+        assert!(!looks_like_write("ls -la"));
+        assert!(!looks_like_write("echo rm"));
+        assert!(!looks_like_write("cat a; echo rm"));
+        assert!(!looks_like_write("cmd 2>&1 | grep hatch"));
+        assert!(!looks_like_write("grep 'a > b' file"));
+        assert!(!looks_like_write("echo done > /dev/null"));
+        // interpreters can write anything, so they are flagged with
+        // confirm_writes on even when the payload itself looks read-only
+        assert!(looks_like_write("python3 -c 'print(1 > 0)'"));
+        assert!(looks_like_write(
+            "python3 -c \"open('should-not-exist.txt','w').write('no')\""
+        ));
+        assert!(looks_like_write("sh -c 'echo hi > f'"));
+        assert!(looks_like_write("awk '{print $1}' file"));
+        assert!(looks_like_write("sudo python3 -c 'print(1)'"));
+        assert!(looks_like_write("echo no | xargs -I{} sh -c 'echo {} > f'"));
+        assert!(looks_like_write("busybox sh -c 'echo hi > f'"));
+        assert!(looks_like_write("env python3 -c 'print(1)'"));
+        assert!(looks_like_write("nohup python3 -c 'print(1)'"));
+        assert!(looks_like_write(
+            r"find . -name '*.rs' -exec touch {} \;"
+        ));
+        assert!(looks_like_write("find . -name tmp -delete"));
+        assert!(looks_like_write("rsync a b"));
+        assert!(!looks_like_write("find . -name '*.rs'"));
+        assert!(!looks_like_write("sed -n 1p file"));
+        assert!(!looks_like_write("wc -l src/*.rs"));
     }
 }
