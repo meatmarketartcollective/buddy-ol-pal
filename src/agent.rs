@@ -64,6 +64,7 @@ pub fn parse_flags(rest: &[String]) -> Result<Flags, String> {
     Ok(f)
 }
 
+#[derive(Debug)]
 struct Gate {
     cfg: ai::AiConfig,
     tier: u8,
@@ -934,18 +935,22 @@ mod tests {
     }
 
     #[test]
-    fn b64_round_trips() {
-        for s in ["", "hi", "task with 'quotes' and spaces", "emoji-less but long: aaaaaaaaaaaaaaaaaaaaaaaa"] {
-            assert_eq!(String::from_utf8_lossy(&{
-                // decode by construction check: only safe alphabet
-                b64_encode(s.as_bytes())
-            }), {
-                let enc = b64_encode(s.as_bytes());
-                assert!(enc.chars().all(|c| B64.contains(&(c as u8)) || c == '='));
-                enc
-            });
+    fn b64_output_is_shell_safe() {
+        for s in [
+            "",
+            "hi",
+            "task with 'quotes' and spaces",
+            "emoji-less but long: aaaaaaaaaaaaaaaaaaaaaaaa",
+        ] {
+            let enc = b64_encode(s.as_bytes());
+            assert!(
+                enc.chars().all(|c| B64.contains(&(c as u8)) || c == '='),
+                "only the safe alphabet and padding survive: {enc}"
+            );
+            assert_eq!(b64_encode(s.as_bytes()), enc, "deterministic");
+            // base64 padding is length-correct: (len+2)/3*4
+            assert_eq!(enc.len(), (s.len() + 2) / 3 * 4);
         }
-        assert_eq!(b64_encode(b"hi"), b64_encode(b"hi"));
     }
 
     #[test]
