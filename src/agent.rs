@@ -423,10 +423,19 @@ fn shell_quote(s: &str) -> String {
 fn open_agent_window(g: &Gate, task: &str, flags: &Flags) -> i32 {
     let exe = std::env::current_exe().unwrap_or_else(|_| PathBuf::from("tb"));
     let b64 = b64_encode(task.as_bytes());
-    let mut cmd = format!(
+    // The tmux server runs the window command outside whatever chroot or
+    // container launched us; HATCH_AGENT_WINDOW_WRAP re-enters it.
+    let wrap = std::env::var("HATCH_AGENT_WINDOW_WRAP").unwrap_or_default();
+    let wrap = wrap.trim();
+    let mut cmd = String::new();
+    if !wrap.is_empty() {
+        cmd.push_str(wrap);
+        cmd.push(' ');
+    }
+    cmd.push_str(&format!(
         "HATCH_AGENT_TASK={b64} {} agent --inner",
         shell_quote(&exe.display().to_string())
-    );
+    ));
     if flags.yes {
         cmd.push_str(" --yes");
     }

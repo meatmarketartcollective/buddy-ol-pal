@@ -155,6 +155,9 @@ just talk:
   `--yes` to act at all.
 - From inside tmux, `tb agent` gives the buddy its own window: sprite docked
   in the corner, transcript behind it, and the window closes when it finishes.
+  If the binary lives inside a chroot or container (a proot distro on Android,
+  for example), set `HATCH_AGENT_WINDOW_WRAP="proot-distro login ubuntu --"`
+  so the window can re-enter it.
 
 The probe grants tier 1 (text answers) or tier 2 (tool calls work); it never
 grants 3 on its own. `tb ai status` shows the tier you are running at.

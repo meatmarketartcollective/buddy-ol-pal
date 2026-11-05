@@ -547,7 +547,7 @@ fn ping(r: &Resolved) -> Result<(), String> {
 
 pub fn ai_cmd(rest: &[String]) -> i32 {
     match rest.first().map(|s| s.as_str()) {
-        None => status_cmd(),
+        None | Some("status") => status_cmd(),
         Some("setup") => setup_cmd(&rest[1..]),
         Some("test") => test_cmd(),
         Some("on") => toggle_cmd(true),
