@@ -138,3 +138,26 @@ If the endpoint is unreachable or out of credits, the buddy falls back to its
 built-in lines; nothing breaks. Requests carry only the buddy's name,
 species, mood and the last event's kind and exit code, never paths, contents
 or secrets.
+
+### The buddy that works (capability tiers)
+
+Once the voice is live and `tb ai test` has probed it, the buddy can work, not
+just talk:
+
+- `tb ask "why did my build fail?"` asks your buddy about recent terminal
+  events (tier 1+). `tb ask --recap` summarizes the last hour. Answers are
+  never clamped; `--full` also saves the whole answer to `last_answer.md`.
+- `tb agent "task"` (tier 2+) lets the buddy read files and run commands with
+  captured output. Tier 3 (set `tier = 3` in ai.toml once you trust the model)
+  unlocks edits. Every action lands in the same event ledger your commands
+  write to, writes and destructive commands ask first (relax with
+  `confirm_writes` / `confirm_destructive = false`), and headless runs need
+  `--yes` to act at all.
+- From inside tmux, `tb agent` gives the buddy its own window: sprite docked
+  in the corner, transcript behind it, and the window closes when it finishes.
+  If the binary lives inside a chroot or container (a proot distro on Android,
+  for example), set `HATCH_AGENT_WINDOW_WRAP="proot-distro login ubuntu --"`
+  so the window can re-enter it.
+
+The probe grants tier 1 (text answers) or tier 2 (tool calls work); it never
+grants 3 on its own. `tb ai status` shows the tier you are running at.

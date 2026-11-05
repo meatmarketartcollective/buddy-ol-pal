@@ -20,7 +20,7 @@ pub const NVIDIA_KEY_URL: &str = "https://build.nvidia.com/settings/api-keys";
 const NVIDIA_BASE: &str = "https://integrate.api.nvidia.com/v1";
 const OPENAI_BASE: &str = "https://api.openai.com/v1";
 const ANTHROPIC_BASE: &str = "https://api.anthropic.com/v1";
-const NVIDIA_MODEL: &str = "meta/llama-3.1-8b-instruct";
+const NVIDIA_MODEL: &str = "google/gemma-3-4b-it";
 const OPENAI_MODEL: &str = "gpt-4o-mini";
 const ANTHROPIC_MODEL: &str = "claude-3-5-haiku-latest";
 const DEFAULT_TIMEOUT_SECS: u64 = 6;
@@ -50,6 +50,22 @@ pub struct AiConfig {
     pub timeout_secs: Option<u64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
+    /// Capability tier: 1 text only, 2 tool calls, 3 full agent incl. edits.
+    /// Unset means "whatever the probe granted"; 3 is never probed, only set.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tier: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub confirm_writes: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub confirm_destructive: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ask_max_tokens: Option<u32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ask_timeout_secs: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub agent_max_tokens: Option<u32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub agent_timeout_secs: Option<u64>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -58,7 +74,7 @@ enum Provider {
     Anthropic,
 }
 
-struct Resolved {
+pub struct Resolved {
     provider: Provider,
     base_url: String,
     model: String,
@@ -81,7 +97,7 @@ fn default_env_name(endpoint: Option<&str>) -> &'static str {
     }
 }
 
-fn resolve(cfg: &AiConfig) -> Resolved {
+pub fn resolve(cfg: &AiConfig) -> Resolved {
     let (provider, base) = match cfg.endpoint.as_deref() {
         Some("anthropic") => (Provider::Anthropic, ANTHROPIC_BASE),
         Some("openai") => (Provider::OpenAiCompat, OPENAI_BASE),
@@ -192,9 +208,29 @@ fn ai_debug(msg: &str) {
 }
 
 fn http_post(r: &Resolved, url: &str, body: &str) -> Option<String> {
-    let agent = ureq::AgentBuilder::new().timeout(r.timeout).build();
+    match http_post_err(r, url, body, r.timeout) {
+        Ok(t) => Some(t),
+        Err(e) => {
+            ai_debug(&e);
+            None
+        }
+    }
+}
+
+/// Honest variant for ask/agent: returns the real failure reason instead of
+/// silently falling back. `timeout` overrides the voice timeout.
+fn http_post_err(
+    r: &Resolved,
+    url: &str,
+    body: &str,
+    timeout: Duration,
+) -> Result<String, String> {
+    let agent = ureq::AgentBuilder::new().timeout(timeout).build();
     let mut req = agent.post(url).set("Content-Type", "application/json");
-    let key = r.key.as_ref()?;
+    let key = r
+        .key
+        .as_ref()
+        .ok_or_else(|| "no API key found".to_string())?;
     match r.provider {
         Provider::OpenAiCompat => {
             req = req.set("Authorization", &format!("Bearer {key}"));
@@ -204,24 +240,27 @@ fn http_post(r: &Resolved, url: &str, body: &str) -> Option<String> {
             req = req.set("anthropic-version", "2023-06-01");
         }
     }
-    let resp = match req.send_string(body) {
-        Ok(r) => r,
-        Err(e) => {
-            ai_debug(&format!("request to {url} failed: {e}"));
-            return None;
-        }
-    };
-    if resp.status() != 200 {
-        ai_debug(&format!("{url} answered HTTP {}", resp.status()));
-        return None;
+    let resp = req
+        .send_string(body)
+        .map_err(|e| format!("request to {url} failed: {e}"))?;
+    let status = resp.status();
+    if status != 200 {
+        let detail = resp
+            .into_string()
+            .ok()
+            .map(|t| {
+                let t = t.trim();
+                if t.chars().count() > 200 {
+                    format!(": {:.200}", t)
+                } else {
+                    format!(": {t}")
+                }
+            })
+            .unwrap_or_default();
+        return Err(format!("{url} answered HTTP {status}{detail}"));
     }
-    match resp.into_string() {
-        Ok(t) => Some(t),
-        Err(e) => {
-            ai_debug(&format!("could not read {url} response body: {e}"));
-            None
-        }
-    }
+    resp.into_string()
+        .map_err(|e| format!("could not read {url} response body: {e}"))
 }
 
 fn parse_line(text: &str, provider: Provider) -> Option<String> {
@@ -276,6 +315,181 @@ fn sanitize(line: &str) -> Option<String> {
     } else {
         Some(out)
     }
+}
+
+// ---- capability tiers ----
+// T1: text answers over the event log (tb ask). T2: tool-call-capable models
+// unlock the agent's read/run tools. T3 is a deliberate user choice: set
+// tier = 3 in ai.toml once the model can be trusted to edit files. The probe
+// never grants T3 on its own.
+
+pub fn tier_cache_path(dir: &Path) -> PathBuf {
+    dir.join("ai_tier")
+}
+
+pub fn save_tier_cache(dir: &Path, tier: u8) -> std::io::Result<()> {
+    fs::write(tier_cache_path(dir), tier.to_string())
+}
+
+pub fn cached_tier(dir: &Path) -> Option<u8> {
+    fs::read_to_string(tier_cache_path(dir))
+        .ok()?
+        .trim()
+        .parse::<u8>()
+        .ok()
+        .filter(|t| (1..=3).contains(t))
+}
+
+pub fn effective_tier(dir: &Path, cfg: &AiConfig) -> Option<u8> {
+    cfg.tier
+        .filter(|t| (1..=3).contains(t))
+        .or_else(|| cached_tier(dir))
+}
+
+/// Full completion for ask/agent: honest errors, no silent fallback, and a
+/// per-call timeout; when max_tokens is None the request carries no cap.
+pub fn chat(
+    r: &Resolved,
+    msgs: &[(String, String)],
+    max_tokens: Option<u32>,
+    timeout: Duration,
+) -> Result<String, String> {
+    if !r.ready() {
+        return Err("no API key found".to_string());
+    }
+    let (url, body) = chat_body(r, msgs, max_tokens);
+    let text = http_post_err(r, &url, &body, timeout)?;
+    parse_content(&text, r.provider)
+}
+
+fn chat_body(
+    r: &Resolved,
+    msgs: &[(String, String)],
+    max_tokens: Option<u32>,
+) -> (String, String) {
+    match r.provider {
+        Provider::OpenAiCompat => {
+            let mut body = serde_json::json!({
+                "model": r.model,
+                "messages": msgs
+                    .iter()
+                    .map(|(role, c)| serde_json::json!({"role": role, "content": c}))
+                    .collect::<Vec<_>>(),
+            });
+            if let Some(m) = max_tokens {
+                body["max_tokens"] = serde_json::json!(m);
+            }
+            (
+                format!("{}/chat/completions", r.base_url.trim_end_matches('/')),
+                body.to_string(),
+            )
+        }
+        Provider::Anthropic => {
+            let sys: Vec<&String> = msgs
+                .iter()
+                .filter(|(role, _)| role == "system")
+                .map(|(_, c)| c)
+                .collect();
+            let rest: Vec<serde_json::Value> = msgs
+                .iter()
+                .filter(|(role, _)| role != "system")
+                .map(|(role, c)| serde_json::json!({"role": role, "content": c}))
+                .collect();
+            let mut body = serde_json::json!({ "model": r.model });
+            if !sys.is_empty() {
+                body["system"] = serde_json::json!(
+                    sys.iter()
+                        .map(|s| s.as_str())
+                        .collect::<Vec<_>>()
+                        .join("\n\n")
+                );
+            }
+            body["messages"] = serde_json::json!(rest);
+            // Anthropic requires max_tokens; unset means a roomy default.
+            body["max_tokens"] = serde_json::json!(max_tokens.unwrap_or(4096));
+            (
+                format!("{}/messages", r.base_url.trim_end_matches('/')),
+                body.to_string(),
+            )
+        }
+    }
+}
+
+/// Like parse_line but honest: ask/agent must see the real failure.
+fn parse_content(text: &str, provider: Provider) -> Result<String, String> {
+    let j: serde_json::Value = serde_json::from_str(text)
+        .map_err(|e| {
+            format!(
+                "response was not valid JSON: {e} (first 200 bytes: {:.200})",
+                text
+            )
+        })?;
+    match provider {
+        Provider::OpenAiCompat => j
+            .get("choices")
+            .and_then(|c| c.get(0))
+            .and_then(|c| c.get("message"))
+            .and_then(|m| m.get("content"))
+            .and_then(|c| c.as_str())
+            .map(str::to_string)
+            .ok_or_else(|| {
+                "openai-compat response had no choices[0].message.content".to_string()
+            }),
+        Provider::Anthropic => {
+            let arr = j
+                .get("content")
+                .and_then(|c| c.as_array())
+                .ok_or_else(|| "anthropic response had no content array".to_string())?;
+            for item in arr {
+                if item.get("type").and_then(|t| t.as_str()) == Some("text") {
+                    return Ok(item
+                        .get("text")
+                        .and_then(|t| t.as_str())
+                        .unwrap_or("")
+                        .to_string());
+                }
+            }
+            Err("anthropic response had no text block".to_string())
+        }
+    }
+}
+
+/// T2 probe: a tool-call-shaped round trip. Text-only models fail it and
+/// stay tier 1; T3 is never granted by the probe, only pinned by the user.
+fn probe_tool_call(r: &Resolved) -> bool {
+    let msgs = vec![
+        (
+            "system".to_string(),
+            "Reply ONLY with a JSON object: {\"action\":\"done\",\"message\":\"ok\",\"success\":true}"
+                .to_string(),
+        ),
+        ("user".to_string(), "acknowledge".to_string()),
+    ];
+    match chat(r, &msgs, Some(48), Duration::from_secs(15)) {
+        Ok(text) => parse_agent_probe(&text)
+            .map(|v| v.get("action").is_some())
+            .unwrap_or(false),
+        Err(_) => false,
+    }
+}
+
+fn parse_agent_probe(text: &str) -> Option<serde_json::Value> {
+    let mut t = text.trim();
+    if let Some(rest) = t.strip_prefix("```json") {
+        t = rest;
+    } else if let Some(rest) = t.strip_prefix("```") {
+        t = rest;
+    }
+    if let Some(rest) = t.strip_suffix("```") {
+        t = rest;
+    }
+    let t = t.trim();
+    let start = t.find('{')?;
+    let end = t.rfind('}')?;
+    if end < start {
+        return None;
+    }
+    serde_json::from_str(&t[start..=end]).ok()
 }
 
 pub fn config_path(dir: &Path) -> PathBuf {
@@ -333,7 +547,7 @@ fn ping(r: &Resolved) -> Result<(), String> {
 
 pub fn ai_cmd(rest: &[String]) -> i32 {
     match rest.first().map(|s| s.as_str()) {
-        None => status_cmd(),
+        None | Some("status") => status_cmd(),
         Some("setup") => setup_cmd(&rest[1..]),
         Some("test") => test_cmd(),
         Some("on") => toggle_cmd(true),
@@ -382,6 +596,12 @@ fn status_cmd() -> i32 {
     println!("  endpoint: {endpoint}");
     println!("  model:    {model}");
     println!("  key:      {key}");
+    let tier_line = match effective_tier(&dir, &cfg) {
+        Some(t) if cfg.tier.is_some() => format!("{t} (pinned in ai.toml)"),
+        Some(t) => format!("{t} (from the last tb ai test)"),
+        None => "unprobed (run tb ai test)".to_string(),
+    };
+    println!("  tier:     {tier_line}");
     println!("  config:   {}", path.display());
     0
 }
@@ -487,6 +707,13 @@ fn setup_cmd(rest: &[String]) -> i32 {
         max_tokens: Some(64),
         timeout_secs: Some(DEFAULT_TIMEOUT_SECS),
         enabled: Some(true),
+        tier: None,
+        confirm_writes: None,
+        confirm_destructive: None,
+        ask_max_tokens: None,
+        ask_timeout_secs: None,
+        agent_max_tokens: None,
+        agent_timeout_secs: None,
     };
     let dir = crate::state::config_dir();
     let path = match save_config(&dir, &cfg) {
@@ -524,6 +751,16 @@ fn test_cmd() -> i32 {
     match ping(&r) {
         Ok(()) => {
             println!("ok. {} answered for model {}.", r.base_url, r.model);
+            if let Some(t) = cfg.tier.filter(|t| (1..=3).contains(t)) {
+                let _ = save_tier_cache(&dir, t);
+                println!("tier pinned in ai.toml: {t}.");
+                print_tier_help(t);
+                return 0;
+            }
+            let tool = probe_tool_call(&r);
+            let tier = if tool { 2 } else { 1 };
+            let _ = save_tier_cache(&dir, tier);
+            print_tier_help(tier);
             0
         }
         Err(e) => {
@@ -531,6 +768,14 @@ fn test_cmd() -> i32 {
             println!("the buddy falls back to its built-in lines either way.");
             1
         }
+    }
+}
+
+fn print_tier_help(t: u8) {
+    match t {
+        1 => println!("tier granted: 1 (text answers only). tb ask works; tool-call-capable models unlock tb agent."),
+        2 => println!("tier granted: 2 (tool calls work). tb ask is live; tb agent can read files and run commands (writes need tier 3)."),
+        _ => println!("tier pinned: 3. tb ask and tb agent are fully live, writes included."),
     }
 }
 
