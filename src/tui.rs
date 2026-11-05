@@ -79,7 +79,7 @@ fn draw(
         height: h.min(area.height),
     };
     let para = Paragraph::new(lines)
-        .block(Block::bordered().title("hatch"))
+        .block(Block::bordered().title("/buddy ol pal"))
         .alignment(Alignment::Left);
     f.render_widget(para, popup);
 }
