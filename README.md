@@ -5,6 +5,10 @@ One creature, 38 species across five rarity tiers, zero accounts. It remembers
 your builds, not your business: events record that a command ran and how long,
 never what it was.
 
+In short: a small pet for your terminal that notices what you do, cheers when
+builds pass, sulks when they fail, and levels up as you work. No account, no
+telemetry.
+
 Rust + ratatui, single binary. (This project was previously called **hatch**;
 the binary is still `tb` and state still lives in `~/.config/hatch`.)
 
@@ -149,25 +153,33 @@ built-in lines; nothing breaks. Requests carry only the buddy's name,
 species, mood and the last event's kind and exit code, never paths, contents
 or secrets.
 
-### The buddy that works (capability tiers)
+### Give the buddy a brain: tb ask and tb agent
 
-Once the voice is live and `tb ai test` has probed it, the buddy can work, not
-just talk:
+After `tb ai setup`, your buddy can do more than talk. The AI works at three
+levels, called tiers. The setup's test call grants tiers 1 and 2
+automatically; tier 3 you turn on yourself once you trust the model you
+picked.
 
-- `tb ask "why did my build fail?"` asks your buddy about recent terminal
-  events (tier 1+). `tb ask --recap` summarizes the last hour. Answers are
-  never clamped; `--full` also saves the whole answer to `last_answer.md`.
-- `tb agent "task"` (tier 2+) lets the buddy read files and run commands with
-  captured output. Tier 3 (set `tier = 3` in ai.toml once you trust the model)
-  unlocks edits. Every action lands in the same event ledger your commands
-  write to, writes and destructive commands ask first (relax with
-  `confirm_writes` / `confirm_destructive = false`), and headless runs need
-  `--yes` to act at all.
-- From inside tmux, `tb agent` gives the buddy its own window: sprite docked
-  in the corner, transcript behind it, and the window closes when it finishes.
-  If the binary lives inside a chroot or container (a proot distro on Android,
-  for example), set `HATCH_AGENT_WINDOW_WRAP="proot-distro login ubuntu --"`
-  so the window can re-enter it.
+- Tier 1, chat: `tb ask "why did my build fail?"`. The buddy answers using
+  your recent terminal events (what ran, what failed, how long). `tb ask
+  --recap` summarizes the last hour, and `--full` saves the whole answer to
+  `last_answer.md`.
+- Tier 2, hands: `tb agent "count the TODO comments in src"`. The buddy can
+  read files and run safe commands, and shows you each step it took.
+- Tier 3, edits: the buddy can also write files and run anything that changes
+  them. Turn it on by adding `tier = 3` to your `ai.toml`, and only when you
+  trust the model you picked. Even at tier 3, writes and destructive commands
+  ask before they act unless you pass `--yes` or set `confirm_writes` /
+  `confirm_destructive = false` in ai.toml; a headless run (no terminal
+  attached) refuses to act without `--yes`.
 
-The probe grants tier 1 (text answers) or tier 2 (tool calls work); it never
-grants 3 on its own. `tb ai status` shows the tier you are running at.
+Every action the agent takes lands in the same event ledger your own commands
+write to, so `tb tail` shows its work right next to yours.
+
+From inside tmux, `tb agent` gives the buddy its own window: sprite docked in
+the corner, transcript behind it, and the window closes when it finishes. If
+the binary lives inside a chroot or container (a proot distro on Android, for
+example), set `HATCH_AGENT_WINDOW_WRAP="proot-distro login ubuntu --"` so the
+window can re-enter it.
+
+`tb ai status` shows the tier you are running at.
