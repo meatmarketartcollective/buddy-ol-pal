@@ -1,3 +1,4 @@
+mod agent;
 mod ai;
 mod anim;
 mod shell;
@@ -18,6 +19,8 @@ fn help() {
     println!("  tb feed            feed your buddy a treat (+1 xp, eases chaos, 1m cooldown)");
     println!("  tb play            play with your buddy (+2 xp, eases chaos more, 5m cooldown)");
     println!("  tb talk            say hi; your buddy answers with a line");
+    println!("  tb ask \"?\"         ask your buddy about recent terminal events (AI, tier 1+)");
+    println!("  tb agent \"task\"   the buddy works: reads files, runs commands; tier 3 edits too");
     println!("  tb ai              give your buddy an AI voice: setup (free NVIDIA key), test, on/off, clear");
     println!("  tb off / tb on     silence notifications and hide the UI, or wake it back up");
     println!("  tb emit <kind>     feed hatch an event from any harness (e.g. build_finished --exit 0 --secs 42)");
@@ -36,6 +39,8 @@ fn main() {
         Some("feed") => feed_cmd(),
         Some("play") => play_cmd(),
         Some("talk") => talk_cmd(),
+        Some("ask") => agent::ask_cmd(&args[1..]),
+        Some("agent") => agent::agent_cmd(&args[1..]),
         Some("ai") => ai::ai_cmd(&args[1..]),
         Some("off") => switch_cmd(false),
         Some("on") => switch_cmd(true),
