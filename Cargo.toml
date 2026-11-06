@@ -1,6 +1,6 @@
 [package]
 name = "buddy-ol-pal"
-version = "0.1.0"
+version = "0.4.0"
 edition = "2021"
 description = "A terminal companion that lives in your terminal and reacts to real events"
 license = "MIT"

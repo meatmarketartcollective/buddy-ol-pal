@@ -4,8 +4,8 @@
 class Tb < Formula
   desc "Terminal companion that reacts to your real command outcomes"
   homepage "https://github.com/aloysiusvonfck/buddy-ol-pal"
-  url "https://github.com/aloysiusvonfck/buddy-ol-pal/archive/refs/tags/v0.1.0.tar.gz"
-  version "0.1.0"
+  url "https://github.com/aloysiusvonfck/buddy-ol-pal/archive/refs/tags/v0.4.0.tar.gz"
+  version "0.4.0"
   license "MIT"
 
   depends_on "rust" => :build
