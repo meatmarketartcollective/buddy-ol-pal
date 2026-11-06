@@ -42,15 +42,17 @@ pub const XP_DAILY_CAP: i64 = 100;
 /// Max level, the last entry of LEVEL_THRESHOLDS.
 pub const MAX_LEVEL: i64 = LEVEL_THRESHOLDS.len() as i64;
 
-/// Fresh xp past max level that triggers an ascension (rehatch). Each one
-/// after costs ASCENSION_STEP more than the last: the first fires at 400
-/// total xp, then 700, then 1000. At the daily cap that is days of real
-/// work per step, so the long game is earned, not ground.
+/// Fresh xp past max level that triggers an ascension (rehatch). The first
+/// fires at 1000 total xp (900 past max), and each one after costs
+/// ASCENSION_STEP more: 1300, 1600, ... At the daily cap that is over a
+/// week of real work for the first rehatch, so the long game is earned,
+/// not ground.
 pub const ASCENSION_STEP: i64 = 300;
 
-/// Total xp that triggers the next ascension.
+/// Total xp that triggers the next ascension: 1000 for the first, then
+/// 300 more each time.
 pub fn ascension_threshold(ascensions: i64) -> i64 {
-    LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.len() - 1] + ASCENSION_STEP * (ascensions + 1)
+    LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.len() - 1] + 900 + ASCENSION_STEP * ascensions
 }
 
 /// Hatch weights after `a` ascensions: common bleeds into the rarer tiers
@@ -969,27 +971,27 @@ mod tests {
     fn apply_xp_ascends_past_max_level() {
         let mut st = default_state(now_secs(), 7);
         st.level = MAX_LEVEL;
-        st.xp = 399;
+        st.xp = 999;
         st.xp_day = now_secs() / 86400;
         st.xp_today = 0;
         let out = apply_xp(&mut st, 2);
         assert_eq!(
             out,
             XpOutcome::Ascended,
-            "401 crosses the first ascension threshold 400"
+            "1001 crosses the first ascension threshold 1000"
         );
         assert_eq!(st.ascensions, 1);
         assert_eq!(st.xp, LEVEL_THRESHOLDS[MAX_LEVEL as usize - 1]);
         assert_eq!(st.level, MAX_LEVEL);
         assert!(st.discovered.contains(&st.species));
-        // the second ascension costs 300 more: threshold 700
-        st.xp = 699;
+        // the second ascension costs 300 more: threshold 1300
+        st.xp = 1299;
         st.xp_today = 0;
         assert_eq!(apply_xp(&mut st, 2), XpOutcome::Ascended);
         assert_eq!(st.ascensions, 2);
         // below the threshold nothing happens
         st.ascensions = 0;
-        st.xp = 390;
+        st.xp = 990;
         st.xp_today = 0;
         assert_eq!(apply_xp(&mut st, 2), XpOutcome::Nothing);
         assert_eq!(st.ascensions, 0);
