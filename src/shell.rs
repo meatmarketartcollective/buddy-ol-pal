@@ -59,3 +59,77 @@ autoload -Uz add-zsh-hook
 add-zsh-hook preexec __buddy_preexec
 add-zsh-hook precmd __buddy_precmd
 "##;
+
+#[cfg(test)]
+mod tests {
+    use super::{BASH, ZSH};
+
+    fn tokens(s: &str) -> Vec<&str> {
+        s.split(|c: char| !c.is_ascii_alphanumeric() && c != '_')
+            .filter(|t| !t.is_empty())
+            .collect()
+    }
+
+    #[test]
+    fn bash_capture_wires_trap_and_prompt_command() {
+        assert!(BASH.contains("trap '__buddy_preexec' DEBUG"));
+        assert!(BASH.contains("PROMPT_COMMAND=\"__buddy_capture"));
+        assert!(BASH.contains("__buddy_capture() {"));
+    }
+
+    #[test]
+    fn zsh_capture_uses_zsh_hooks() {
+        assert!(ZSH.contains("add-zsh-hook preexec __buddy_preexec"));
+        assert!(ZSH.contains("add-zsh-hook precmd __buddy_precmd"));
+        assert!(ZSH.contains("__buddy_cmd=$1"), "zsh must report the command itself");
+    }
+
+    #[test]
+    fn both_snippets_ignore_buddy_commands() {
+        for s in [BASH, ZSH] {
+            assert!(
+                s.contains("!= buddy ]"),
+                "capture must not chase its own emit"
+            );
+        }
+    }
+
+    #[test]
+    fn both_snippets_emit_exit_and_secs() {
+        for s in [BASH, ZSH] {
+            assert!(s.contains(r#"command buddy emit --exit "$code" --secs "$secs""#));
+        }
+    }
+
+    #[test]
+    fn threshold_is_env_overridable_with_sane_default() {
+        for s in [BASH, ZSH] {
+            assert!(s.contains("${BUDDY_THRESHOLD_SECS:-10}"));
+        }
+    }
+
+    #[test]
+    fn fast_successes_are_skipped_slow_or_failed_are_kept() {
+        for s in [BASH, ZSH] {
+            assert!(s.contains("\"$code\" -ne 0"), "failures must be captured");
+            assert!(s.contains("-ge \"${BUDDY_THRESHOLD_SECS"), "slow runs must be captured");
+        }
+    }
+
+    #[test]
+    fn bash_guard_fires_only_once_per_prompt() {
+        assert!(BASH.contains("__buddy_prompt_done=1"));
+        assert!(BASH.contains("__buddy_busy=1"));
+    }
+
+    #[test]
+    fn snippets_carry_no_legacy_tb_name() {
+        for s in [BASH, ZSH] {
+            for t in tokens(s) {
+                assert_ne!(t, "tb", "legacy tb token in shell snippet");
+                assert_ne!(t, "TB_HOME");
+            }
+            assert!(!s.contains("TB_"));
+        }
+    }
+}

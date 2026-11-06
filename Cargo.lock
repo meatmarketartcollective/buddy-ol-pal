@@ -77,6 +77,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3ded4057c258ba199e2d26386d3af3780957ecaee6c4ef4041c6b4b8b97c0b06"
 
 [[package]]
+name = "buddy-ol-pal"
+version = "0.6.0"
+dependencies = [
+ "crossterm",
+ "petname",
+ "ratatui",
+ "rpassword",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "toml",
+ "ureq",
+]
+
+[[package]]
 name = "cassowary"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -324,21 +339,6 @@ name = "hashbrown"
 version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a"
-
-[[package]]
-name = "buddy-ol-pal"
-version = "0.5.0"
-dependencies = [
- "crossterm",
- "petname",
- "ratatui",
- "rpassword",
- "serde",
- "serde_json",
- "tempfile",
- "toml",
- "ureq",
-]
 
 [[package]]
 name = "heck"
