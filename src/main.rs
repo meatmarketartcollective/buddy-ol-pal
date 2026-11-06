@@ -10,23 +10,23 @@ mod watcher;
 use std::fs;
 
 fn help() {
-    println!("tb - a terminal companion that reacts to real events\n");
-    println!("  tb ui              open the companion (plain `tb` also works)");
-    println!("  tb run -- <cmd>    run a command; long runs and failures get logged as events");
-    println!("  tb status          one-line companion status for scripts and panes");
-    println!("  tb dex             the discovery list; undiscovered species show as ???");
-    println!("  tb pet             show your buddy some love; eases the chaos");
-    println!("  tb feed            feed your buddy a treat (+1 xp, eases chaos, 1m cooldown)");
-    println!("  tb play            play with your buddy (+2 xp, eases chaos more, 5m cooldown)");
-    println!("  tb talk            say hi; your buddy answers with a line");
-    println!("  tb ask \"?\"         ask your buddy about recent terminal events (AI, tier 1+)");
-    println!("  tb agent \"task\"   the buddy works: reads files, runs commands; tier 3 edits too");
-    println!("  tb ai              give your buddy an AI voice: setup (free NVIDIA key), test, on/off, clear");
-    println!("  tb off / tb on     silence notifications and hide the UI, or wake it back up");
-    println!("  tb emit <kind>     feed tb an event from any harness (e.g. build_finished --exit 0 --secs 42)");
-    println!("  tb shell [bash|zsh]  print the passive-capture snippet; eval it in your rc file");
-    println!("  tb tail [-n N]     print the last N events as JSON lines (default 10)\n");
-    println!("state lives in ~/.config/buddy-ol-pal (override with TB_HOME)");
+    println!("buddy - a terminal companion that reacts to real events\n");
+    println!("  buddy ui              open the companion (plain `buddy` also works)");
+    println!("  buddy run -- <cmd>    run a command; long runs and failures get logged as events");
+    println!("  buddy status          one-line companion status for scripts and panes");
+    println!("  buddy dex             the discovery list; undiscovered species show as ???");
+    println!("  buddy pet             show your buddy some love; eases the chaos");
+    println!("  buddy feed            feed your buddy a treat (+1 xp, eases chaos, 1m cooldown)");
+    println!("  buddy play            play with your buddy (+2 xp, eases chaos more, 5m cooldown)");
+    println!("  buddy talk            say hi; your buddy answers with a line");
+    println!("  buddy ask \"?\"         ask your buddy about recent terminal events (AI, tier 1+)");
+    println!("  buddy agent \"task\"   the buddy works: reads files, runs commands; tier 3 edits too");
+    println!("  buddy ai              give your buddy an AI voice: setup (free NVIDIA key), test, on/off, clear");
+    println!("  buddy off / buddy on     silence notifications and hide the UI, or wake it back up");
+    println!("  buddy emit <kind>     feed buddy an event from any harness (e.g. build_finished --exit 0 --secs 42)");
+    println!("  buddy shell [bash|zsh]  print the passive-capture snippet; eval it in your rc file");
+    println!("  buddy tail [-n N]     print the last N events as JSON lines (default 10)\n");
+    println!("state lives in ~/.config/buddy-ol-pal (override with BUDDY_HOME)");
 }
 
 fn main() {
@@ -61,7 +61,7 @@ fn main() {
     std::process::exit(code);
 }
 
-/// `tb run -- <cmd>`: the conventional `--` separator before the command is
+/// `buddy run -- <cmd>`: the conventional `--` separator before the command is
 /// optional; strip it so the documented form works.
 fn run_argv(rest: &[String]) -> Vec<String> {
     if rest.first().map(|s| s.as_str()) == Some("--") {
@@ -95,8 +95,8 @@ mod tests {
     }
 }
 
-/// `tb status`: one plain line, read-only. Never hatches a companion.
-/// `tb pet`: a little affection. Logs a petted event (the UI shows the petted
+/// `buddy status`: one plain line, read-only. Never hatches a companion.
+/// `buddy pet`: a little affection. Logs a petted event (the UI shows the petted
 /// state for PET_SECS) and eases the chaos a touch.
 fn pet_cmd() -> i32 {
     let dir = state::config_dir();
@@ -108,11 +108,11 @@ fn pet_cmd() -> i32 {
         exit_code: 0,
     };
     if let Err(e) = state::append_event(&dir, &ev) {
-        eprintln!("tb: could not write event: {}", e);
+        eprintln!("buddy: could not write event: {}", e);
     }
     state::apply_event_chaos(&mut st, "petted");
     if let Err(e) = state::save_state(&dir, &st) {
-        eprintln!("tb: could not save state: {}", e);
+        eprintln!("buddy: could not save state: {}", e);
     }
     println!(
         "{} the {} soaks it in. (petted)",
@@ -122,7 +122,7 @@ fn pet_cmd() -> i32 {
     0
 }
 
-/// The interaction set behind `tb feed` / `tb play` / `tb talk`. Each logs
+/// The interaction set behind `buddy feed` / `buddy play` / `buddy talk`. Each logs
 /// an event the UI, tail and status can see; feed and play earn a little XP
 /// and ease the chaos, talk just gets a line back. Feed and play cool down.
 fn interaction(kind: &str, cooldown_secs: i64, xp: i64, verb: &str, full: &str) -> i32 {
@@ -142,12 +142,12 @@ fn interaction(kind: &str, cooldown_secs: i64, xp: i64, verb: &str, full: &str) 
         exit_code: 0,
     };
     if let Err(e) = state::append_event(&dir, &ev) {
-        eprintln!("tb: could not write event: {}", e);
+        eprintln!("buddy: could not write event: {}", e);
     }
     let outcome = state::apply_xp(&mut st, xp);
     state::apply_event_chaos(&mut st, kind);
     if let Err(e) = state::save_state(&dir, &st) {
-        eprintln!("tb: could not save state: {}", e);
+        eprintln!("buddy: could not save state: {}", e);
     }
     println!(
         "{} the {}: {}",
@@ -217,14 +217,14 @@ fn talk_cmd() -> i32 {
     interaction("talked", 0, 0, &format!("{line} (talked)"), "")
 }
 
-/// `tb off` / `tb on`: the off switch. Events keep logging either way; off
+/// `buddy off` / `buddy on`: the off switch. Events keep logging either way; off
 /// only silences notifications and keeps the UI from opening.
 fn switch_cmd(on: bool) -> i32 {
     let dir = state::config_dir();
     let mut st = state::load_or_hatch(&dir);
     st.enabled = on;
     if let Err(e) = state::save_state(&dir, &st) {
-        eprintln!("tb: could not save state: {}", e);
+        eprintln!("buddy: could not save state: {}", e);
         return 1;
     }
     println!(
@@ -232,14 +232,14 @@ fn switch_cmd(on: bool) -> i32 {
         if on {
             "the buddy is back on."
         } else {
-            "the buddy is off. events still log; tb on to wake it."
+            "the buddy is off. events still log; buddy on to wake it."
         }
     );
     0
 }
 
-/// `tb shell [bash|zsh]`: prints the passive-capture snippet for that shell.
-/// Eval its output in the rc file and tb sees every interactive command.
+/// `buddy shell [bash|zsh]`: prints the passive-capture snippet for that shell.
+/// Eval its output in the rc file and buddy sees every interactive command.
 fn shell_cmd(which: Option<&str>) -> i32 {
     match which.unwrap_or("bash") {
         "bash" => {
@@ -251,7 +251,7 @@ fn shell_cmd(which: Option<&str>) -> i32 {
             0
         }
         other => {
-            eprintln!("tb: unsupported shell '{}'. try bash or zsh.", other);
+            eprintln!("buddy: unsupported shell '{}'. try bash or zsh.", other);
             2
         }
     }
@@ -263,7 +263,7 @@ fn status_cmd() -> i32 {
         .ok()
         .and_then(|s| state::parse_state(&s));
     let Some(st) = st else {
-        println!("no companion yet; run tb");
+        println!("no companion yet; run buddy");
         return 0;
     };
     let now = state::now_secs();
@@ -304,7 +304,7 @@ fn status_cmd() -> i32 {
     0
 }
 
-/// `tb dex`: the discovery list. Discovered species show name, species and
+/// `buddy dex`: the discovery list. Discovered species show name, species and
 /// tier; undiscovered ones are hidden behind ???.
 fn dex_cmd() -> i32 {
     let dir = state::config_dir();
@@ -315,7 +315,7 @@ fn dex_cmd() -> i32 {
     0
 }
 
-/// `tb tail [-n N]`: the last N events as JSON lines. Read-only.
+/// `buddy tail [-n N]`: the last N events as JSON lines. Read-only.
 fn tail_cmd(rest: &[String]) -> i32 {
     let mut n: usize = 10;
     let mut idx = 0;

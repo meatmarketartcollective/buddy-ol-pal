@@ -9,7 +9,7 @@ pub const CELEBRATE_SECS: i64 = 6;
 pub const MIFF_SECS: i64 = 600;
 pub const MIFF_WINDOW_SECS: i64 = 3600;
 // The original 7-state matrix: sleep after a quiet stretch, resting after a
-// wake keypress, petted after `tb pet`. Chaos builds from failures and throws
+// wake keypress, petted after `buddy pet`. Chaos builds from failures and throws
 // random glitch frames once it crosses the glitch threshold.
 pub const SLEEP_AFTER_SECS: i64 = 300;
 pub const REST_SECS: i64 = 10;
@@ -147,7 +147,7 @@ pub fn now_secs() -> i64 {
 }
 
 pub fn config_dir() -> PathBuf {
-    if let Ok(home) = std::env::var("TB_HOME") {
+    if let Ok(home) = std::env::var("BUDDY_HOME") {
         return PathBuf::from(home);
     }
     let base = std::env::var("XDG_CONFIG_HOME")
@@ -348,7 +348,7 @@ pub fn parse_state(text: &str) -> Option<CompanionState> {
 }
 
 /// A cross-process lock over the read-modify-write section every command
-/// shares (load state, mutate, save). Concurrent `tb run` and `tb emit` calls
+/// shares (load state, mutate, save). Concurrent `buddy run` and `buddy emit` calls
 /// otherwise lose each other's XP and chaos to the last writer. Blocks until
 /// the lock is held; on any error the caller proceeds unlocked rather than
 /// failing the command.
@@ -584,7 +584,7 @@ pub fn is_miffed(events: &[Event], now: i64) -> bool {
     recent >= 2
 }
 
-/// One plain line for `tb status`: name, species, derived mood, xp, last event.
+/// One plain line for `buddy status`: name, species, derived mood, xp, last event.
 pub fn format_status(
     st: &CompanionState,
     species_label: &str,

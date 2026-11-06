@@ -4,19 +4,19 @@ use std::process::Command;
 use std::time::Instant;
 
 pub fn threshold_secs() -> u64 {
-    std::env::var("TB_THRESHOLD_SECS")
+    std::env::var("BUDDY_THRESHOLD_SECS")
         .ok()
         .and_then(|v| v.parse().ok())
         .unwrap_or(10)
 }
 
-/// `tb run -- <command> [args...]`: spawns the command with inherited stdio,
+/// `buddy run -- <command> [args...]`: spawns the command with inherited stdio,
 /// times it, marks the companion working while the child is live, and on exit
 /// appends one event if it qualifies. Never logs command content, only
 /// outcome, duration, and exit code.
 pub fn run_and_log(argv: &[String]) -> i32 {
     if argv.is_empty() {
-        eprintln!("usage: tb run -- <command> [args...]");
+        eprintln!("usage: buddy run -- <command> [args...]");
         return 2;
     }
     let dir = state::config_dir();
@@ -30,7 +30,7 @@ pub fn run_and_log(argv: &[String]) -> i32 {
     let code = match status {
         Ok(s) => s.code().unwrap_or(-1),
         Err(e) => {
-            eprintln!("tb: could not run '{}': {}", argv[0], e);
+            eprintln!("buddy: could not run '{}': {}", argv[0], e);
             -1
         }
     };
@@ -41,8 +41,8 @@ pub fn run_and_log(argv: &[String]) -> i32 {
 }
 
 /// Fold one logged event into the companion: write it, pay the XP, apply the
-/// chaos effect, save, and notify while the buddy is on. Shared by `tb run`
-/// and `tb emit` so adapters get exactly the same reactions.
+/// chaos effect, save, and notify while the buddy is on. Shared by `buddy run`
+/// and `buddy emit` so adapters get exactly the same reactions.
 /// Voice: print one spoken line, but only when stdout is a real terminal.
 /// Piped output stays machine-clean; that lesson cost a bug already.
 pub fn speak_text(msg: &str) {
@@ -65,7 +65,7 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
         .unwrap_or(true);
     if !known {
         eprintln!(
-            "tb: unknown kind '{}'. known kinds: build_finished, command_failed. logging it, but it stays silent and calm.",
+            "buddy: unknown kind '{}'. known kinds: build_finished, command_failed. logging it, but it stays silent and calm.",
             kind.unwrap_or("")
         );
         if let Some(k) = kind {
@@ -76,7 +76,7 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
                 exit_code: code,
             };
             if let Err(e) = state::append_event(dir, &ev) {
-                eprintln!("tb: could not write event: {}", e);
+                eprintln!("buddy: could not write event: {}", e);
             }
         }
         return code;
@@ -90,7 +90,7 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
             exit_code: code,
         };
         if let Err(e) = state::append_event(dir, &ev) {
-            eprintln!("tb: could not write event: {}", e);
+            eprintln!("buddy: could not write event: {}", e);
         }
     }
 
@@ -107,7 +107,7 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
         state::apply_event_chaos(&mut st, k);
     }
     if let Err(e) = state::save_state(dir, &st) {
-        eprintln!("tb: could not save state: {}", e);
+        eprintln!("buddy: could not save state: {}", e);
     }
 
     // Notifications: only while the buddy is on. The OSC 9 sequence asks the
@@ -159,8 +159,8 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
 }
 
 
-/// `tb emit [kind] [--exit N] [--secs S]`: the adapter surface. With a kind,
-/// any harness can feed tb a named event. With no kind, the outcome is
+/// `buddy emit [kind] [--exit N] [--secs S]`: the adapter surface. With a kind,
+/// any harness can feed buddy a named event. With no kind, the outcome is
 /// classified like a wrapped run: slow successes and any failure become
 /// events, fast successes are skipped (nothing worth reacting to). Same
 /// effects as a real run either way. Unknown kinds are logged but stay
@@ -191,7 +191,7 @@ pub fn emit(argv: &[String]) -> i32 {
     let (kind, exit_code, secs) = match parse_emit_args(argv) {
         Ok(parsed) => parsed,
         Err(e) => {
-            eprintln!("tb: {}. usage: tb emit [kind] [--exit N] [--secs S]", e);
+            eprintln!("buddy: {}. usage: buddy emit [kind] [--exit N] [--secs S]", e);
             return 2;
         }
     };
@@ -209,18 +209,18 @@ pub fn emit(argv: &[String]) -> i32 {
 /// The notification line for an event, in the buddy's voice.
 pub fn notification_message(kind: &str, duration_secs: u64, code: i32) -> String {
     match kind {
-        "build_finished" => format!("tb: build finished in {}s", duration_secs),
-        "command_failed" => format!("tb: command failed (exit {})", code),
-        other => format!("tb: {}", other),
+        "build_finished" => format!("buddy: build finished in {}s", duration_secs),
+        "command_failed" => format!("buddy: command failed (exit {})", code),
+        other => format!("buddy: {}", other),
     }
 }
 
 /// Emit a notification: the OSC 9 desktop-notification escape on stdout, and,
 /// inside tmux, a display-message so the other panes see it too. The escape
-/// only goes to a real terminal (a pipe gets clean output); TB_NOTIFY=off
-/// silences everything and TB_NOTIFY=force emits even piped, for testing.
+/// only goes to a real terminal (a pipe gets clean output); BUDDY_NOTIFY=off
+/// silences everything and BUDDY_NOTIFY=force emits even piped, for testing.
 pub fn notify(msg: &str) {
-    match std::env::var("TB_NOTIFY").as_deref() {
+    match std::env::var("BUDDY_NOTIFY").as_deref() {
         Ok("off") => return,
         Ok("force") => {}
         _ => {
@@ -247,9 +247,9 @@ mod tests {
 
     #[test]
     fn notification_messages_name_the_outcome() {
-        assert_eq!(notification_message("build_finished", 42, 0), "tb: build finished in 42s");
-        assert_eq!(notification_message("command_failed", 3, 2), "tb: command failed (exit 2)");
-        assert_eq!(notification_message("petted", 0, 0), "tb: petted");
+        assert_eq!(notification_message("build_finished", 42, 0), "buddy: build finished in 42s");
+        assert_eq!(notification_message("command_failed", 3, 2), "buddy: command failed (exit 2)");
+        assert_eq!(notification_message("petted", 0, 0), "buddy: petted");
     }
 
     #[test]

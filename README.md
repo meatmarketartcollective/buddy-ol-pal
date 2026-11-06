@@ -9,7 +9,7 @@ In short: a small pet for your terminal that notices what you do, cheers when
 builds pass, sulks when they fail, and levels up as you work. No account, no
 telemetry.
 
-Rust + ratatui, single binary. (The binary is `tb`. Older builds kept state
+Rust + ratatui, single binary. (The binary is `buddy`. Older builds kept state
 in a differently named folder, and first run moves it over for you.)
 From source you want a recent stable Rust (1.89 or newer): the state lock
 uses std's `File::lock`.
@@ -36,7 +36,7 @@ From a clone:
     git clone <repo> && cd buddy-ol-pal
     ./install.sh
 
-Either way `tb` lands in `~/.local/bin` (set `TB_BIN` to install
+Either way `buddy` lands in `~/.local/bin` (set `BUDDY_BIN` to install
 somewhere else). First run hatches a companion and saves it locally.
 No config, no account.
 
@@ -45,18 +45,18 @@ No config, no account.
 
 ## Usage
 
-    tb                          # open the companion UI
-    tb run -- cargo build       # wrap a command; a slow success or any failure becomes an event
-    tb status                   # one line: name, species, level, ascensions, mood, xp, chaos
-    tb tail                     # the recent events
-    tb dex                      # species you have discovered
-    tb pet / feed / play / talk # interactions, each on its own cooldown
-    tb off / tb on              # the off switch: no notifications, no UI; events still log
-    tb emit <kind> [--exit N] [--secs S]  # adapter: feed tb an event from any harness
+    buddy                          # open the companion UI
+    buddy run -- cargo build       # wrap a command; a slow success or any failure becomes an event
+    buddy status                   # one line: name, species, level, ascensions, mood, xp, chaos
+    buddy tail                     # the recent events
+    buddy dex                      # species you have discovered
+    buddy pet / feed / play / talk # interactions, each on its own cooldown
+    buddy off / buddy on              # the off switch: no notifications, no UI; events still log
+    buddy emit <kind> [--exit N] [--secs S]  # adapter: feed buddy an event from any harness
 
 #### The voice
 
-The buddy speaks in text, not noise. `tb talk` asks for a line, `tb status`
+The buddy speaks in text, not noise. `buddy talk` asks for a line, `buddy status`
 quotes the mood it is in, and after every qualifying event (a wrapped run, an
 emit, or a captured shell command) it says a line that matches the mood:
 celebrating on a green build, miffed on a failure. All 38 species have pools
@@ -67,13 +67,13 @@ lines only reach a real terminal; piped output stays clean.
 
 Interactive shells can feed the buddy without wrapping anything:
 
-    eval "$(tb shell bash)"    # add to .bashrc
-    eval "$(tb shell zsh)"     # add to .zshrc
+    eval "$(buddy shell bash)"    # add to .bashrc
+    eval "$(buddy shell zsh)"     # add to .zshrc
 
 Every command's outcome and duration then reach the buddy on their own.
 Fast successes are skipped (nothing worth reacting to); failures and slow
-successes become events, same as a wrapped run. Commands starting with tb
-are ignored so the capture does not chase itself. Set TB_THRESHOLD_SECS
+successes become events, same as a wrapped run. Commands starting with buddy
+are ignored so the capture does not chase itself. Set BUDDY_THRESHOLD_SECS
 to move the slow-success line.
 
 ## Wiring it to real work
@@ -81,14 +81,14 @@ to move the slow-success line.
 Wrap the commands you care about, and long successes plus any failure turn
 into events:
 
-    tb run -- cargo build
-    tb run -- pytest
+    buddy run -- cargo build
+    buddy run -- pytest
 
 Or, from any harness or hook (Claude Code hooks, CI scripts, your own cron),
 report the event without wrapping the command:
 
-    tb emit build_finished --exit 0 --secs 42
-    tb emit command_failed --exit 2
+    buddy emit build_finished --exit 0 --secs 42
+    buddy emit command_failed --exit 2
 
 `emit` and `run` feed the same state: XP, mood, chaos, notifications.
 
@@ -101,18 +101,18 @@ accruing, and every 700 more (the first rehatch fires at 1000 total, then
 species with the rarity odds shifted up a step. Common starts at 50% and
 bleeds toward the rare tiers; legendary goes 2% to 7% to 12% to 17% to 22%
 over four ascensions. Name and level carry over, and every species it has
-been shows up in `tb dex`.
+been shows up in `buddy dex`.
 
 ### Notifications
 
 A logged build event emits an OSC 9 desktop-notification escape on stdout,
-and inside tmux also a `display-message` the other panes see. `tb off`
-silences everything and keeps the UI from opening; `tb on` wakes the buddy
+and inside tmux also a `display-message` the other panes see. `buddy off`
+silences everything and keeps the UI from opening; `buddy on` wakes the buddy
 back up. Events keep logging either way.
 
 ## Species packs
 
-Drop a TOML file in `~/.config/buddy-ol-pal/packs/` (or `$TB_HOME/packs`) and it
+Drop a TOML file in `~/.config/buddy-ol-pal/packs/` (or `$BUDDY_HOME/packs`) and it
 loads at startup, next to the 38 built-ins. Same shape as `species.toml`:
 a species name that matches a built-in replaces it, a new name is added.
 Files that do not parse are skipped, so a bad pack never takes the buddy
@@ -131,7 +131,7 @@ models give you free credits at signup, no credit card.
 
 ### The free NVIDIA key (the default)
 
-    tb ai setup
+    buddy ai setup
 
 That walks you through it:
 
@@ -140,14 +140,14 @@ That walks you through it:
   3. Copy the key (it starts with nvapi-) and paste it at the prompt. Input
      is hidden.
 
-tb writes `ai.toml` into its state dir (permissions 600), runs a test
-call, and from then on `tb talk` answers come from the model
+buddy writes `ai.toml` into its state dir (permissions 600), runs a test
+call, and from then on `buddy talk` answers come from the model
 (`meta/llama-3.1-8b-instruct` unless you change it).
 
 ### Any other endpoint
 
-Setup flags pick a different provider: `tb ai setup --openai`,
-`tb ai setup --anthropic`, or `tb ai setup --url URL --model M` for anything
+Setup flags pick a different provider: `buddy ai setup --openai`,
+`buddy ai setup --anthropic`, or `buddy ai setup --url URL --model M` for anything
 OpenAI-compatible: Groq, OpenRouter, a local Ollama
 (`--url http://127.0.0.1:11434/v1 --model llama3.1`), LM Studio, vLLM. Hand
 the key over through an env var with `--env NAME` and nothing is written to
@@ -155,29 +155,29 @@ disk.
 
 ### Control
 
-    tb ai          status
-    tb ai test     one test call
-    tb ai on/off   wake or silence the voice
-    tb ai clear    remove the config
-- `TB_AI_DEBUG=1` prints the reason an AI call failed (connection error, HTTP status, malformed response) to stderr; without it, failures fall back to built-in lines silently.
+    buddy ai          status
+    buddy ai test     one test call
+    buddy ai on/off   wake or silence the voice
+    buddy ai clear    remove the config
+- `BUDDY_AI_DEBUG=1` prints the reason an AI call failed (connection error, HTTP status, malformed response) to stderr; without it, failures fall back to built-in lines silently.
 
 If the endpoint is unreachable or out of credits, the buddy falls back to its
 built-in lines; nothing breaks. Requests carry only the buddy's name,
 species, mood and the last event's kind and exit code, never paths, contents
 or secrets.
 
-### Give the buddy a brain: tb ask and tb agent
+### Give the buddy a brain: buddy ask and buddy agent
 
-After `tb ai setup`, your buddy can do more than talk. The AI works at three
+After `buddy ai setup`, your buddy can do more than talk. The AI works at three
 levels, called tiers. The setup's test call grants tiers 1 and 2
 automatically; tier 3 you turn on yourself once you trust the model you
 picked.
 
-- Tier 1, chat: `tb ask "why did my build fail?"`. The buddy answers using
-  your recent terminal events (what ran, what failed, how long). `tb ask
+- Tier 1, chat: `buddy ask "why did my build fail?"`. The buddy answers using
+  your recent terminal events (what ran, what failed, how long). `buddy ask
   --recap` summarizes the last hour, and `--full` saves the whole answer to
   `last_answer.md`.
-- Tier 2, hands: `tb agent "count the TODO comments in src"`. The buddy can
+- Tier 2, hands: `buddy agent "count the TODO comments in src"`. The buddy can
   read files and run safe commands, and shows you each step it took.
 - Tier 3, edits: the buddy can also write files and run anything that changes
   them. Turn it on by adding `tier = 3` to your `ai.toml`, and only when you
@@ -197,12 +197,12 @@ make, not one the software makes. A weak free model still makes a fine chat
 buddy at tier 1 even when it cannot be trusted with your repo.
 
 Every action the agent takes lands in the same event ledger your own commands
-write to, so `tb tail` shows its work right next to yours.
+write to, so `buddy tail` shows its work right next to yours.
 
-From inside tmux, `tb agent` gives the buddy its own window: sprite docked in
+From inside tmux, `buddy agent` gives the buddy its own window: sprite docked in
 the corner, transcript behind it, and the window closes when it finishes. If
 the binary lives inside a chroot or container (a proot distro on Android, for
-example), set `TB_AGENT_WINDOW_WRAP="proot-distro login ubuntu --"`` so the
+example), set `BUDDY_AGENT_WINDOW_WRAP="proot-distro login ubuntu --"`` so the
 window can re-enter it.
 
-`tb ai status` shows the tier you are running at.
+`buddy ai status` shows the tier you are running at.

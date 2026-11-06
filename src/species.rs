@@ -134,7 +134,7 @@ pub fn table() -> &'static [Species] {
     TABLE.get_or_init(|| merge(builtin_table(), &load_pack_files()))
 }
 
-/// Runtime species packs: every *.toml in $TB_HOME/packs, sorted by file
+/// Runtime species packs: every *.toml in $BUDDY_HOME/packs, sorted by file
 /// name so the load order is stable. Missing dir means no packs.
 fn load_pack_files() -> Vec<(String, String)> {
     let dir = crate::state::config_dir().join("packs");
@@ -233,7 +233,7 @@ pub fn pick_weighted(seed: u64, weights: &[(&str, u64)]) -> &'static Species {
     &t[(seed as usize) % t.len()]
 }
 
-/// `tb dex` rows: discovered species show name, species and tier; undiscovered
+/// `buddy dex` rows: discovered species show name, species and tier; undiscovered
 /// ones hide everything behind ???. The first row is the summary counter.
 pub fn dex_rows(discovered: &[String]) -> Vec<String> {
     let t = table();

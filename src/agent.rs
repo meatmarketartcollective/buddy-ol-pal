@@ -1,11 +1,11 @@
 //! The buddy that works: tiered agent commands.
 //!
-//! `tb ask` (tier 1+): a read-only adviser over the event ledger. Answers are
+//! `buddy ask` (tier 1+): a read-only adviser over the event ledger. Answers are
 //! never clamped: the 140-character rule is the voice's, never the agent's.
-//! `tb agent` (tier 2+): the buddy reads files and runs commands with
+//! `buddy agent` (tier 2+): the buddy reads files and runs commands with
 //! captured output; tier 3 unlocks edits. Every action appends an agent_*
 //! event to the same ledger your commands write to, so the buddy's history
-//! shows what it did. Tier assignment is a probe (`tb ai test`) or an
+//! shows what it did. Tier assignment is a probe (`buddy ai test`) or an
 //! explicit `tier = N` in ai.toml; no key, no agent, ever a silent fallback.
 
 use crate::ai;
@@ -73,19 +73,19 @@ struct Gate {
 
 fn gate(dir: &Path, min_tier: u8, what: &str) -> Result<Gate, String> {
     let cfg = ai::load_config(dir).ok_or_else(|| {
-        format!("tb {what}: no AI voice configured; run tb ai setup first.")
+        format!("buddy {what}: no AI voice configured; run buddy ai setup first.")
     })?;
     if cfg.enabled == Some(false) {
-        return Err(format!("tb {what}: the AI voice is off (tb ai on)."));
+        return Err(format!("buddy {what}: the AI voice is off (buddy ai on)."));
     }
     let tier = ai::effective_tier(dir, &cfg).ok_or_else(|| {
         format!(
-            "tb {what}: no capability tier yet; run `tb ai test`, or set tier = 1..3 in ai.toml."
+            "buddy {what}: no capability tier yet; run `buddy ai test`, or set tier = 1..3 in ai.toml."
         )
     })?;
     if tier < min_tier {
         return Err(format!(
-            "tb {what}: needs tier {min_tier}, yours is {tier} (tier = N in ai.toml raises it)."
+            "buddy {what}: needs tier {min_tier}, yours is {tier} (tier = N in ai.toml raises it)."
         ));
     }
     Ok(Gate {
@@ -103,7 +103,7 @@ fn audit(dir: &Path, kind: &str, exit_code: i32, duration_secs: u64) {
         exit_code,
     };
     if let Err(e) = state::append_event(dir, &ev) {
-        eprintln!("tb: could not write event: {e}");
+        eprintln!("buddy: could not write event: {e}");
     }
 }
 
@@ -147,7 +147,7 @@ pub fn ask_cmd(rest: &[String]) -> i32 {
     let flags = match parse_flags(rest) {
         Ok(f) => f,
         Err(e) => {
-            eprintln!("tb ask: {e}");
+            eprintln!("buddy ask: {e}");
             return 2;
         }
     };
@@ -170,7 +170,7 @@ pub fn ask_cmd(rest: &[String]) -> i32 {
     } else {
         let q = flags.rest.join(" ");
         if q.trim().is_empty() {
-            eprintln!("usage: tb ask \"question\"  |  tb ask --recap");
+            eprintln!("usage: buddy ask \"question\"  |  buddy ask --recap");
             return 2;
         }
         ask_prompt(&st.name, &sp.name, &mood, &events, &q)
@@ -196,14 +196,14 @@ pub fn ask_cmd(rest: &[String]) -> i32 {
                 let path = dir.join("last_answer.md");
                 match std::fs::write(&path, &answer) {
                     Ok(()) => println!("\nfull answer saved to {}", path.display()),
-                    Err(e) => eprintln!("tb ask: could not save the answer: {e}"),
+                    Err(e) => eprintln!("buddy ask: could not save the answer: {e}"),
                 }
             }
             audit(&dir, "asked", 0, 0);
             0
         }
         Err(e) => {
-            eprintln!("tb ask: {e}");
+            eprintln!("buddy ask: {e}");
             1
         }
     }
@@ -434,8 +434,8 @@ fn clip(s: &str, n: usize) -> String {
 }
 
 fn run_capture(cmd: &str) -> (String, i32, u64) {
-    if std::env::var_os("TB_AGENT_DEBUG").is_some() {
-        eprintln!("tb agent: run: {cmd}");
+    if std::env::var_os("BUDDY_AGENT_DEBUG").is_some() {
+        eprintln!("buddy agent: run: {cmd}");
     }
     let start = Instant::now();
     match Command::new("sh").arg("-c").arg(cmd).output() {
@@ -466,7 +466,7 @@ pub fn agent_cmd(rest: &[String]) -> i32 {
     let flags = match parse_flags(rest) {
         Ok(f) => f,
         Err(e) => {
-            eprintln!("tb agent: {e}");
+            eprintln!("buddy agent: {e}");
             return 2;
         }
     };
@@ -479,13 +479,13 @@ pub fn agent_cmd(rest: &[String]) -> i32 {
         }
     };
     let mut task = flags.rest.join(" ");
-    if let Ok(t) = std::env::var("TB_AGENT_TASK") {
+    if let Ok(t) = std::env::var("BUDDY_AGENT_TASK") {
         if !t.trim().is_empty() {
             task = t;
         }
     }
     if task.trim().is_empty() {
-        eprintln!("usage: tb agent \"task\"  (tier 2: reads + runs; tier 3: edits too)");
+        eprintln!("usage: buddy agent \"task\"  (tier 2: reads + runs; tier 3: edits too)");
         return 2;
     }
     if !flags.inner && std::env::var_os("TMUX").is_some() {
@@ -525,14 +525,14 @@ fn shell_quote(s: &str) -> String {
     format!("'{}'", s.replace('\'', "'\\''"))
 }
 
-/// `tb agent` from inside tmux: the buddy gets its own window and hops back
+/// `buddy agent` from inside tmux: the buddy gets its own window and hops back
 /// to the caller's terminal the moment it finishes (the window closes).
 fn open_agent_window(g: &Gate, task: &str, flags: &Flags) -> i32 {
-    let exe = std::env::current_exe().unwrap_or_else(|_| PathBuf::from("tb"));
+    let exe = std::env::current_exe().unwrap_or_else(|_| PathBuf::from("buddy"));
     let b64 = b64_encode(task.as_bytes());
     // The tmux server runs the window command outside whatever chroot or
-    // container launched us; TB_AGENT_WINDOW_WRAP re-enters it.
-    let wrap = std::env::var("TB_AGENT_WINDOW_WRAP").unwrap_or_default();
+    // container launched us; BUDDY_AGENT_WINDOW_WRAP re-enters it.
+    let wrap = std::env::var("BUDDY_AGENT_WINDOW_WRAP").unwrap_or_default();
     let wrap = wrap.trim();
     let mut cmd = String::new();
     if !wrap.is_empty() {
@@ -543,19 +543,19 @@ fn open_agent_window(g: &Gate, task: &str, flags: &Flags) -> i32 {
     // process's: forward the state dir (and AI debug flag) explicitly so
     // the inner agent reads the same ai.toml and state as the caller.
     let mut envs = String::new();
-    if let Ok(h) = std::env::var("TB_HOME") {
+    if let Ok(h) = std::env::var("BUDDY_HOME") {
         if !h.trim().is_empty() {
-            envs.push_str(&format!("TB_HOME={} ", shell_quote(&h)));
+            envs.push_str(&format!("BUDDY_HOME={} ", shell_quote(&h)));
         }
     }
-    if std::env::var("TB_AI_DEBUG")
+    if std::env::var("BUDDY_AI_DEBUG")
         .map(|v| !v.trim().is_empty())
         .unwrap_or(false)
     {
-        envs.push_str("TB_AI_DEBUG=1 ");
+        envs.push_str("BUDDY_AI_DEBUG=1 ");
     }
     cmd.push_str(&format!(
-        "{envs}TB_AGENT_TASK={b64} {} agent --inner",
+        "{envs}BUDDY_AGENT_TASK={b64} {} agent --inner",
         shell_quote(&exe.display().to_string())
     ));
     if flags.yes {
@@ -565,7 +565,7 @@ fn open_agent_window(g: &Gate, task: &str, flags: &Flags) -> i32 {
         cmd.push_str(&format!(" --max-steps {}", flags.max_steps));
     }
     let status = Command::new("tmux")
-        .args(["new-window", "-n", "tb-agent", &cmd])
+        .args(["new-window", "-n", "buddy-agent", &cmd])
         .status();
     match status {
         Ok(s) if s.success() => {
@@ -573,7 +573,7 @@ fn open_agent_window(g: &Gate, task: &str, flags: &Flags) -> i32 {
             0
         }
         _ => {
-            eprintln!("tb agent: could not open a tmux window; running inline instead.");
+            eprintln!("buddy agent: could not open a tmux window; running inline instead.");
             run_agent(g, task, flags)
         }
     }
@@ -832,7 +832,7 @@ fn may_proceed(
         return true;
     }
     if ui.is_none() {
-        eprintln!("tb agent: refusing {what}: no terminal to confirm in; pass --yes to allow it.");
+        eprintln!("buddy agent: refusing {what}: no terminal to confirm in; pass --yes to allow it.");
         return false;
     }
     let u = ui.as_mut().unwrap();
@@ -962,7 +962,7 @@ impl AgentUi {
             )));
             f.render_widget(
                 ratatui::widgets::Paragraph::new(sprite).block(
-                    ratatui::widgets::Block::bordered().title("tb agent"),
+                    ratatui::widgets::Block::bordered().title("buddy agent"),
                 ),
                 rect,
             );

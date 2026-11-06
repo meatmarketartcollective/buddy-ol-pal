@@ -1,6 +1,6 @@
 //! Pluggable AI voice for the buddy.
 //!
-//! `tb ai setup` walks through NVIDIA's free hosted models by default
+//! `buddy ai setup` walks through NVIDIA's free hosted models by default
 //! (OpenAI-compatible endpoint, free credits at signup, no credit card). Any
 //! other OpenAI-compatible endpoint (OpenAI, Groq, Ollama, LM Studio, vLLM,
 //! OpenRouter, ...) or an Anthropic endpoint works by editing ai.toml or with
@@ -199,11 +199,11 @@ fn build_body(r: &Resolved, v: &Voice) -> Option<(String, String)> {
     }
 }
 
-/// One-line diagnostics to stderr, only when TB_AI_DEBUG is set.
+/// One-line diagnostics to stderr, only when BUDDY_AI_DEBUG is set.
 /// Normal runs stay silent: unreachable endpoints fall back quietly.
 fn ai_debug(msg: &str) {
-    if std::env::var_os("TB_AI_DEBUG").is_some() {
-        eprintln!("tb ai: {msg}");
+    if std::env::var_os("BUDDY_AI_DEBUG").is_some() {
+        eprintln!("buddy ai: {msg}");
     }
 }
 
@@ -394,7 +394,7 @@ fn sanitize(line: &str) -> Option<String> {
 }
 
 // ---- capability tiers ----
-// T1: text answers over the event log (tb ask). T2: tool-call-capable models
+// T1: text answers over the event log (buddy ask). T2: tool-call-capable models
 // unlock the agent's read/run tools. T3 is a deliberate user choice: set
 // tier = 3 in ai.toml once the model can be trusted to edit files. The probe
 // never grants T3 on its own.
@@ -628,7 +628,7 @@ pub fn ai_cmd(rest: &[String]) -> i32 {
         Some("off") => toggle_cmd(false),
         Some("clear") => clear_cmd(),
         Some(other) => {
-            eprintln!("unknown ai command: {other}\nusage: tb ai [setup|test|on|off|clear]");
+            eprintln!("unknown ai command: {other}\nusage: buddy ai [setup|test|on|off|clear]");
             2
         }
     }
@@ -640,7 +640,7 @@ fn status_cmd() -> i32 {
     if !path.exists() {
         println!("no AI voice configured; the buddy speaks its built-in lines.");
         println!(
-            "`tb ai setup` walks you through a free NVIDIA key (no card), or edit {}.",
+            "`buddy ai setup` walks you through a free NVIDIA key (no card), or edit {}.",
             path.display()
         );
         return 0;
@@ -649,7 +649,7 @@ fn status_cmd() -> i32 {
         Some(c) => c,
         None => {
             println!(
-                "{} exists but does not parse; fix or delete it, then run tb ai setup.",
+                "{} exists but does not parse; fix or delete it, then run buddy ai setup.",
                 path.display()
             );
             return 1;
@@ -672,8 +672,8 @@ fn status_cmd() -> i32 {
     println!("  key:      {key}");
     let tier_line = match effective_tier(&dir, &cfg) {
         Some(t) if cfg.tier.is_some() => format!("{t} (pinned in ai.toml)"),
-        Some(t) => format!("{t} (from the last tb ai test)"),
-        None => "unprobed (run tb ai test)".to_string(),
+        Some(t) => format!("{t} (from the last buddy ai test)"),
+        None => "unprobed (run buddy ai test)".to_string(),
     };
     println!("  tier:     {tier_line}");
     println!("  config:   {}", path.display());
@@ -728,7 +728,7 @@ fn setup_cmd(rest: &[String]) -> i32 {
                 }
             },
             other => {
-                eprintln!("unknown setup flag: {other}\nusage: tb ai setup [--openai|--anthropic|--url U --model M] [--env NAME]");
+                eprintln!("unknown setup flag: {other}\nusage: buddy ai setup [--openai|--anthropic|--url U --model M] [--env NAME]");
                 return 2;
             }
         }
@@ -736,7 +736,7 @@ fn setup_cmd(rest: &[String]) -> i32 {
     }
 
     if endpoint == "nvidia" && key_env.is_none() {
-        println!("tb can give your buddy an AI voice. The free default is NVIDIA's");
+        println!("buddy can give your buddy an AI voice. The free default is NVIDIA's");
         println!("hosted models: free credits when you sign up, no credit card.");
         println!();
         println!("  1. Open {NVIDIA_KEY_URL}");
@@ -802,11 +802,11 @@ fn setup_cmd(rest: &[String]) -> i32 {
     let r = resolve(&cfg);
     match ping(&r) {
         Ok(()) => println!(
-            "voice is live. `tb talk` to hear it. If the key ever runs dry, the buddy falls back to its built-in lines."
+            "voice is live. `buddy talk` to hear it. If the key ever runs dry, the buddy falls back to its built-in lines."
         ),
         Err(e) => {
             println!("the test call failed: {e}");
-            println!("the buddy keeps its built-in lines until this works; check the key and run tb ai test.");
+            println!("the buddy keeps its built-in lines until this works; check the key and run buddy ai test.");
         }
     }
     0
@@ -817,7 +817,7 @@ fn test_cmd() -> i32 {
     let cfg = match load_config(&dir) {
         Some(c) => c,
         None => {
-            println!("no AI voice configured; run tb ai setup first.");
+            println!("no AI voice configured; run buddy ai setup first.");
             return 1;
         }
     };
@@ -847,9 +847,9 @@ fn test_cmd() -> i32 {
 
 fn print_tier_help(t: u8) {
     match t {
-        1 => println!("tier granted: 1 (text answers only). tb ask works; tool-call-capable models unlock tb agent."),
-        2 => println!("tier granted: 2 (tool calls work). tb ask is live; tb agent can read files and run commands (writes need tier 3)."),
-        _ => println!("tier pinned: 3. tb ask and tb agent are fully live, writes included."),
+        1 => println!("tier granted: 1 (text answers only). buddy ask works; tool-call-capable models unlock buddy agent."),
+        2 => println!("tier granted: 2 (tool calls work). buddy ask is live; buddy agent can read files and run commands (writes need tier 3)."),
+        _ => println!("tier pinned: 3. buddy ask and buddy agent are fully live, writes included."),
     }
 }
 
@@ -858,7 +858,7 @@ fn toggle_cmd(on: bool) -> i32 {
     let cfg = match load_config(&dir) {
         Some(c) => c,
         None => {
-            println!("no AI voice configured; run tb ai setup first.");
+            println!("no AI voice configured; run buddy ai setup first.");
             return 1;
         }
     };
