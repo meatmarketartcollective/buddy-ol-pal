@@ -82,7 +82,7 @@ TAIL = ("# Every species and every mood carries two art frames that cycle every\
 for key, header in HEADERS.items():
     path = os.path.join(os.path.expanduser("~/buddy-ol-pal/packs"), key + ".toml")
     with open(path, "w") as f:
-        f.write("# %s\n# %s\n# Drop in ~/.config/buddy-ol-pal/packs/ (or $TB_HOME/packs).\n\n" % (header, TAIL))
+        f.write("# %s\n# %s\n# Drop in ~/.config/buddy-ol-pal/packs/ (or $BUDDY_HOME/packs).\n\n" % (header, TAIL))
         for (slug, tier, names, art, lines) in DATA[key]:
             emit(f, slug, tier, names, art, lines)
     print("wrote", path)

@@ -14,7 +14,7 @@ use std::time::Duration;
 
 fn last_line(last: Option<&Event>, now: i64) -> String {
     match last {
-        None => "nothing yet. try: tb run -- <cmd>".to_string(),
+        None => "nothing yet. try: buddy run -- <cmd>".to_string(),
         Some(ev) => format!(
             "last: {}, {}s ago",
             ev.kind,
@@ -88,14 +88,14 @@ pub fn run_ui() -> i32 {
     let dir = state::config_dir();
     let mut st = state::load_or_hatch(&dir);
     if !st.enabled {
-        println!("the buddy is off (tb on to wake it)");
+        println!("the buddy is off (buddy on to wake it)");
         return 0;
     }
     let sp = species::resolve(&st.species);
 
     let mut stdout = io::stdout();
     if crossterm::terminal::enable_raw_mode().is_err() {
-        eprintln!("tb: needs a real terminal (tty)");
+        eprintln!("buddy: needs a real terminal (tty)");
         return 1;
     }
     crossterm::execute!(stdout, crossterm::terminal::EnterAlternateScreen).ok();
