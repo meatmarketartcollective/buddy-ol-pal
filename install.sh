@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install hatch (tb).
+# Install /buddy ol pal (tb).
 #
 # Two paths:
 #   1. prebuilt binary: downloaded from the GitHub releases page when one
@@ -9,7 +9,7 @@
 # Env: HATCH_BIN sets the install directory (default ~/.local/bin).
 set -euo pipefail
 
-REPO="aloysiusvonfck/hatch"
+REPO="aloysiusvonfck/buddy-ol-pal"
 dest="${HATCH_BIN:-$HOME/.local/bin}"
 machine="$(uname -s)-$(uname -m)"
 
@@ -37,7 +37,7 @@ fetch_prebuilt() {
 build_from_source() {
   cd "$(dirname "$0")"
   if ! command -v cargo >/dev/null 2>&1; then
-    echo "hatch: no cargo on PATH, and no prebuilt binary for $machine." >&2
+    echo "tb: no cargo on PATH, and no prebuilt binary for $machine." >&2
     echo "install rust first: https://rustup.rs" >&2
     exit 1
   fi

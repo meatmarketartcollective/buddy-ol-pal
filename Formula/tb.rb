@@ -1,10 +1,10 @@
-# Homebrew formula for hatch (tb). Ready for a public repo; until then it
+# Homebrew formula for /buddy ol pal (tb). The repo is public; the formula
 # installs from the local checkout:
 #   brew install --build-from-source Formula/tb.rb
 class Tb < Formula
   desc "Terminal companion that reacts to your real command outcomes"
-  homepage "https://github.com/aloysiusvonfck/hatch"
-  url "https://github.com/aloysiusvonfck/hatch/archive/refs/tags/v0.1.0.tar.gz"
+  homepage "https://github.com/aloysiusvonfck/buddy-ol-pal"
+  url "https://github.com/aloysiusvonfck/buddy-ol-pal/archive/refs/tags/v0.1.0.tar.gz"
   version "0.1.0"
   license "MIT"
 

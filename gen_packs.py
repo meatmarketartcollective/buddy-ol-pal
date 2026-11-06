@@ -61,7 +61,8 @@ def emit(f, slug, tier, names, idle, lines):
     f.write("\n")
 
 PACKS = {}
-exec(open("/workspace/pack_data.py").read(), PACKS)
+here = os.path.dirname(os.path.abspath(__file__))
+exec(open(os.path.join(here, "pack_data.py")).read(), PACKS)
 DATA = PACKS["DATA"]
 
 HEADERS = {
