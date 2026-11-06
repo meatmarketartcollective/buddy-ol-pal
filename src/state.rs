@@ -39,6 +39,45 @@ pub const LEVEL_THRESHOLDS: [i64; 5] = [0, 10, 25, 50, 100];
 /// This is what keeps a loop of toy runs from minting a level 5 buddy.
 pub const XP_DAILY_CAP: i64 = 100;
 
+/// Max level, the last entry of LEVEL_THRESHOLDS.
+pub const MAX_LEVEL: i64 = LEVEL_THRESHOLDS.len() as i64;
+
+/// Fresh xp past max level that triggers an ascension (rehatch). The first
+/// fires at 1000 total xp (900 past max), and each one after costs
+/// ASCENSION_STEP more: 1300, 1600, ... At the daily cap that is over a
+/// week of real work for the first rehatch, so the long game is earned,
+/// not ground.
+pub const ASCENSION_STEP: i64 = 300;
+
+/// Total xp that triggers the next ascension: 1000 for the first, then
+/// 300 more each time.
+pub fn ascension_threshold(ascensions: i64) -> i64 {
+    LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.len() - 1] + 900 + ASCENSION_STEP * ascensions
+}
+
+/// Hatch weights after `a` ascensions: common bleeds into the rarer tiers
+/// 10/5/5/5/5 a step, clamped at four steps so the sum always stays 100.
+/// Legendary goes 2% -> 7% -> 12% -> 17% -> 22%.
+pub fn ascension_weights(a: i64) -> [(&'static str, u64); 5] {
+    let a = a.clamp(0, 4) as u64;
+    [
+        ("common", 50 - 10 * a),
+        ("uncommon", 25 - 5 * a),
+        ("rare", 15 + 5 * a),
+        ("epic", 8 + 5 * a),
+        ("legendary", 2 + 5 * a),
+    ]
+}
+
+/// What one xp grant changed. Leveled is a level crossing; Ascended is a
+/// rehatch past max level into a fresh species with rarer hatch odds.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum XpOutcome {
+    Nothing,
+    Leveled,
+    Ascended,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct CompanionState {
     pub version: i64,
@@ -59,6 +98,8 @@ pub struct CompanionState {
     pub xp_today: i64, // XP earned today against the daily cap (state v6)
     #[serde(default)]
     pub xp_day: i64, // unix day the xp_today counter belongs to (state v6)
+    #[serde(default)]
+    pub ascensions: i64, // completed rehatches past max level; defaulted so older state files load as-is
 }
 
 fn default_true() -> bool {
@@ -143,6 +184,7 @@ pub fn default_state(now: i64, seed: u64) -> CompanionState {
         xp: 0,
         level: 1,
         discovered: vec![sp.name.clone()],
+        ascensions: 0,
     }
 }
 
@@ -192,12 +234,12 @@ pub fn xp_gain(exit_code: i32, duration_secs: u64, threshold_secs: u64) -> i64 {
 /// daily cap cannot be bypassed by one of them. Rolls the per-day counter at
 /// the unix day boundary, guards against a clock that jumps backward (a stale
 /// xp_day in the future resets the counter instead of granting an extra day),
-/// clamps negative gains to nothing, and re-derives the level. Returns true
-/// when the companion crossed into a new level, so callers can react once.
-pub fn apply_xp(st: &mut CompanionState, gain: i64) -> bool {
+/// clamps negative gains to nothing, and re-derives the level. Returns the
+/// outcome (Nothing, Leveled, Ascended) so callers can react once.
+pub fn apply_xp(st: &mut CompanionState, gain: i64) -> XpOutcome {
     if gain <= 0 {
         st.level = level_for(st.xp);
-        return false;
+        return XpOutcome::Nothing;
     }
     let today = now_secs() / 86400;
     if st.xp_day != today {
@@ -213,7 +255,27 @@ pub fn apply_xp(st: &mut CompanionState, gain: i64) -> bool {
     }
     let prev_level = st.level;
     st.level = level_for(st.xp);
-    st.level > prev_level
+    if st.level > prev_level {
+        return XpOutcome::Leveled;
+    }
+    // Ascension: xp keeps accruing past max level; every ASCENSION_STEP past
+    // the last threshold rehatches the buddy into a fresh species with the
+    // rarity odds shifted up. The reroll keeps name, level and xp, and the
+    // new species lands in the dex.
+    if st.level == MAX_LEVEL && st.xp >= ascension_threshold(st.ascensions) {
+        st.ascensions += 1;
+        st.xp = LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.len() - 1];
+        let seed = (now_secs() as u64)
+            .wrapping_mul(0x9E37_79B9_7F4A_7C15)
+            ^ (st.ascensions as u64).wrapping_mul(7919);
+        let sp = crate::species::pick_weighted(seed, &ascension_weights(st.ascensions));
+        if !st.discovered.iter().any(|d| d == &sp.name) {
+            st.discovered.push(sp.name.clone());
+        }
+        st.species = sp.name.clone();
+        return XpOutcome::Ascended;
+    }
+    XpOutcome::Nothing
 }
 
 /// XP still owed before the next level, or 0 when maxed.
@@ -527,14 +589,20 @@ pub fn format_status(
         Some(ev) => format!("last={} {}s ago", ev.kind, (now - ev.ts).max(0)),
         None => "no events yet".to_string(),
     };
+    let asc_part = if st.ascensions > 0 {
+        format!(" asc={}", st.ascensions)
+    } else {
+        String::new()
+    };
     format!(
-        "{} the {} L{} ({}) xp={} chaos={} {}",
+        "{} the {} L{} ({}) xp={} chaos={}{} {}",
         st.name,
         species_label,
         st.level,
         mood.label(),
         st.xp,
         chaos,
+        asc_part,
         last_part
     )
 }
@@ -885,13 +953,78 @@ mod tests {
     }
 
     #[test]
+    fn ascension_weights_shift_and_sum() {
+        for a in 0..=6 {
+            let w = ascension_weights(a);
+            assert_eq!(w.iter().map(|x| x.1).sum::<u64>(), 100);
+        }
+        assert_eq!(ascension_weights(0)[4].1, 2, "legendary starts at 2");
+        assert_eq!(ascension_weights(1)[4].1, 7, "legendary 2 -> 7 after one");
+        assert_eq!(
+            ascension_weights(9),
+            ascension_weights(4),
+            "odds stop moving after four ascensions"
+        );
+    }
+
+    #[test]
+    fn apply_xp_ascends_past_max_level() {
+        let mut st = default_state(now_secs(), 7);
+        st.level = MAX_LEVEL;
+        st.xp = 999;
+        st.xp_day = now_secs() / 86400;
+        st.xp_today = 0;
+        let out = apply_xp(&mut st, 2);
+        assert_eq!(
+            out,
+            XpOutcome::Ascended,
+            "1001 crosses the first ascension threshold 1000"
+        );
+        assert_eq!(st.ascensions, 1);
+        assert_eq!(st.xp, LEVEL_THRESHOLDS[MAX_LEVEL as usize - 1]);
+        assert_eq!(st.level, MAX_LEVEL);
+        assert!(st.discovered.contains(&st.species));
+        // the second ascension costs 300 more: threshold 1300
+        st.xp = 1299;
+        st.xp_today = 0;
+        assert_eq!(apply_xp(&mut st, 2), XpOutcome::Ascended);
+        assert_eq!(st.ascensions, 2);
+        // below the threshold nothing happens
+        st.ascensions = 0;
+        st.xp = 990;
+        st.xp_today = 0;
+        assert_eq!(apply_xp(&mut st, 2), XpOutcome::Nothing);
+        assert_eq!(st.ascensions, 0);
+    }
+
+    #[test]
+    fn pick_weighted_honors_custom_weights() {
+        let all_legendary = [("legendary", 100u64)];
+        for s in [1u64, 7, 42, 999, 12345] {
+            assert_eq!(
+                crate::species::pick_weighted(s, &all_legendary).tier,
+                "legendary"
+            );
+        }
+        // 10 common / 90 legendary: exactly 20 of seeds 0..200 roll common
+        let shifted = [("common", 10u64), ("legendary", 90u64)];
+        let mut common = 0;
+        for s in 0..200u64 {
+            if crate::species::pick_weighted(s, &shifted).tier == "common" {
+                common += 1;
+            }
+        }
+        assert_eq!(common, 20, "seed % 100 < 10 rolls common");
+    }
+
+    #[test]
     fn apply_xp_caps_every_path() {
         let mut st = default_state(now_secs(), 7);
         st.xp_day = now_secs() / 86400;
         st.xp_today = XP_DAILY_CAP - 1;
-        let leveled = apply_xp(&mut st, 5);
+        let outcome = apply_xp(&mut st, 5);
         assert_eq!(st.xp_today, XP_DAILY_CAP, "clipped at the cap");
-        assert!(!leveled);
+        assert_eq!(outcome, XpOutcome::Nothing);
         // one more grant the same day pays nothing at all
         apply_xp(&mut st, 5);
         assert_eq!(st.xp_today, XP_DAILY_CAP);
@@ -903,11 +1036,15 @@ mod tests {
         st.level = level_for(st.xp);
         st.xp = 9;
         st.xp_day = now_secs() / 86400;
-        let leveled = apply_xp(&mut st, 2);
-        assert!(leveled, "crossing 10 is a level up");
+        let outcome = apply_xp(&mut st, 2);
+        assert_eq!(outcome, XpOutcome::Leveled, "crossing 10 is a level up");
         assert_eq!(st.level, 2);
         let again = apply_xp(&mut st, 2);
-        assert!(!again, "no second level-up without crossing a threshold");
+        assert_eq!(
+            again,
+            XpOutcome::Nothing,
+            "no second level-up without crossing a threshold"
+        );
     }
 
     #[test]
