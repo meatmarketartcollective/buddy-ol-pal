@@ -159,3 +159,123 @@ pub fn run_ui() -> i32 {
     terminal.show_cursor().ok();
     0
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{draw, last_line};
+    use crate::species;
+    use crate::state::{CompanionState, Event, Mood};
+    use ratatui::backend::TestBackend;
+    use ratatui::Terminal;
+
+    fn fixture() -> (CompanionState, &'static species::Species) {
+        let sp = species::fallback();
+        let st = CompanionState {
+            version: 6,
+            name: "Fig".to_string(),
+            species: sp.name.to_string(),
+            hatched_at: 0,
+            mood: "idle".to_string(),
+            xp: 3,
+            level: 1,
+            discovered: vec![],
+            chaos: 0,
+            enabled: true,
+            xp_today: 0,
+            xp_day: 0,
+            ascensions: 0,
+        };
+        (st, sp)
+    }
+
+    fn buffer_text(b: &ratatui::buffer::Buffer) -> String {
+        b.content.iter().map(|c| c.symbol().to_string()).collect()
+    }
+
+    #[test]
+    fn no_events_hint_the_first_run() {
+        assert_eq!(
+            last_line(None, 100),
+            "nothing yet. try: buddy run -- <cmd>"
+        );
+    }
+
+    #[test]
+    fn last_event_shows_kind_and_age() {
+        let ev = Event {
+            ts: 93,
+            kind: "command_failed".to_string(),
+            duration_secs: 2,
+            exit_code: 1,
+        };
+        assert_eq!(last_line(Some(&ev), 100), "last: command_failed, 7s ago");
+    }
+
+    #[test]
+    fn clock_skew_never_shows_negative_age() {
+        let ev = Event {
+            ts: 500,
+            kind: "fed".to_string(),
+            duration_secs: 0,
+            exit_code: 0,
+        };
+        assert_eq!(last_line(Some(&ev), 100), "last: fed, 0s ago");
+    }
+
+    #[test]
+    fn ui_draws_title_name_and_hint() {
+        let (st, sp) = fixture();
+        let ev = Event {
+            ts: 98,
+            kind: "build_finished".to_string(),
+            duration_secs: 42,
+            exit_code: 0,
+        };
+        let mut terminal = Terminal::new(TestBackend::new(80, 24)).unwrap();
+        terminal
+            .draw(|f| draw(f, &st, sp, Mood::Idle, Some(&ev), 100, 0, 0))
+            .unwrap();
+        let text = buffer_text(terminal.backend().buffer());
+        assert!(text.contains("/buddy ol pal"), "box title missing");
+        assert!(text.contains("Fig the "), "pet line missing");
+        assert!(text.contains("L1"), "level missing");
+        assert!(text.contains("last: build_finished, 2s ago"), "last line missing");
+    }
+
+    #[test]
+    fn empty_history_draws_the_first_run_hint() {
+        let (st, sp) = fixture();
+        let mut terminal = Terminal::new(TestBackend::new(80, 24)).unwrap();
+        terminal
+            .draw(|f| draw(f, &st, sp, Mood::Idle, None, 100, 0, 0))
+            .unwrap();
+        let text = buffer_text(terminal.backend().buffer());
+        assert!(text.contains("nothing yet"));
+    }
+
+    #[test]
+    fn mood_sets_the_status_word() {
+        let (st, sp) = fixture();
+        let mut terminal = Terminal::new(TestBackend::new(80, 24)).unwrap();
+        terminal
+            .draw(|f| draw(f, &st, sp, Mood::Miffed, None, 100, 0, 0))
+            .unwrap();
+        let text = buffer_text(terminal.backend().buffer());
+        assert!(text.contains("(miffed)"), "mood label missing from the pet line");
+    }
+
+    #[test]
+    fn ui_survives_a_tiny_terminal() {
+        let (st, sp) = fixture();
+        let ev = Event {
+            ts: 98,
+            kind: "fed".to_string(),
+            duration_secs: 0,
+            exit_code: 0,
+        };
+        let mut terminal = Terminal::new(TestBackend::new(20, 5)).unwrap();
+        terminal
+            .draw(|f| draw(f, &st, sp, Mood::Idle, Some(&ev), 100, 0, 0))
+            .unwrap();
+    }
+}
