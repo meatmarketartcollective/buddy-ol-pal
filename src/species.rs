@@ -208,13 +208,21 @@ pub const TIER_WEIGHT_TOTAL: u64 = 100;
 /// A new hatch rolls a rarity tier first, then a species within that tier,
 /// all seeded so tests can reproduce every roll.
 pub fn pick(seed: u64) -> &'static Species {
-    let roll = seed % TIER_WEIGHT_TOTAL;
+    pick_weighted(seed, &TIER_WEIGHTS)
+}
+
+/// A hatch roll against explicit weights (ascension uses shifted odds).
+/// Rolls a tier by weight, then a species uniformly within that tier, all
+/// seeded so tests can reproduce every roll.
+pub fn pick_weighted(seed: u64, weights: &[(&str, u64)]) -> &'static Species {
+    let total: u64 = weights.iter().map(|w| w.1).sum();
+    let roll = seed % total;
     let mut acc = 0u64;
-    for (tier, weight) in TIER_WEIGHTS {
+    for (tier, weight) in weights {
         acc += weight;
         if roll < acc {
             let group: Vec<&'static Species> =
-                table().iter().filter(|s| s.tier == tier).collect();
+                table().iter().filter(|s| s.tier == *tier).collect();
             if !group.is_empty() {
                 return group[((seed >> 8) as usize) % group.len()];
             }

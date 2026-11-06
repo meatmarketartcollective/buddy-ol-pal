@@ -101,7 +101,7 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
     let mut st = state::load_or_hatch(dir);
     let threshold = threshold_secs();
     let gain = state::xp_gain(code, duration_secs, threshold);
-    let leveled = state::apply_xp(&mut st, gain);
+    let outcome = state::apply_xp(&mut st, gain);
     let prev_level = st.level;
     if let Some(k) = kind {
         state::apply_event_chaos(&mut st, k);
@@ -137,13 +137,19 @@ pub fn settle(dir: &std::path::Path, kind: Option<&str>, duration_secs: u64, cod
                     line
                 ));
             }
-            if leveled {
-                speak_text(&format!(
+            match outcome {
+                state::XpOutcome::Leveled => speak_text(&format!(
                     "{} the {} grew to level {}!",
                     st.name,
                     species::display_name(&st.species),
                     st.level
-                ));
+                )),
+                state::XpOutcome::Ascended => speak_text(&format!(
+                    "{} ascended! Rehatched as a {} with rarer species odds ahead.",
+                    st.name,
+                    species::display_name(&st.species)
+                )),
+                state::XpOutcome::Nothing => {}
             }
             notify(&notification_message(k, duration_secs, code));
         }
