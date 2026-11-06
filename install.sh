@@ -6,11 +6,11 @@
 #      matches this machine (linux x86_64 today; more as releases add them).
 #   2. from source: cargo build --release, needs rustup or cargo on PATH.
 #
-# Env: HATCH_BIN sets the install directory (default ~/.local/bin).
+# Env: TB_BIN sets the install directory (default ~/.local/bin).
 set -euo pipefail
 
 REPO="aloysiusvonfck/buddy-ol-pal"
-dest="${HATCH_BIN:-$HOME/.local/bin}"
+dest="${TB_BIN:-$HOME/.local/bin}"
 machine="$(uname -s)-$(uname -m)"
 
 fetch_prebuilt() {

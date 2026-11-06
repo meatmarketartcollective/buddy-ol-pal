@@ -134,7 +134,7 @@ pub fn table() -> &'static [Species] {
     TABLE.get_or_init(|| merge(builtin_table(), &load_pack_files()))
 }
 
-/// Runtime species packs: every *.toml in $HATCH_HOME/packs, sorted by file
+/// Runtime species packs: every *.toml in $TB_HOME/packs, sorted by file
 /// name so the load order is stable. Missing dir means no packs.
 fn load_pack_files() -> Vec<(String, String)> {
     let dir = crate::state::config_dir().join("packs");

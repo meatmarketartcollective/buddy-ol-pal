@@ -199,11 +199,11 @@ fn build_body(r: &Resolved, v: &Voice) -> Option<(String, String)> {
     }
 }
 
-/// One-line diagnostics to stderr, only when HATCH_AI_DEBUG is set.
+/// One-line diagnostics to stderr, only when TB_AI_DEBUG is set.
 /// Normal runs stay silent: unreachable endpoints fall back quietly.
 fn ai_debug(msg: &str) {
-    if std::env::var_os("HATCH_AI_DEBUG").is_some() {
-        eprintln!("hatch ai: {msg}");
+    if std::env::var_os("TB_AI_DEBUG").is_some() {
+        eprintln!("tb ai: {msg}");
     }
 }
 
@@ -736,7 +736,7 @@ fn setup_cmd(rest: &[String]) -> i32 {
     }
 
     if endpoint == "nvidia" && key_env.is_none() {
-        println!("hatch can give your buddy an AI voice. The free default is NVIDIA's");
+        println!("tb can give your buddy an AI voice. The free default is NVIDIA's");
         println!("hosted models: free credits when you sign up, no credit card.");
         println!();
         println!("  1. Open {NVIDIA_KEY_URL}");
