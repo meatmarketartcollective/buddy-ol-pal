@@ -1,5 +1,5 @@
 [package]
-name = "hatch"
+name = "buddy-ol-pal"
 version = "0.1.0"
 edition = "2021"
 description = "A terminal companion that lives in your terminal and reacts to real events"

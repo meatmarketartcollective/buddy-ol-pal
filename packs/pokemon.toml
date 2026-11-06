@@ -5,7 +5,7 @@
 # spinner, glitch) runs on top. Sleeping/resting/petted ride the idle
 # frames. Sole exception: petrock, who is a rock and does not animate.
 # That is the joke.
-# Drop in ~/.config/hatch/packs/ (or $HATCH_HOME/packs).
+# Drop in ~/.config/buddy-ol-pal/packs/ (or $TB_HOME/packs).
 
 [[species]]
 name = "pikachu"

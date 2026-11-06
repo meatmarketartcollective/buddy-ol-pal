@@ -147,7 +147,7 @@ pub fn now_secs() -> i64 {
 }
 
 pub fn config_dir() -> PathBuf {
-    if let Ok(home) = std::env::var("HATCH_HOME") {
+    if let Ok(home) = std::env::var("TB_HOME") {
         return PathBuf::from(home);
     }
     let base = std::env::var("XDG_CONFIG_HOME")
@@ -156,7 +156,15 @@ pub fn config_dir() -> PathBuf {
             let home = std::env::var("HOME").unwrap_or_else(|_| ".".to_string());
             PathBuf::from(home).join(".config")
         });
-    base.join("hatch")
+    let dir = base.join("buddy-ol-pal");
+    // The state folder got a new name when the project was renamed. First
+    // run moves an existing folder over so pets and ai.toml survive the
+    // upgrade; nothing is deleted.
+    let legacy = base.join("hatch");
+    if !dir.exists() && legacy.exists() {
+        let _ = std::fs::rename(&legacy, &dir);
+    }
+    dir
 }
 
 pub fn default_state(now: i64, seed: u64) -> CompanionState {
@@ -349,7 +357,7 @@ pub fn lock_state(dir: &Path) -> Option<std::fs::File> {
         .create(true)
         .truncate(false)
         .write(true)
-        .open(dir.join("hatch.lock"))
+        .open(dir.join("buddy.lock"))
         .ok()?;
     f.lock().ok()?;
     Some(f)

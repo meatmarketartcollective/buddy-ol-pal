@@ -73,19 +73,19 @@ struct Gate {
 
 fn gate(dir: &Path, min_tier: u8, what: &str) -> Result<Gate, String> {
     let cfg = ai::load_config(dir).ok_or_else(|| {
-        format!("hatch {what}: no AI voice configured; run tb ai setup first.")
+        format!("tb {what}: no AI voice configured; run tb ai setup first.")
     })?;
     if cfg.enabled == Some(false) {
-        return Err(format!("hatch {what}: the AI voice is off (tb ai on)."));
+        return Err(format!("tb {what}: the AI voice is off (tb ai on)."));
     }
     let tier = ai::effective_tier(dir, &cfg).ok_or_else(|| {
         format!(
-            "hatch {what}: no capability tier yet; run `tb ai test`, or set tier = 1..3 in ai.toml."
+            "tb {what}: no capability tier yet; run `tb ai test`, or set tier = 1..3 in ai.toml."
         )
     })?;
     if tier < min_tier {
         return Err(format!(
-            "hatch {what}: needs tier {min_tier}, yours is {tier} (tier = N in ai.toml raises it)."
+            "tb {what}: needs tier {min_tier}, yours is {tier} (tier = N in ai.toml raises it)."
         ));
     }
     Ok(Gate {
@@ -103,7 +103,7 @@ fn audit(dir: &Path, kind: &str, exit_code: i32, duration_secs: u64) {
         exit_code,
     };
     if let Err(e) = state::append_event(dir, &ev) {
-        eprintln!("hatch: could not write event: {e}");
+        eprintln!("tb: could not write event: {e}");
     }
 }
 
@@ -147,7 +147,7 @@ pub fn ask_cmd(rest: &[String]) -> i32 {
     let flags = match parse_flags(rest) {
         Ok(f) => f,
         Err(e) => {
-            eprintln!("hatch ask: {e}");
+            eprintln!("tb ask: {e}");
             return 2;
         }
     };
@@ -196,14 +196,14 @@ pub fn ask_cmd(rest: &[String]) -> i32 {
                 let path = dir.join("last_answer.md");
                 match std::fs::write(&path, &answer) {
                     Ok(()) => println!("\nfull answer saved to {}", path.display()),
-                    Err(e) => eprintln!("hatch ask: could not save the answer: {e}"),
+                    Err(e) => eprintln!("tb ask: could not save the answer: {e}"),
                 }
             }
             audit(&dir, "asked", 0, 0);
             0
         }
         Err(e) => {
-            eprintln!("hatch ask: {e}");
+            eprintln!("tb ask: {e}");
             1
         }
     }
@@ -434,8 +434,8 @@ fn clip(s: &str, n: usize) -> String {
 }
 
 fn run_capture(cmd: &str) -> (String, i32, u64) {
-    if std::env::var_os("HATCH_AGENT_DEBUG").is_some() {
-        eprintln!("hatch agent: run: {cmd}");
+    if std::env::var_os("TB_AGENT_DEBUG").is_some() {
+        eprintln!("tb agent: run: {cmd}");
     }
     let start = Instant::now();
     match Command::new("sh").arg("-c").arg(cmd).output() {
@@ -466,7 +466,7 @@ pub fn agent_cmd(rest: &[String]) -> i32 {
     let flags = match parse_flags(rest) {
         Ok(f) => f,
         Err(e) => {
-            eprintln!("hatch agent: {e}");
+            eprintln!("tb agent: {e}");
             return 2;
         }
     };
@@ -479,7 +479,7 @@ pub fn agent_cmd(rest: &[String]) -> i32 {
         }
     };
     let mut task = flags.rest.join(" ");
-    if let Ok(t) = std::env::var("HATCH_AGENT_TASK") {
+    if let Ok(t) = std::env::var("TB_AGENT_TASK") {
         if !t.trim().is_empty() {
             task = t;
         }
@@ -531,8 +531,8 @@ fn open_agent_window(g: &Gate, task: &str, flags: &Flags) -> i32 {
     let exe = std::env::current_exe().unwrap_or_else(|_| PathBuf::from("tb"));
     let b64 = b64_encode(task.as_bytes());
     // The tmux server runs the window command outside whatever chroot or
-    // container launched us; HATCH_AGENT_WINDOW_WRAP re-enters it.
-    let wrap = std::env::var("HATCH_AGENT_WINDOW_WRAP").unwrap_or_default();
+    // container launched us; TB_AGENT_WINDOW_WRAP re-enters it.
+    let wrap = std::env::var("TB_AGENT_WINDOW_WRAP").unwrap_or_default();
     let wrap = wrap.trim();
     let mut cmd = String::new();
     if !wrap.is_empty() {
@@ -543,19 +543,19 @@ fn open_agent_window(g: &Gate, task: &str, flags: &Flags) -> i32 {
     // process's: forward the state dir (and AI debug flag) explicitly so
     // the inner agent reads the same ai.toml and state as the caller.
     let mut envs = String::new();
-    if let Ok(h) = std::env::var("HATCH_HOME") {
+    if let Ok(h) = std::env::var("TB_HOME") {
         if !h.trim().is_empty() {
-            envs.push_str(&format!("HATCH_HOME={} ", shell_quote(&h)));
+            envs.push_str(&format!("TB_HOME={} ", shell_quote(&h)));
         }
     }
-    if std::env::var("HATCH_AI_DEBUG")
+    if std::env::var("TB_AI_DEBUG")
         .map(|v| !v.trim().is_empty())
         .unwrap_or(false)
     {
-        envs.push_str("HATCH_AI_DEBUG=1 ");
+        envs.push_str("TB_AI_DEBUG=1 ");
     }
     cmd.push_str(&format!(
-        "{envs}HATCH_AGENT_TASK={b64} {} agent --inner",
+        "{envs}TB_AGENT_TASK={b64} {} agent --inner",
         shell_quote(&exe.display().to_string())
     ));
     if flags.yes {
@@ -565,7 +565,7 @@ fn open_agent_window(g: &Gate, task: &str, flags: &Flags) -> i32 {
         cmd.push_str(&format!(" --max-steps {}", flags.max_steps));
     }
     let status = Command::new("tmux")
-        .args(["new-window", "-n", "hatch-agent", &cmd])
+        .args(["new-window", "-n", "tb-agent", &cmd])
         .status();
     match status {
         Ok(s) if s.success() => {
@@ -573,7 +573,7 @@ fn open_agent_window(g: &Gate, task: &str, flags: &Flags) -> i32 {
             0
         }
         _ => {
-            eprintln!("hatch agent: could not open a tmux window; running inline instead.");
+            eprintln!("tb agent: could not open a tmux window; running inline instead.");
             run_agent(g, task, flags)
         }
     }
@@ -832,7 +832,7 @@ fn may_proceed(
         return true;
     }
     if ui.is_none() {
-        eprintln!("hatch agent: refusing {what}: no terminal to confirm in; pass --yes to allow it.");
+        eprintln!("tb agent: refusing {what}: no terminal to confirm in; pass --yes to allow it.");
         return false;
     }
     let u = ui.as_mut().unwrap();
@@ -962,7 +962,7 @@ impl AgentUi {
             )));
             f.render_widget(
                 ratatui::widgets::Paragraph::new(sprite).block(
-                    ratatui::widgets::Block::bordered().title("hatch agent"),
+                    ratatui::widgets::Block::bordered().title("tb agent"),
                 ),
                 rect,
             );
@@ -1159,7 +1159,7 @@ mod write_gate_tests {
         assert!(!looks_like_write("ls -la"));
         assert!(!looks_like_write("echo rm"));
         assert!(!looks_like_write("cat a; echo rm"));
-        assert!(!looks_like_write("cmd 2>&1 | grep hatch"));
+        assert!(!looks_like_write("cmd 2>&1 | grep buddy"));
         assert!(!looks_like_write("grep 'a > b' file"));
         assert!(!looks_like_write("echo done > /dev/null"));
         // interpreters can write anything, so they are flagged with

@@ -10,7 +10,7 @@ mod watcher;
 use std::fs;
 
 fn help() {
-    println!("hatch - a terminal companion that reacts to real events\n");
+    println!("tb - a terminal companion that reacts to real events\n");
     println!("  tb ui              open the companion (plain `tb` also works)");
     println!("  tb run -- <cmd>    run a command; long runs and failures get logged as events");
     println!("  tb status          one-line companion status for scripts and panes");
@@ -23,10 +23,10 @@ fn help() {
     println!("  tb agent \"task\"   the buddy works: reads files, runs commands; tier 3 edits too");
     println!("  tb ai              give your buddy an AI voice: setup (free NVIDIA key), test, on/off, clear");
     println!("  tb off / tb on     silence notifications and hide the UI, or wake it back up");
-    println!("  tb emit <kind>     feed hatch an event from any harness (e.g. build_finished --exit 0 --secs 42)");
+    println!("  tb emit <kind>     feed tb an event from any harness (e.g. build_finished --exit 0 --secs 42)");
     println!("  tb shell [bash|zsh]  print the passive-capture snippet; eval it in your rc file");
     println!("  tb tail [-n N]     print the last N events as JSON lines (default 10)\n");
-    println!("state lives in ~/.config/hatch (override with HATCH_HOME)");
+    println!("state lives in ~/.config/buddy-ol-pal (override with TB_HOME)");
 }
 
 fn main() {
@@ -108,11 +108,11 @@ fn pet_cmd() -> i32 {
         exit_code: 0,
     };
     if let Err(e) = state::append_event(&dir, &ev) {
-        eprintln!("hatch: could not write event: {}", e);
+        eprintln!("tb: could not write event: {}", e);
     }
     state::apply_event_chaos(&mut st, "petted");
     if let Err(e) = state::save_state(&dir, &st) {
-        eprintln!("hatch: could not save state: {}", e);
+        eprintln!("tb: could not save state: {}", e);
     }
     println!(
         "{} the {} soaks it in. (petted)",
@@ -142,12 +142,12 @@ fn interaction(kind: &str, cooldown_secs: i64, xp: i64, verb: &str, full: &str) 
         exit_code: 0,
     };
     if let Err(e) = state::append_event(&dir, &ev) {
-        eprintln!("hatch: could not write event: {}", e);
+        eprintln!("tb: could not write event: {}", e);
     }
     let outcome = state::apply_xp(&mut st, xp);
     state::apply_event_chaos(&mut st, kind);
     if let Err(e) = state::save_state(&dir, &st) {
-        eprintln!("hatch: could not save state: {}", e);
+        eprintln!("tb: could not save state: {}", e);
     }
     println!(
         "{} the {}: {}",
@@ -224,22 +224,22 @@ fn switch_cmd(on: bool) -> i32 {
     let mut st = state::load_or_hatch(&dir);
     st.enabled = on;
     if let Err(e) = state::save_state(&dir, &st) {
-        eprintln!("hatch: could not save state: {}", e);
+        eprintln!("tb: could not save state: {}", e);
         return 1;
     }
     println!(
         "{}",
         if on {
-            "hatch is back on."
+            "the buddy is back on."
         } else {
-            "hatch is off. events still log; tb on to wake it."
+            "the buddy is off. events still log; tb on to wake it."
         }
     );
     0
 }
 
 /// `tb shell [bash|zsh]`: prints the passive-capture snippet for that shell.
-/// Eval its output in the rc file and hatch sees every interactive command.
+/// Eval its output in the rc file and tb sees every interactive command.
 fn shell_cmd(which: Option<&str>) -> i32 {
     match which.unwrap_or("bash") {
         "bash" => {
@@ -251,7 +251,7 @@ fn shell_cmd(which: Option<&str>) -> i32 {
             0
         }
         other => {
-            eprintln!("hatch: unsupported shell '{}'. try bash or zsh.", other);
+            eprintln!("tb: unsupported shell '{}'. try bash or zsh.", other);
             2
         }
     }
