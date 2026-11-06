@@ -96,8 +96,8 @@ report the event without wrapping the command:
 
 XP pays out only up to a daily cap (100) so a loop of toy commands cannot buy
 levels; level 5 lands at 100 lifetime XP. Past max level the XP keeps
-accruing, and every 300 more (the first rehatch fires at 1000 total, then
-1300, then 1600, each one costlier) the buddy ascends: it rehatches into a fresh
+accruing, and every 700 more (the first rehatch fires at 1000 total, then
+1700, then 2400, each one costlier) the buddy ascends: it rehatches into a fresh
 species with the rarity odds shifted up a step. Common starts at 50% and
 bleeds toward the rare tiers; legendary goes 2% to 7% to 12% to 17% to 22%
 over four ascensions. Name and level carry over, and every species it has

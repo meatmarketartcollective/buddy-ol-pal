@@ -43,14 +43,14 @@ pub const XP_DAILY_CAP: i64 = 100;
 pub const MAX_LEVEL: i64 = LEVEL_THRESHOLDS.len() as i64;
 
 /// Fresh xp past max level that triggers an ascension (rehatch). The first
-/// fires at 1000 total xp (900 past max), and each one after costs
-/// ASCENSION_STEP more: 1300, 1600, ... At the daily cap that is over a
-/// week of real work for the first rehatch, so the long game is earned,
-/// not ground.
-pub const ASCENSION_STEP: i64 = 300;
+/// fires at 1000 total xp (900 past max), and each one after costs 700
+/// more than the last: 1700, 2400, 3100. At the daily cap that is over a
+/// week of real work for the first rehatch and longer for each next one,
+/// so the long game is earned, not ground.
+pub const ASCENSION_STEP: i64 = 700;
 
 /// Total xp that triggers the next ascension: 1000 for the first, then
-/// 300 more each time.
+/// 700 more each time.
 pub fn ascension_threshold(ascensions: i64) -> i64 {
     LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.len() - 1] + 900 + ASCENSION_STEP * ascensions
 }
@@ -984,8 +984,8 @@ mod tests {
         assert_eq!(st.xp, LEVEL_THRESHOLDS[MAX_LEVEL as usize - 1]);
         assert_eq!(st.level, MAX_LEVEL);
         assert!(st.discovered.contains(&st.species));
-        // the second ascension costs 300 more: threshold 1300
-        st.xp = 1299;
+        // the second ascension costs 700 more: threshold 1700
+        st.xp = 1699;
         st.xp_today = 0;
         assert_eq!(apply_xp(&mut st, 2), XpOutcome::Ascended);
         assert_eq!(st.ascensions, 2);
