@@ -11,6 +11,8 @@ telemetry.
 
 Rust + ratatui, single binary. (This project was previously called **hatch**;
 the binary is still `tb` and state still lives in `~/.config/hatch`.)
+From source you want a recent stable Rust (1.89 or newer): the state lock
+uses std's `File::lock`.
 
 ## Miss your /buddy?
 
@@ -31,7 +33,7 @@ prebuilt path):
 
 From a clone:
 
-    git clone <repo> && cd hatch
+    git clone <repo> && cd buddy-ol-pal
     ./install.sh
 
 Either way `tb` lands in `~/.local/bin` (set `HATCH_BIN` to install
