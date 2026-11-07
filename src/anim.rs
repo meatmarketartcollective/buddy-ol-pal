@@ -55,6 +55,14 @@ const EGG_SMALL_CRACKED: [&str; 4] = [
     "( /\\ )",
     " '--' ",
 ];
+const EGG_WIDE3: [&str; 3] = ["   .---.  ", "  (     ) ", "   '---'  "];
+const EGG_WIDE3_TILT: [&str; 3] = ["    .---. ", "   (     )", "    '---' "];
+const EGG_WIDE3_CRACKED: [&str; 3] = ["   .---.  ", "  ( X / ) ", "   '---'  "];
+const EGG_WIDE3_OPEN: [&str; 3] = ["   .---.  ", "  ( o o ) ", "   '---'  "];
+const EGG_SMALL3: [&str; 3] = [" .--. ", "(    )", " '--' "];
+const EGG_SMALL3_TILT: [&str; 3] = [" ,--. ", "(    )", " `--' "];
+const EGG_SMALL3_CRACKED: [&str; 3] = [" .--. ", "( X/ )", " '--' "];
+const EGG_SMALL3_OPEN: [&str; 3] = [" .--. ", "( o o)", " '--' "];
 const EGG_SMALL_OPEN: [&str; 4] = [
     " .--. ",
     "( o o)",
@@ -95,11 +103,11 @@ pub fn hatch_frame(base: &str, step: u64) -> String {
     let h = base.lines().count().max(1);
     let w = base.lines().map(|l| l.chars().count()).max().unwrap_or(1);
     // An art box too small to hold an egg simply skips the animation.
-    if w < 6 || h < 4 {
+    if w < 6 || h < 3 {
         return base.to_string();
     }
-    let patterns: &[&str] = if w >= 10 {
-        match step {
+    let patterns: &[&str] = match (w >= 10, h) {
+        (true, 4..) => match step {
             0..=3 => {
                 if step % 2 == 0 {
                     &EGG_WIDE
@@ -109,9 +117,8 @@ pub fn hatch_frame(base: &str, step: u64) -> String {
             }
             4..=7 => &EGG_WIDE_CRACKED,
             _ => &EGG_WIDE_OPEN,
-        }
-    } else {
-        match step {
+        },
+        (false, 4..) => match step {
             0..=3 => {
                 if step % 2 == 0 {
                     &EGG_SMALL
@@ -121,7 +128,30 @@ pub fn hatch_frame(base: &str, step: u64) -> String {
             }
             4..=7 => &EGG_SMALL_CRACKED,
             _ => &EGG_SMALL_OPEN,
-        }
+        },
+        (true, 3) => match step {
+            0..=3 => {
+                if step % 2 == 0 {
+                    &EGG_WIDE3
+                } else {
+                    &EGG_WIDE3_TILT
+                }
+            }
+            4..=7 => &EGG_WIDE3_CRACKED,
+            _ => &EGG_WIDE3_OPEN,
+        },
+        (false, 3) => match step {
+            0..=3 => {
+                if step % 2 == 0 {
+                    &EGG_SMALL3
+                } else {
+                    &EGG_SMALL3_TILT
+                }
+            }
+            4..=7 => &EGG_SMALL3_CRACKED,
+            _ => &EGG_SMALL3_OPEN,
+        },
+        _ => return base.to_string(),
     };
     center_block(patterns, h, w)
 }
@@ -364,6 +394,15 @@ mod tests {
     fn hatch_skips_an_art_box_too_small_for_an_egg() {
         let tiny = " o \n";
         assert_eq!(hatch_frame(tiny, 5), tiny, "a 1-line box cannot hold an egg");
+    }
+
+    #[test]
+    fn hatch_fits_a_three_line_art() {
+        let short = " (o.o)\n <(*_*)>\n  ~~~\n";
+        assert_ne!(hatch_frame(short, 5), short, "a 3-line box still animates");
+        let f = hatch_frame(short, 5);
+        assert!(f.contains('X'), "3-line crack must show");
+        assert_eq!(hatch_frame(short, HATCH_TICKS), short);
     }
 
     #[test]
