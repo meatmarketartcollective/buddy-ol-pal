@@ -163,9 +163,12 @@ fn interaction(kind: &str, cooldown_secs: i64, xp: i64, verb: &str, full: &str) 
             st.level
         ),
         state::XpOutcome::Ascended => println!(
-            "{} ascended! It rehatched into a {} with rarer species odds ahead.",
+            "{} ascended! It rehatched into a {} ({}) with rarer species odds ahead.",
             st.name,
-            species::display_name(&st.species)
+            species::display_name(&st.species),
+            species::get(&st.species)
+                .unwrap_or_else(species::fallback)
+                .tier
         ),
         state::XpOutcome::Nothing => {}
     }
@@ -271,18 +274,19 @@ fn status_cmd() -> i32 {
     let active = state::is_active(&dir);
     let mood = state::current_mood(active, &events, now);
     let chaos = state::effective_chaos(&st, &events, now);
+    let sp = species::get(&st.species).unwrap_or_else(species::fallback);
     println!(
         "{}",
         state::format_status(
             &st,
             species::display_name(&st.species),
+            &sp.tier,
             mood,
             events.last(),
             now,
             chaos
         )
     );
-    let sp = species::get(&st.species).unwrap_or_else(species::fallback);
     let line = species::speak(
         sp,
         mood,

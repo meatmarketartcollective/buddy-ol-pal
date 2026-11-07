@@ -50,6 +50,7 @@ fn status_after_hatch_names_the_pet() {
     assert_eq!(r.code, 0);
     assert!(r.out.contains("the "), "got: {}", r.out);
     assert!(!r.out.contains("no companion yet"));
+    assert!(r.out.contains("tier="), "status must show the rarity tier: {}", r.out);
 }
 
 #[test]

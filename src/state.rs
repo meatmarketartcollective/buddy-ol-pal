@@ -588,6 +588,7 @@ pub fn is_miffed(events: &[Event], now: i64) -> bool {
 pub fn format_status(
     st: &CompanionState,
     species_label: &str,
+    tier: &str,
     mood: Mood,
     last: Option<&Event>,
     now: i64,
@@ -603,13 +604,14 @@ pub fn format_status(
         String::new()
     };
     format!(
-        "{} the {} L{} ({}) xp={} chaos={}{} {}",
+        "{} the {} L{} ({}) xp={} chaos={} tier={}{} {}",
         st.name,
         species_label,
         st.level,
         mood.label(),
         st.xp,
         chaos,
+        tier,
         asc_part,
         last_part
     )
@@ -825,7 +827,7 @@ mod tests {
     #[test]
     fn status_format_and_no_events() {
         let st = default_state(1_700_000_000, 0);
-        let line = format_status(&st, &st.species.clone(), Mood::Idle, None, 1_700_000_100, 0);
+        let line = format_status(&st, &st.species.clone(), "common", Mood::Idle, None, 1_700_000_100, 0);
         assert!(line.starts_with(&format!("{} the {} L1 (idle) xp=0", st.name, st.species)));
         assert!(line.ends_with("no events yet"));
         let ev = Event {
@@ -834,7 +836,7 @@ mod tests {
             duration_secs: 30,
             exit_code: 0,
         };
-        let line2 = format_status(&st, &st.species.clone(), Mood::Celebrate, Some(&ev), 1_700_000_100, 0);
+        let line2 = format_status(&st, &st.species.clone(), "common", Mood::Celebrate, Some(&ev), 1_700_000_100, 0);
         assert!(line2.ends_with("last=build_finished 10s ago"));
     }
 
@@ -930,7 +932,7 @@ mod tests {
         assert_eq!(st.xp, 3);
         assert_eq!(st.version, STATE_VERSION);
         assert_eq!(st.level, 1);
-        let line = format_status(&st, crate::species::display_name(&st.species), Mood::Idle, None, 2, 0);
+        let line = format_status(&st, crate::species::display_name(&st.species), "common", Mood::Idle, None, 2, 0);
         assert!(line.contains("(idle)"));
         assert!(!line.contains("banana"));
     }
