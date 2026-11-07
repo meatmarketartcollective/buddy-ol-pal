@@ -32,11 +32,20 @@ fn draw(
     now: i64,
     tick: u64,
     chaos: i64,
+    hatch: Option<(u64, &str)>,
 ) {
     let area = f.area();
     let base_art = sp.art.frame_for(mood, tick);
-    let art = anim::frame(mood, base_art, tick, chaos);
-    let blurb = species::pick_line(sp.lines.for_mood(mood), now);
+    let (art, blurb) = match hatch {
+        Some((start, msg)) if tick.saturating_sub(start) < anim::HATCH_TICKS => (
+            anim::hatch_frame(base_art, tick.saturating_sub(start)),
+            msg.to_string(),
+        ),
+        _ => (
+            anim::frame(mood, base_art, tick, chaos),
+            species::pick_line(sp.lines.for_mood(mood), now).to_string(),
+        ),
+    };
     let mood_style = match mood {
         Mood::Idle => Style::default().fg(Color::Gray),
         Mood::Working => Style::default().fg(Color::Yellow),
@@ -55,7 +64,10 @@ fn draw(
         lines.push(Line::from(Span::styled(l.to_string(), art_style)));
     }
     lines.push(Line::from(Span::styled(
-        format!("{} the {} L{} ({})", st.name, sp.name, st.level, mood.label()),
+        format!(
+            "{} the {} [{}] L{} ({})",
+            st.name, sp.name, sp.tier, st.level, mood.label()
+        ),
         Style::default()
             .fg(Color::White)
             .add_modifier(Modifier::BOLD),
@@ -110,6 +122,15 @@ pub fn run_ui() -> i32 {
     let mut quit = false;
     let mut tick: u64 = 0;
     let mut wake: Option<i64> = None;
+    // A hatch or rehatch that just happened (fresh egg, or the species and
+    // ascension count another process just changed) plays the egg animation
+    // once, then the normal mood art takes back over.
+    let mut seen_hatched_at = st.hatched_at;
+    let mut seen_ascensions = st.ascensions;
+    let mut seen_species = st.species.clone();
+    let mut fresh_at_start = st.hatched_at + 2 >= state::now_secs();
+    let mut hatch_start: Option<u64> = None;
+    let mut hatch_msg = String::new();
     loop {
         while crossterm::event::poll(Duration::from_millis(0)).unwrap_or(false) {
             if let Ok(crossterm::event::Event::Key(k)) = crossterm::event::read() {
@@ -133,6 +154,38 @@ pub fn run_ui() -> i32 {
         let now = state::now_secs();
         let events = state::read_events_tail(&dir, 8);
         let active = state::is_active(&dir);
+        // Pick up changes another process made to the state file (a feed or
+        // ascension in a sibling pane) so the UI stays live with it.
+        if let Ok(text) = std::fs::read_to_string(dir.join("state.toml")) {
+            if let Some(fresh) = state::parse_state(&text) {
+                if fresh.hatched_at != seen_hatched_at || fresh_at_start {
+                    seen_hatched_at = fresh.hatched_at;
+                    fresh_at_start = false;
+                    hatch_start = Some(tick);
+                    hatch_msg = format!(
+                        "It hatched! {} the {} ({})",
+                        fresh.name,
+                        species::display_name(&fresh.species),
+                        species::get(&fresh.species)
+                            .unwrap_or_else(species::fallback)
+                            .tier
+                    );
+                } else if fresh.ascensions > seen_ascensions || fresh.species != seen_species {
+                    seen_ascensions = fresh.ascensions;
+                    seen_species = fresh.species.clone();
+                    hatch_start = Some(tick);
+                    hatch_msg = format!(
+                        "Rehatched! {} the {} ({})",
+                        fresh.name,
+                        species::display_name(&fresh.species),
+                        species::get(&fresh.species)
+                            .unwrap_or_else(species::fallback)
+                            .tier
+                    );
+                }
+                st = fresh;
+            }
+        }
         let mut mood = state::current_mood(active, &events, now);
         if mood == Mood::Sleeping {
             if let Some(w) = wake {
@@ -144,7 +197,10 @@ pub fn run_ui() -> i32 {
         st.mood = mood.label().to_string();
         let chaos = state::effective_chaos(&st, &events, now);
 
-        let _ = terminal.draw(|f| draw(f, &st, sp, mood, events.last(), now, tick, chaos));
+        let hatch = hatch_start.map(|s| (s, hatch_msg.as_str()));
+        let _ = terminal.draw(|f| {
+            draw(f, &st, sp, mood, events.last(), now, tick, chaos, hatch)
+        });
         tick += 1;
         std::thread::sleep(Duration::from_millis(250));
     }
@@ -233,12 +289,17 @@ mod tests {
         };
         let mut terminal = Terminal::new(TestBackend::new(80, 24)).unwrap();
         terminal
-            .draw(|f| draw(f, &st, sp, Mood::Idle, Some(&ev), 100, 0, 0))
+            .draw(|f| draw(f, &st, sp, Mood::Idle, Some(&ev), 100, 0, 0, None))
             .unwrap();
         let text = buffer_text(terminal.backend().buffer());
         assert!(text.contains("/buddy ol pal"), "box title missing");
         assert!(text.contains("Fig the "), "pet line missing");
         assert!(text.contains("L1"), "level missing");
+        assert!(
+            text.contains(&format!("[{}]", sp.tier)),
+            "rarity tier missing from the header: {}",
+            sp.tier
+        );
         assert!(text.contains("last: build_finished, 2s ago"), "last line missing");
     }
 
@@ -247,7 +308,7 @@ mod tests {
         let (st, sp) = fixture();
         let mut terminal = Terminal::new(TestBackend::new(80, 24)).unwrap();
         terminal
-            .draw(|f| draw(f, &st, sp, Mood::Idle, None, 100, 0, 0))
+            .draw(|f| draw(f, &st, sp, Mood::Idle, None, 100, 0, 0, None))
             .unwrap();
         let text = buffer_text(terminal.backend().buffer());
         assert!(text.contains("nothing yet"));
@@ -258,10 +319,52 @@ mod tests {
         let (st, sp) = fixture();
         let mut terminal = Terminal::new(TestBackend::new(80, 24)).unwrap();
         terminal
-            .draw(|f| draw(f, &st, sp, Mood::Miffed, None, 100, 0, 0))
+            .draw(|f| draw(f, &st, sp, Mood::Miffed, None, 100, 0, 0, None))
             .unwrap();
         let text = buffer_text(terminal.backend().buffer());
         assert!(text.contains("(miffed)"), "mood label missing from the pet line");
+    }
+
+    #[test]
+    fn hatch_frames_take_over_until_the_animation_ends() {
+        let (st, sp) = fixture();
+        let mut terminal = Terminal::new(TestBackend::new(80, 24)).unwrap();
+        terminal
+            .draw(|f| {
+                draw(
+                    f,
+                    &st,
+                    sp,
+                    Mood::Idle,
+                    None,
+                    100,
+                    0,
+                    0,
+                    Some((0, "It hatched! Fig the ember (legendary)")),
+                )
+            })
+            .unwrap();
+        let text = buffer_text(terminal.backend().buffer());
+        assert!(text.contains("It hatched!"), "hatch blurb missing");
+        // A tick past the animation length, the normal art and blurb return.
+        let mut terminal = Terminal::new(TestBackend::new(80, 24)).unwrap();
+        terminal
+            .draw(|f| {
+                draw(
+                    f,
+                    &st,
+                    sp,
+                    Mood::Idle,
+                    None,
+                    100,
+                    crate::anim::HATCH_TICKS,
+                    0,
+                    Some((0, "It hatched! Fig the ember (legendary)")),
+                )
+            })
+            .unwrap();
+        let text = buffer_text(terminal.backend().buffer());
+        assert!(!text.contains("It hatched!"), "hatch blurb must end");
     }
 
     #[test]
@@ -275,7 +378,7 @@ mod tests {
         };
         let mut terminal = Terminal::new(TestBackend::new(20, 5)).unwrap();
         terminal
-            .draw(|f| draw(f, &st, sp, Mood::Idle, Some(&ev), 100, 0, 0))
+            .draw(|f| draw(f, &st, sp, Mood::Idle, Some(&ev), 100, 0, 0, None))
             .unwrap();
     }
 }

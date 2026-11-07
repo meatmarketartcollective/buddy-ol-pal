@@ -6,6 +6,156 @@
 
 use crate::state::{Mood, GLITCH_THRESHOLD};
 
+
+/// Ticks the hatch/rehatch animation runs before the normal art takes over.
+pub const HATCH_TICKS: u64 = 12;
+
+/// Egg frames for the hatch animation. The popup never resizes mid-hatch:
+/// every frame is padded to the species art's line count and width, and the
+/// final step is the buddy's own art.
+const EGG_WIDE: [&str; 4] = [
+    "   .---.  ",
+    "  (     ) ",
+    "  (     ) ",
+    "   '---'  ",
+];
+const EGG_WIDE_TILT: [&str; 4] = [
+    "    .---. ",
+    "   (     )",
+    "   (     )",
+    "    '---' ",
+];
+const EGG_WIDE_CRACKED: [&str; 4] = [
+    "   .---.  ",
+    "  ( \\ / ) ",
+    "  (  X  ) ",
+    "   '---'  ",
+];
+const EGG_WIDE_OPEN: [&str; 4] = [
+    "   .---.  ",
+    "  ( o o ) ",
+    "  (_____) ",
+    "          ",
+];
+const EGG_SMALL: [&str; 4] = [
+    " .--. ",
+    "(    )",
+    "(    )",
+    " '--' ",
+];
+const EGG_SMALL_TILT: [&str; 4] = [
+    "  --  ",
+    "(    )",
+    "(    )",
+    " '--' ",
+];
+const EGG_SMALL_CRACKED: [&str; 4] = [
+    " .--. ",
+    "( X  )",
+    "( /\\ )",
+    " '--' ",
+];
+const EGG_WIDE3: [&str; 3] = ["   .---.  ", "  (     ) ", "   '---'  "];
+const EGG_WIDE3_TILT: [&str; 3] = ["    .---. ", "   (     )", "    '---' "];
+const EGG_WIDE3_CRACKED: [&str; 3] = ["   .---.  ", "  ( X / ) ", "   '---'  "];
+const EGG_WIDE3_OPEN: [&str; 3] = ["   .---.  ", "  ( o o ) ", "   '---'  "];
+const EGG_SMALL3: [&str; 3] = [" .--. ", "(    )", " '--' "];
+const EGG_SMALL3_TILT: [&str; 3] = [" ,--. ", "(    )", " `--' "];
+const EGG_SMALL3_CRACKED: [&str; 3] = [" .--. ", "( X/ )", " '--' "];
+const EGG_SMALL3_OPEN: [&str; 3] = [" .--. ", "( o o)", " '--' "];
+const EGG_SMALL_OPEN: [&str; 4] = [
+    " .--. ",
+    "( o o)",
+    "(____)",
+    "      ",
+];
+
+fn center_block(rows: &[&str], h: usize, w: usize) -> String {
+    let top = (h.saturating_sub(rows.len())) / 2;
+    let mut out = String::new();
+    for i in 0..h {
+        if i < top || i >= top + rows.len() {
+            out.push_str(&" ".repeat(w));
+        } else {
+            let row = rows[i - top];
+            let len = row.chars().count();
+            let pad = w.saturating_sub(len) / 2;
+            let line = format!(
+                "{}{}{}",
+                " ".repeat(pad),
+                row,
+                " ".repeat(w.saturating_sub(pad + len))
+            );
+            out.push_str(&line);
+        }
+        out.push('\n');
+    }
+    out
+}
+
+/// One frame of the hatch (or rehatch) animation. Steps: the egg sits and
+/// wobbles, then cracks, then the shell opens on a peeking buddy, then the
+/// species art itself. Sized to the base art box so the popup holds still.
+pub fn hatch_frame(base: &str, step: u64) -> String {
+    if step >= HATCH_TICKS {
+        return base.to_string();
+    }
+    let h = base.lines().count().max(1);
+    let w = base.lines().map(|l| l.chars().count()).max().unwrap_or(1);
+    // An art box too small to hold an egg simply skips the animation.
+    if w < 6 || h < 3 {
+        return base.to_string();
+    }
+    let patterns: &[&str] = match (w >= 10, h) {
+        (true, 4..) => match step {
+            0..=3 => {
+                if step % 2 == 0 {
+                    &EGG_WIDE
+                } else {
+                    &EGG_WIDE_TILT
+                }
+            }
+            4..=7 => &EGG_WIDE_CRACKED,
+            _ => &EGG_WIDE_OPEN,
+        },
+        (false, 4..) => match step {
+            0..=3 => {
+                if step % 2 == 0 {
+                    &EGG_SMALL
+                } else {
+                    &EGG_SMALL_TILT
+                }
+            }
+            4..=7 => &EGG_SMALL_CRACKED,
+            _ => &EGG_SMALL_OPEN,
+        },
+        (true, 3) => match step {
+            0..=3 => {
+                if step % 2 == 0 {
+                    &EGG_WIDE3
+                } else {
+                    &EGG_WIDE3_TILT
+                }
+            }
+            4..=7 => &EGG_WIDE3_CRACKED,
+            _ => &EGG_WIDE3_OPEN,
+        },
+        (false, 3) => match step {
+            0..=3 => {
+                if step % 2 == 0 {
+                    &EGG_SMALL3
+                } else {
+                    &EGG_SMALL3_TILT
+                }
+            }
+            4..=7 => &EGG_SMALL3_CRACKED,
+            _ => &EGG_SMALL3_OPEN,
+        },
+        _ => return base.to_string(),
+    };
+    center_block(patterns, h, w)
+}
+
 const GLITCH_CHARS: &[char] = &['#', '%', '?', '!', '/', '\\', '~', '^', '='];
 
 /// SplitMix64: tiny deterministic hash for frame rolls.
@@ -204,6 +354,66 @@ mod tests {
     #[test]
     fn frames_are_deterministic() {
         assert_eq!(frame(Mood::Idle, ART, 9, 80), frame(Mood::Idle, ART, 9, 80));
+    }
+
+    const EGG_ART: &str = "   o   o   \n  (o.o)   \n   ~~~~~   \n  <(*_*)>  \n";
+
+    #[test]
+    fn hatch_frames_hold_the_art_box_then_return_the_buddy() {
+        // Every egg frame keeps the base art's shape so the popup never
+        // resizes mid-animation, and the final step is the buddy itself.
+        for step in 0..HATCH_TICKS {
+            let f = hatch_frame(EGG_ART, step);
+            assert_eq!(f.lines().count(), EGG_ART.lines().count(), "step {}", step);
+            let w = f.lines().map(|l| l.chars().count()).max().unwrap();
+            assert!(
+                w <= EGG_ART.lines().map(|l| l.chars().count()).max().unwrap(),
+                "step {}",
+                step
+            );
+        }
+        assert_eq!(hatch_frame(EGG_ART, HATCH_TICKS), EGG_ART);
+        assert_eq!(hatch_frame(EGG_ART, 999), EGG_ART);
+    }
+
+    #[test]
+    fn hatch_walks_egg_crack_then_emerge() {
+        let intact = hatch_frame(EGG_ART, 0);
+        assert!(!intact.contains('X'), "step 0 must be an intact egg");
+        assert!(
+            hatch_frame(EGG_ART, 0) != hatch_frame(EGG_ART, 1),
+            "the egg should wobble"
+        );
+        let cracked = hatch_frame(EGG_ART, 5);
+        assert!(cracked.contains('X'), "mid-hatch must show the crack");
+        let open = hatch_frame(EGG_ART, 9);
+        assert!(open.contains('o'), "emerge step must peek the eyes");
+    }
+
+    #[test]
+    fn hatch_skips_an_art_box_too_small_for_an_egg() {
+        let tiny = " o \n";
+        assert_eq!(hatch_frame(tiny, 5), tiny, "a 1-line box cannot hold an egg");
+    }
+
+    #[test]
+    fn hatch_fits_a_three_line_art() {
+        let short = " (o.o)\n <(*_*)>\n  ~~~\n";
+        assert_ne!(hatch_frame(short, 5), short, "a 3-line box still animates");
+        let f = hatch_frame(short, 5);
+        assert!(f.contains('X'), "3-line crack must show");
+        assert_eq!(hatch_frame(short, HATCH_TICKS), short);
+    }
+
+    #[test]
+    fn hatch_fits_a_small_art_box() {
+        let small = " (o.o)\n <(*_*)>\n  ~~~~\n  ~~~~\n";
+        let f = hatch_frame(small, 5);
+        assert_eq!(f.lines().count(), small.lines().count());
+        let max_w = small.lines().map(|l| l.chars().count()).max().unwrap();
+        for l in f.lines() {
+            assert!(l.chars().count() <= max_w, "overflow: {:?} > {}", l, max_w);
+        }
     }
 
     #[test]
