@@ -23,6 +23,18 @@ pub enum ArtFrames {
 }
 
 impl ArtFrames {
+    /// TOML multiline strings carry their closing newline into the art; a
+    /// trailing empty line would pad every popup by one row. Trim it here,
+    /// once at load, so no frame ever ends on a blank line.
+    fn trim_blank_tail(&mut self) {
+        match self {
+            ArtFrames::One(s) => while s.ends_with('\n') { s.pop(); },
+            ArtFrames::Many(v) => {
+                for s in v { while s.ends_with('\n') { s.pop(); } }
+            }
+        }
+    }
+
     pub fn frames(&self) -> Vec<&str> {
         match self {
             ArtFrames::One(s) => vec![s.as_str()],
@@ -47,6 +59,10 @@ pub struct MoodArt {
     pub working: ArtFrames,
     pub celebrating: ArtFrames,
     pub miffed: ArtFrames,
+    /// Art lines the eye transforms must never touch: circles that are
+    /// decor, not eyes (boba pearls). Absent means every line may blink.
+    #[serde(default)]
+    pub blink_skip: Vec<usize>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -81,6 +97,11 @@ impl MoodArt {
             Mood::Sleeping | Mood::Resting | Mood::Petted => &self.idle,
         };
         frames.frame_for(tick)
+    }
+
+    /// Lines the eye transforms skip on this art, in every mood.
+    pub fn blink_skip(&self) -> &[usize] {
+        &self.blink_skip
     }
 }
 
@@ -126,7 +147,18 @@ pub fn speak(sp: &Species, mood: Mood, seed: u64) -> &str {
 pub fn builtin_table() -> Vec<Species> {
     let parsed: SpeciesFile = toml::from_str(SPECIES_TOML).expect("species.toml must parse");
     assert!(!parsed.species.is_empty(), "species table is empty");
-    parsed.species
+    let mut v = parsed.species;
+    v.iter_mut().for_each(normalize);
+    v
+}
+
+/// Load-time cleanup every species gets once, builtin or pack: no art
+/// frame may end on a blank line.
+fn normalize(sp: &mut Species) {
+    sp.art.idle.trim_blank_tail();
+    sp.art.working.trim_blank_tail();
+    sp.art.celebrating.trim_blank_tail();
+    sp.art.miffed.trim_blank_tail();
 }
 
 pub fn table() -> &'static [Species] {
@@ -160,9 +192,10 @@ fn load_pack_files() -> Vec<(String, String)> {
 fn merge(builtins: Vec<Species>, packs: &[(String, String)]) -> Vec<Species> {
     let mut table = builtins;
     for (_, text) in packs {
-        let Ok(parsed) = toml::from_str::<SpeciesFile>(text) else {
+        let Ok(mut parsed) = toml::from_str::<SpeciesFile>(text) else {
             continue;
         };
+        parsed.species.iter_mut().for_each(normalize);
         for sp in parsed.species {
             if let Some(slot) = table.iter_mut().find(|t| t.name == sp.name) {
                 *slot = sp;

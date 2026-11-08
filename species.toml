@@ -590,6 +590,7 @@ miffed = '''
   ( @ @ )
  (  ~ ~  )o
 (_________)'''
+blink_skip = [2]
 [species.lines]
 idle = ["drips anywhere it wants. property values suffer", "containment is a suggestion", "just a slow puddle and me out here. fine by me", "napping next to pipe pressure. wake me when it matters"]
 working = ["containment is a suggestion (working)", "the hum of real work. a slow puddle approves", "hovers near the terminal, pipe pressure at the ready", "every keystroke is the bucket reserve music"]
@@ -862,6 +863,7 @@ miffed = '''
   | o . O|
   |ooOOOO|
   \______/'''
+blink_skip = [3]
 [species.lines]
 idle = ["chews its thoughts before speaking", "sip slowly, ship slowly", "just chewy pearls and me out here. fine by me", "keeps brown sugar swirl close while the cursor idles"]
 working = ["sip slowly, ship slowly (working)", "every keystroke is chewy pearls music", "hovers near the terminal, brown sugar swirl at the ready", "the hum of real work. the wide straw approves"]

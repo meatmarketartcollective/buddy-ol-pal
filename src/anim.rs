@@ -181,21 +181,80 @@ pub fn glitch_severity(chaos: i64) -> i64 {
     (5 + (chaos - GLITCH_THRESHOLD)).clamp(1, 45)
 }
 
-fn closed_eyes(art: &str) -> String {
-    art.chars()
-        .map(|c| match c {
-            'o' | 'O' | '0' | '\u{25C9}' | '\u{25CF}' | '\u{25D5}' | '\u{2665}' => '-',
-            _ => c,
+fn closed_eyes(art: &str, skip: &[usize]) -> String {
+    swap_eyes(art, skip, '-')
+}
+
+fn swap_eyes(art: &str, skip: &[usize], to: char) -> String {
+    art.split_inclusive('\n')
+        .enumerate()
+        .map(|(i, line)| {
+            if skip.contains(&i) {
+                return line.to_string();
+            }
+            line.chars()
+                .map(|c| match c {
+                    'o' | 'O' | '0' | '\u{25C9}' | '\u{25CF}' | '\u{25D5}' | '\u{2665}' => to,
+                    _ => c,
+                })
+                .collect::<String>()
         })
         .collect()
 }
 
-fn half_lids(art: &str) -> String {
-    art.chars()
-        .map(|c| match c {
-            'o' | 'O' | '0' | '\u{25C9}' | '\u{25CF}' | '\u{25D5}' | '\u{2665}' => '.',
-            _ => c,
+fn half_lids(art: &str, skip: &[usize]) -> String {
+    swap_eyes(art, skip, '.')
+}
+
+/// The open-eye counterpart for species whose art has no open eye
+/// characters at all (ember's `( -.- )`): the normal blink would be a
+/// no-op, so on a blink tick the closed face opens instead. Only a line
+/// shaped like a paren face changes, its outermost closed-eye glyphs
+/// (`-` or `.`) widen to `o`, width preserved. Decor and non-face lines
+/// never move.
+fn open_peek(art: &str, skip: &[usize]) -> String {
+    art.split_inclusive('\n')
+        .enumerate()
+        .map(|(i, line)| {
+            if skip.contains(&i) {
+                return line.to_string();
+            }
+            peek_line(line)
         })
+        .collect()
+}
+
+fn peek_line(line: &str) -> String {
+    let open = match line.find('(') {
+        Some(i) => i,
+        None => return line.to_string(),
+    };
+    let close = match line.rfind(')') {
+        Some(i) => i,
+        None => return line.to_string(),
+    };
+    if close <= open + 1 {
+        return line.to_string();
+    }
+    let inner = &line[open + 1..close];
+    let eyes: Vec<usize> = inner
+        .char_indices()
+        .filter(|(_, c)| !c.is_whitespace())
+        .map(|(i, _)| i)
+        .collect();
+    if eyes.len() < 2 {
+        return line.to_string();
+    }
+    let first = inner[eyes[0]..].chars().next().unwrap();
+    let last = inner[eyes[eyes.len() - 1]..].chars().next().unwrap();
+    let closed = |c: char| c == '-' || c == '.';
+    if !closed(first) || !closed(last) {
+        return line.to_string();
+    }
+    let first_at = open + 1 + eyes[0];
+    let last_at = open + 1 + eyes[eyes.len() - 1];
+    line.char_indices()
+        .map(|(i, c)| if i == first_at || i == last_at { 'o' } else { c })
         .collect()
 }
 
@@ -224,10 +283,10 @@ pub fn glitch_frame(art: &str, seed: u64, chaos: i64) -> String {
 
 /// The frame to show right now: the mood's base art animated for its state,
 /// and, at high chaos, occasionally replaced by a random glitch frame.
-pub fn frame(mood: Mood, base: &str, tick: u64, chaos: i64) -> String {
+pub fn frame(mood: Mood, base: &str, tick: u64, chaos: i64, skip: &[usize]) -> String {
     let animated = match mood {
-        Mood::Sleeping => format!("{}\n{}", closed_eyes(base), zzz_line(tick)),
-        Mood::Resting => half_lids(base),
+        Mood::Sleeping => format!("{}\n{}", closed_eyes(base, skip), zzz_line(tick)),
+        Mood::Resting => half_lids(base, skip),
         Mood::Petted => {
             let hearts = if tick % 2 == 0 { "   <3" } else { "  <333" };
             format!("{}\n{}", base, hearts)
@@ -238,7 +297,12 @@ pub fn frame(mood: Mood, base: &str, tick: u64, chaos: i64) -> String {
         }
         Mood::Idle => {
             if tick % 4 == 3 {
-                closed_eyes(base)
+                let closed = closed_eyes(base, skip);
+                if closed == base {
+                    open_peek(base, skip)
+                } else {
+                    closed
+                }
             } else {
                 base.to_string()
             }
@@ -264,48 +328,48 @@ mod tests {
 
     #[test]
     fn sleeping_frames_cycle_the_zzz_drift() {
-        assert_ne!(frame(Mood::Sleeping, ART, 0, 0), frame(Mood::Sleeping, ART, 1, 0));
-        assert!(frame(Mood::Sleeping, ART, 0, 0).contains("z Z Z"));
+        assert_ne!(frame(Mood::Sleeping, ART, 0, 0, &[]), frame(Mood::Sleeping, ART, 1, 0, &[]));
+        assert!(frame(Mood::Sleeping, ART, 0, 0, &[]).contains("z Z Z"));
         // Asleep means eyes closed in every frame.
-        assert!(!frame(Mood::Sleeping, ART, 5, 0).contains('o'));
+        assert!(!frame(Mood::Sleeping, ART, 5, 0, &[]).contains('o'));
     }
 
     #[test]
     fn idle_blinks_every_fourth_tick() {
-        assert_eq!(frame(Mood::Idle, ART, 0, 0), ART);
-        assert_ne!(frame(Mood::Idle, ART, 3, 0), ART);
-        assert_eq!(frame(Mood::Idle, ART, 4, 0), ART);
+        assert_eq!(frame(Mood::Idle, ART, 0, 0, &[]), ART);
+        assert_ne!(frame(Mood::Idle, ART, 3, 0, &[]), ART);
+        assert_eq!(frame(Mood::Idle, ART, 4, 0, &[]), ART);
     }
 
     #[test]
     fn resting_half_closes_the_eyes() {
-        assert!(!frame(Mood::Resting, ART, 0, 0).contains('o'));
-        assert!(frame(Mood::Resting, ART, 0, 0).contains('.'));
+        assert!(!frame(Mood::Resting, ART, 0, 0, &[]).contains('o'));
+        assert!(frame(Mood::Resting, ART, 0, 0, &[]).contains('.'));
     }
 
     #[test]
     fn petted_pulses_hearts() {
-        assert!(frame(Mood::Petted, ART, 0, 0).contains("<3"));
-        assert_ne!(frame(Mood::Petted, ART, 0, 0), frame(Mood::Petted, ART, 1, 0));
+        assert!(frame(Mood::Petted, ART, 0, 0, &[]).contains("<3"));
+        assert_ne!(frame(Mood::Petted, ART, 0, 0, &[]), frame(Mood::Petted, ART, 1, 0, &[]));
     }
 
     #[test]
     fn sleeping_closes_symbol_eyes_too() {
         let art = "( \u{25C9}   \u{25C9} )\n";
-        let f = frame(Mood::Sleeping, art, 0, 0);
+        let f = frame(Mood::Sleeping, art, 0, 0, &[]);
         assert!(!f.contains('\u{25C9}'), "symbol eyes must close when asleep");
     }
 
     #[test]
     fn working_spins() {
-        assert_ne!(frame(Mood::Working, ART, 0, 0), frame(Mood::Working, ART, 1, 0));
+        assert_ne!(frame(Mood::Working, ART, 0, 0, &[]), frame(Mood::Working, ART, 1, 0, &[]));
     }
 
     #[test]
     fn no_glitch_below_the_threshold() {
         for tick in 0..200 {
-            let f = frame(Mood::Idle, ART, tick, 40);
-            assert_eq!(f, if tick % 4 == 3 { closed_eyes(ART) } else { ART.to_string() });
+            let f = frame(Mood::Idle, ART, tick, 40, &[]);
+            assert_eq!(f, if tick % 4 == 3 { closed_eyes(ART, &[]) } else { ART.to_string() });
         }
     }
 
@@ -314,7 +378,7 @@ mod tests {
         let mut corrupted = 0;
         let mut clean = 0;
         for tick in 0..200 {
-            let f = frame(Mood::Idle, ART, tick, 100);
+            let f = frame(Mood::Idle, ART, tick, 100, &[]);
             if f.contains('#') || f.contains('%') || f.contains('?') {
                 corrupted += 1;
             } else {
@@ -327,7 +391,7 @@ mod tests {
 
     #[test]
     fn glitch_never_touches_spaces_or_newlines() {
-        let f = frame(Mood::Idle, ART, 7, 100);
+        let f = frame(Mood::Idle, ART, 7, 100, &[]);
         let mut glitched = false;
         for (a, b) in f.chars().zip(ART.chars()) {
             if b == ' ' || b == '\n' {
@@ -353,7 +417,7 @@ mod tests {
 
     #[test]
     fn frames_are_deterministic() {
-        assert_eq!(frame(Mood::Idle, ART, 9, 80), frame(Mood::Idle, ART, 9, 80));
+        assert_eq!(frame(Mood::Idle, ART, 9, 80, &[]), frame(Mood::Idle, ART, 9, 80, &[]));
     }
 
     const EGG_ART: &str = "   o   o   \n  (o.o)   \n   ~~~~~   \n  <(*_*)>  \n";
@@ -422,5 +486,48 @@ mod tests {
         assert_eq!(glitch_chance(50), 10);
         assert_eq!(glitch_chance(100), 70);
         assert!(glitch_severity(55) < glitch_severity(95));
+    }
+    #[test]
+    fn closed_face_species_peek_open_on_blink() {
+        let art = "( -.- )\n(_____)\n";
+        assert_eq!(frame(Mood::Idle, art, 3, 0, &[]), "( o.o )\n(_____)\n");
+        assert_eq!(frame(Mood::Idle, art, 1, 0, &[]), art);
+    }
+
+    #[test]
+    fn peek_never_touches_non_face_paren_lines() {
+        let art = "( o o )\n( >.< )\n(_____)\n";
+        let f = frame(Mood::Idle, art, 3, 0, &[]);
+        // open eyes close through the normal path; the rest is decor.
+        assert!(f.contains("( - - )"), "{f}");
+        assert!(f.contains("( >.< )"), "{f}");
+        assert!(f.contains("(_____)"), "{f}");
+    }
+
+    #[test]
+    fn blink_skip_protects_decor_lines() {
+        let art = "| o . o|\n|ooOOOO|\n";
+        let skip = [1usize];
+        let f = frame(Mood::Idle, art, 3, 0, &skip);
+        assert!(f.contains("| - . -|"), "{f}");
+        assert!(f.contains("|ooOOOO|"), "{f}");
+        let r = frame(Mood::Resting, art, 0, 0, &skip);
+        assert!(r.contains("| . . .|"), "{r}");
+        assert!(r.contains("|ooOOOO|"), "{r}");
+    }
+
+    #[test]
+    fn loaded_frames_never_end_on_blank_line() {
+        for sp in crate::species::builtin_table() {
+            assert!(!sp.art.idle.frames().iter().any(|f| f.ends_with('\n')), "{}", sp.name);
+            assert!(!sp.art.working.frames().iter().any(|f| f.ends_with('\n')), "{}", sp.name);
+            assert!(!sp.art.celebrating.frames().iter().any(|f| f.ends_with('\n')), "{}", sp.name);
+            assert!(!sp.art.miffed.frames().iter().any(|f| f.ends_with('\n')), "{}", sp.name);
+        }
+        let boba = crate::species::builtin_table()
+            .into_iter()
+            .find(|s| s.name == "boba")
+            .unwrap();
+        assert_eq!(boba.art.blink_skip(), &[3]);
     }
 }

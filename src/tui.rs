@@ -42,7 +42,7 @@ fn draw(
             msg.to_string(),
         ),
         _ => (
-            anim::frame(mood, base_art, tick, chaos),
+            anim::frame(mood, base_art, tick, chaos, sp.art.blink_skip()),
             species::pick_line(sp.lines.for_mood(mood), now).to_string(),
         ),
     };
