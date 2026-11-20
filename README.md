@@ -42,6 +42,12 @@ No config, no account.
 
 ![buddy ol pal demo](demo.gif)
 
+The menu is the front door, and the companion rides along in a corner of
+your terminal:
+
+![the buddy menu](shots/menu.png)
+![the companion](shots/companion.png)
+
 
 ## Usage
 

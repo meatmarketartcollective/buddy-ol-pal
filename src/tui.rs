@@ -82,7 +82,18 @@ fn draw(
         Style::default().fg(Color::Cyan),
     )));
 
-    let w = 36u16;
+    let max_line = lines
+        .iter()
+        .map(|l| {
+            l.spans
+                .iter()
+                .map(|s| s.content.chars().count())
+                .sum::<usize>()
+        })
+        .max()
+        .unwrap_or(0);
+    let w = max_line.saturating_add(2).min(200) as u16;
+    let w = w.max(24);
     let h = (art.lines().count() as u16).saturating_add(7);
     let popup = Rect {
         x: area.width.saturating_sub(w + 1),
